@@ -13,16 +13,16 @@ def show_dashboard():
     
     # Modern gradient header for dashboard
     st.markdown("""
-    <div style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); 
+    <div style="background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%); 
     padding: 2rem 2.5rem; border-radius: 16px; margin-bottom: 1.5rem; 
-    box-shadow: 0 10px 40px rgba(17, 153, 142, 0.3);">
+    box-shadow: 0 10px 40px rgba(0,0,0,0.12);">
         <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
             <div style="font-size: 3rem;">📊</div>
             <div>
-                <h1 style="color: white; margin: 0; font-size: 2rem; font-weight: 700;">
+                <h1 style="color: var(--text-primary); margin: 0; font-size: 2rem; font-weight: 700;">
                     Dashboard
                 </h1>
-                <p style="color: rgba(255,255,255,0.85); margin: 0.25rem 0 0 0; font-size: 1rem;">
+                <p style="color: var(--text-secondary); margin: 0.25rem 0 0 0; font-size: 1rem;">
                     Your AI activity at a glance
                 </p>
             </div>
@@ -37,10 +37,10 @@ def show_dashboard():
     
     # Welcome card
     st.markdown(f"""
-    <div style="background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%); 
-    padding: 1.25rem 1.5rem; border-radius: 12px; border-left: 4px solid #667eea; margin-bottom: 1rem;">
-        <h3 style="margin: 0 0 0.25rem 0;">Welcome back, {user_name}! 👋</h3>
-        {"<p style='color: #64748b; margin: 0;'>📧 " + user_email + "</p>" if user_email else ""}
+    <div style="background: linear-gradient(135deg, var(--accent-primary)15 0%, var(--accent-secondary)15 100%); 
+    padding: 1.25rem 1.5rem; border-radius: 12px; border-left: 4px solid var(--accent-primary); margin-bottom: 1rem;">
+        <h3 style="margin: 0 0 0.25rem 0; color: var(--text-primary);">Welcome back, {user_name}! 👋</h3>
+        {"<p style='color: var(--text-secondary); margin: 0;'>📧 " + user_email + "</p>" if user_email else ""}
     </div>
     """, unsafe_allow_html=True)
     
@@ -53,11 +53,11 @@ def show_dashboard():
     
     with col1:
         st.markdown(f"""
-        <div class="gradient-card-purple" style="background: linear-gradient(135deg, #667eea20 0%, #764ba220 100%); 
-        padding: 1.25rem; border-radius: 12px; border-left: 4px solid #667eea; text-align: center;">
-            <div style="font-size: 2rem; font-weight: 700; background: linear-gradient(135deg, #667eea, #764ba2); 
+        <div class="gradient-card-purple" style="background: linear-gradient(135deg, var(--accent-primary)20 0%, var(--accent-secondary)20 100%); 
+        padding: 1.25rem; border-radius: 12px; border-left: 4px solid var(--accent-primary); text-align: center;">
+            <div style="font-size: 2rem; font-weight: 700; background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)); 
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;">{total_messages}</div>
-            <div style="color: #64748b; font-size: 0.85rem; font-weight: 600;">💬 Messages</div>
+            <div style="color: var(--text-secondary); font-size: 0.85rem; font-weight: 600;">💬 Messages</div>
         </div>
         """, unsafe_allow_html=True)
     with col2:
@@ -104,10 +104,10 @@ def show_dashboard():
     action_col1, action_col2 = st.columns(2)
     
     with action_col1:
-        st.markdown("""
-        <div class="quick-action-card" style="background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%); padding: 1.5rem; border-radius: 10px; border-left: 4px solid #667eea; margin-bottom: 1rem;">
+        st.markdown(f"""
+        <div class="quick-action-card" style="background: linear-gradient(135deg, var(--accent-primary)15 0%, var(--accent-secondary)15 100%); padding: 1.5rem; border-radius: 10px; border-left: 4px solid var(--accent-primary); margin-bottom: 1rem; color: var(--text-primary);">
             <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">💬 Start Chatting</div>
-            <div class="card-description" style="font-size: 0.9rem; margin-bottom: 1rem;">Begin a new conversation with your selected AI model or enable AI Brain for multi-model responses</div>
+            <div class="card-description" style="font-size: 0.9rem; margin-bottom: 1rem; color: var(--text-secondary);">Begin a new conversation with your selected AI model or enable AI Brain for multi-model responses</div>
         </div>
         """, unsafe_allow_html=True)
         
@@ -171,16 +171,17 @@ def show_dashboard():
     st.markdown("""
     <style>
     .action-card {
-        background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+        background: linear-gradient(135deg, var(--accent-primary)10 0%, var(--accent-secondary)10 100%);
         border-radius: 10px;
         padding: 12px;
         text-align: center;
-        border: 1px solid #667eea30;
+        border: 1px solid rgba(0,0,0,0.06);
         transition: transform 0.2s;
+        color: var(--text-primary);
     }
     .action-card:hover { transform: translateY(-2px); }
     .action-icon { font-size: 1.5rem; }
-    .action-label { font-size: 0.85rem; color: var(--text-secondary, #555); margin-top: 4px; }
+    .action-label { font-size: 0.85rem; color: var(--text-secondary); margin-top: 4px; }
     </style>
     """, unsafe_allow_html=True)
 
