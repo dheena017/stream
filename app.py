@@ -1818,15 +1818,75 @@ with st.sidebar:
         else:
             st.info("No model performance data yet. Use Brain Mode to start learning!")
     
-    # Topic Expertise Dashboard
+    # Topic Expertise Dashboard (enhanced)
     with st.expander("🎯 Topic Expertise", expanded=False):
         top_topics = stats.get("top_topics", [])
+        topic_expertise = learning_brain.topic_expertise  # {topic: {model: count}}
+
         if top_topics:
-            st.write("**Most Discussed Topics:**")
-            for topic_info in top_topics[:10]:
+            # Summary metrics
+            total_topics = len(top_topics)
+            total_entries = sum(t['count'] for t in top_topics)
+            top_topic_name = top_topics[0]['topic'] if top_topics else "—"
+            te_col1, te_col2, te_col3 = st.columns(3)
+            with te_col1:
+                st.metric("Total Topics", total_topics)
+            with te_col2:
+                st.metric("Total Entries", total_entries)
+            with te_col3:
+                st.metric("Top Topic", top_topic_name)
+
+            st.markdown("---")
+
+            # Horizontal bar chart of top 10 topics
+            st.markdown("#### Top Topics by Conversations")
+            df_topics = pd.DataFrame(top_topics[:10])
+            if not df_topics.empty:
+                df_topics = df_topics.set_index('topic')
+                st.bar_chart(df_topics['count'])
+
+            # Detailed topic cards with model breakdown
+            st.markdown("#### Topic Details")
+            for idx, topic_info in enumerate(top_topics[:10], start=1):
                 topic_name = topic_info['topic']
                 count = topic_info['count']
-                st.write(f"• **{topic_name}**: {count} conversation{'s' if count != 1 else ''}")
+
+                # Badge for rank
+                if idx == 1:
+                    badge = "🥇"
+                elif idx == 2:
+                    badge = "🥈"
+                elif idx == 3:
+                    badge = "🥉"
+                else:
+                    badge = f"#{idx}"
+
+                st.markdown(
+                    f'<div style="background:linear-gradient(90deg,#667eea22,#764ba208);'
+                    f'border-left:4px solid #667eea;padding:10px;border-radius:6px;margin-bottom:8px;">'
+                    f'<span style="font-size:1.1rem;">{badge} <b>{topic_name}</b></span>'
+                    f' &nbsp;—&nbsp; {count} conversation{"s" if count != 1 else ""}'
+                    f'</div>',
+                    unsafe_allow_html=True
+                )
+
+                # Model breakdown for this topic
+                models_for_topic = topic_expertise.get(topic_name, {})
+                if models_for_topic:
+                    sorted_models = sorted(models_for_topic.items(), key=lambda x: x[1], reverse=True)
+                    chips = " ".join([f"`{m}` ({c})" for m, c in sorted_models[:5]])
+                    st.caption(f"Models: {chips}")
+
+            # Search / filter topics
+            st.markdown("#### Search Topics")
+            search_q = st.text_input("Filter topics", "", key="topic_search")
+            if search_q:
+                filtered = [t for t in top_topics if search_q.lower() in t['topic'].lower()]
+                if filtered:
+                    for t in filtered[:20]:
+                        st.write(f"• **{t['topic']}**: {t['count']}")
+                else:
+                    st.info("No matching topics found.")
         else:
             st.info("No topics learned yet. Ask questions to build the knowledge base!")
     
