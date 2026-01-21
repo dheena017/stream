@@ -2348,6 +2348,52 @@ if st.session_state.voice_mode:
 else:
     st.caption("GPT-4, Claude, Gemini, Llama, Grok, DeepSeek")
 
+# Keyboard shortcuts
+st.markdown("""
+<script>
+document.addEventListener('keydown', function(e) {
+    // Ctrl+K or Cmd+K: Focus chat input
+    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        const chatInput = document.querySelector('textarea[data-testid="stChatInput"]');
+        if (chatInput) chatInput.focus();
+    }
+    // Ctrl+Shift+C: Clear chat (trigger button click)
+    if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'C') {
+        e.preventDefault();
+        const clearBtn = document.querySelector('button[kind="secondary"]');
+        if (clearBtn && clearBtn.innerText.includes('Clear')) clearBtn.click();
+    }
+    // Escape: Blur current input
+    if (e.key === 'Escape') {
+        document.activeElement.blur();
+    }
+});
+</script>
+<style>
+/* Keyboard shortcut hints */
+.shortcut-hint {
+    font-size: 0.7rem;
+    color: #888;
+    background: #f0f0f0;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-left: 4px;
+}
+</style>
+""", unsafe_allow_html=True)
+
+# Show keyboard shortcut hints
+with st.expander("⌨️ Keyboard Shortcuts", expanded=False):
+    st.markdown("""
+    | Shortcut | Action |
+    |----------|--------|
+    | `Ctrl/Cmd + K` | Focus chat input |
+    | `Ctrl/Cmd + Shift + C` | Clear chat |
+    | `Escape` | Blur input |
+    | `Enter` | Send message (in chat input) |
+    """)
+
 # Chat interface styling
 st.markdown("""
 <style>
