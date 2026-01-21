@@ -16,3 +16,8 @@ beautifulsoup4
 requests
 aiohttp
 google-generativeai
+
+# Optional (for advanced multimodal/image captioning)
+transformers
+torch
+torchvision

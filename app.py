@@ -115,7 +115,8 @@ def initialize_chat_state():
         "messages": [],
         "voice_mode": False,
         "enable_internet_search": False,
-        "search_result_count": 5
+        "search_result_count": 5,
+        "enable_advanced_captioning": False
     }
     
     for key, value in chat_defaults.items():

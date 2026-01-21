@@ -167,3 +167,140 @@ def augment_prompt_with_search(prompt: str, search_results: List[Dict]) -> str:
 Please use the above search results to provide a current and accurate answer."""
     
     return augmented
+
+
+def process_images_for_context(images: List) -> List[Dict]:
+    """Generate lightweight context for a list of PIL Images.
+
+    Returns list of dicts: {name: str, caption: str}
+    This function uses Pillow only and a very small heuristic captioner when
+    no advanced model is available.
+    """
+    results = []
+    try:
+        from PIL import Image
+        for i, img in enumerate(images, 1):
+            caption = None
+            # If image has info/description metadata, prefer it
+            try:
+                info = getattr(img, 'info', {}) or {}
+                caption = info.get('description') or info.get('caption')
+            except Exception:
+                caption = None
+
+            # Fallback: provide a simple size-based caption
+            if not caption:
+                try:
+                    caption = f"Image {i}: {img.width}x{img.height} pixels"
+                except Exception:
+                    caption = f"Image {i} (unknown size)"
+
+            results.append({"name": f"image_{i}", "caption": caption})
+    except Exception as e:
+        logger.error(f"process_images_for_context error: {e}")
+    return results
+
+
+def transcribe_audio_file(file_like) -> str:
+    """Transcribe audio file-like object to text.
+
+    This attempts to use `speech_recognition` if available, otherwise returns
+    a short placeholder indicating transcription is not available.
+    """
+    try:
+        import speech_recognition as sr
+        recognizer = sr.Recognizer()
+        # speech_recognition accepts a path or AudioFile-like object
+        with sr.AudioFile(file_like) as source:
+            audio = recognizer.record(source)
+        try:
+            text = recognizer.recognize_google(audio)
+            return text
+        except Exception as e:
+            logger.warning(f"Speech recognition failed: {e}")
+            return "[Transcription failed or not available]"
+    except Exception:
+        logger.info("speech_recognition not installed; skipping transcription")
+        return "[Transcription unavailable - install speech_recognition]"
+
+
+def extract_video_frame_thumbnails(file_like, max_frames: int = 3) -> List[str]:
+    """Extract small thumbnails (as base64 strings) from a video file-like object.
+
+    Requires `moviepy`. Returns list of base64-encoded PNG images. If moviepy
+    is not available, returns an empty list.
+    """
+    thumbnails = []
+    try:
+        from moviepy.editor import VideoFileClip
+        import tempfile
+        from io import BytesIO
+        import base64
+
+        with tempfile.NamedTemporaryFile(suffix='.mp4', delete=True) as tmp:
+            tmp.write(file_like.read())
+            tmp.flush()
+            clip = VideoFileClip(tmp.name)
+            duration = clip.duration or 0
+            times = [(i + 1) * duration / (max_frames + 1) for i in range(max_frames)]
+            for t in times:
+                frame = clip.get_frame(t)
+                from PIL import Image
+                img = Image.fromarray(frame)
+                buf = BytesIO()
+                img.thumbnail((320, 320))
+                img.save(buf, format='PNG')
+                b64 = base64.b64encode(buf.getvalue()).decode('utf-8')
+                thumbnails.append(f"data:image/png;base64,{b64}")
+            clip.reader.close()
+            clip.audio = None
+    except Exception as e:
+        logger.info(f"moviepy not available or failed to extract frames: {e}")
+    return thumbnails
+
+
+def generate_blip_caption(image) -> Optional[str]:
+    """Generate an image caption using BLIP model (Salesforce/blip-image-captioning-base).
+
+    Returns caption string on success or None if BLIP is unavailable.
+    """
+    try:
+        from transformers import BlipProcessor, BlipForConditionalGeneration
+        import torch
+        processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-base")
+        model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-base")
+        device = "cuda" if torch.cuda.is_available() else "cpu"
+        model.to(device)
+
+        # Prepare inputs
+        inputs = processor(images=image, return_tensors="pt").to(device)
+        with torch.no_grad():
+            output_ids = model.generate(**inputs, max_new_tokens=50)
+        caption = processor.decode(output_ids[0], skip_special_tokens=True)
+        return caption
+    except Exception as e:
+        logger.info(f"BLIP captioning unavailable: {e}")
+        return None
+
+
+def generate_image_captions(images: List, use_blip: bool = False) -> List[Dict]:
+    """Generate captions for a list of PIL images.
+
+    If `use_blip` is True, attempt BLIP captioning per image and fall back to
+    `process_images_for_context` heuristics when BLIP is not available.
+    Returns list of {name, caption} dictionaries.
+    """
+    if not images:
+        return []
+    results = []
+    if use_blip:
+        for i, img in enumerate(images, 1):
+            cap = generate_blip_caption(img)
+            if not cap:
+                # fallback
+                fallback = process_images_for_context([img])[0]
+                cap = fallback.get('caption')
+            results.append({"name": f"image_{i}", "caption": cap})
+    else:
+        results = process_images_for_context(images)
+    return results

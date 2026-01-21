@@ -15,7 +15,8 @@ import google.generativeai as genai
 from ui.chat_utils import (
     get_openai_client, get_google_client, get_anthropic_client,
     build_conversation_history, create_openai_messages, handle_openai_compatible_provider,
-    perform_internet_search, augment_prompt_with_search
+    perform_internet_search, augment_prompt_with_search,
+    process_images_for_context, transcribe_audio_file, extract_video_frame_thumbnails, generate_image_captions
 )
 from brain import AIBrain
 from brain_learning import LearningBrain
@@ -192,6 +193,49 @@ def show_chat_page():
                         uploaded_file_info.append({"name": file.name, "type": "Text"})
                         st.success(f"Text: {file.name}")
 
+                # Audio files
+                if file_ext in ["mp3", "wav"]:
+                    try:
+                        # Keep a buffer copy for transcription helper
+                        file_bytes = file.read()
+                        from io import BytesIO
+                        audio_buf = BytesIO(file_bytes)
+                        transcription = transcribe_audio_file(audio_buf)
+                        extra_context += f"\n--- Audio {file.name} (transcript) ---\n{transcription}\n"
+                        uploaded_file_info.append({"name": file.name, "type": "Audio", "transcript": transcription})
+                        st.success(f"Audio processed: {file.name}")
+                    except Exception as e:
+                        st.warning(f"Audio processing failed: {e}")
+
+                # Video files
+                if file_ext in ["mp4", "mov"]:
+                    try:
+                        from io import BytesIO
+                        file_bytes = file.read()
+                        video_buf = BytesIO(file_bytes)
+                        thumbs = extract_video_frame_thumbnails(video_buf, max_frames=3)
+                        if thumbs:
+                            uploaded_file_info.append({"name": file.name, "type": "Video", "thumbnails": thumbs})
+                            # display small gallery
+                            cols = st.columns(min(len(thumbs), 3))
+                            for i, b64 in enumerate(thumbs):
+                                with cols[i%3]:
+                                    st.image(b64)
+                            extra_context += f"\n--- Video {file.name} - {len(thumbs)} thumbnails extracted ---\n"
+                            st.success(f"Video processed: {file.name}")
+                        else:
+                            st.info("No thumbnails extracted")
+                    except Exception as e:
+                        st.warning(f"Video processing failed: {e}")
+
+    # Advanced captioning option (move outside upload loop)
+    adv_caption = st.checkbox(
+        "🖼️ Enable Advanced Image Captioning (BLIP)",
+        value=st.session_state.get('enable_advanced_captioning', False),
+        help="Use BLIP model locally to generate richer image captions if installed"
+    )
+    st.session_state.enable_advanced_captioning = adv_caption
+
     if st.session_state.get('voice_mode'):
         st.info("🎤 Voice Mode Active - Use audio input")
         audio = st.audio_input("Record")
@@ -224,6 +268,17 @@ def show_chat_page():
             final_prompt = prompt
             if extra_context:
                 final_prompt += f"\n\nContext:\n{extra_context}"
+
+            # Multimodal processing: images -> captions
+            if uploaded_images:
+                try:
+                    use_blip = st.session_state.get('enable_advanced_captioning', False)
+                    img_context = generate_image_captions(uploaded_images, use_blip=use_blip)
+                    if img_context:
+                        img_texts = "\n".join([f"{it['name']}: {it['caption']}" for it in img_context])
+                        final_prompt += f"\n\nImage Context:\n{img_texts}"
+                except Exception as e:
+                    st.warning(f"Image processing error: {e}")
             
             # Internet Search Integration
             if st.session_state.get('enable_internet_search', False):
