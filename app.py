@@ -1890,14 +1890,72 @@ with st.sidebar:
         else:
             st.info("No topics learned yet. Ask questions to build the knowledge base!")
     
-    # Recent Learning Activity
+    # Recent Learning Activity (enhanced)
     with st.expander("📜 Recent Learning Activity", expanded=False):
-        if learning_brain.conversation_history:
-            st.write("**Last 5 Learning Sessions:**")
-            for record in learning_brain.conversation_history[-5:][::-1]:
-                query_preview = record.query[:80] + "..." if len(record.query) > 80 else record.query
-                st.caption(f"🔹 {query_preview}")
-                st.caption(f"   Models: {', '.join(record.models)} | Success: {record.success_count}/{len(record.models)}")
+        history = learning_brain.conversation_history
+        if history:
+            # Summary metrics
+            total_sessions = len(history)
+            total_success = sum(r.success_count for r in history)
+            total_models_used = sum(len(r.models) for r in history)
+            avg_success_rate = (total_success / total_models_used * 100) if total_models_used else 0
+
+            la_col1, la_col2, la_col3 = st.columns(3)
+            with la_col1:
+                st.metric("Total Sessions", total_sessions)
+            with la_col2:
+                st.metric("Total Successes", total_success)
+            with la_col3:
+                st.metric("Avg Success", f"{avg_success_rate:.1f}%")
+
+            st.markdown("---")
+
+            # Activity trend chart (sessions per day)
+            st.markdown("#### Activity Trend")
+            dates = [r.timestamp.split('T')[0] for r in history]
+            counts = pd.Series(dates).value_counts().sort_index()
+            counts.index = pd.to_datetime(counts.index)
+            st.line_chart(counts)
+
+            # Configurable number of recent sessions
+            st.markdown("#### Recent Sessions")
+            num_sessions = st.slider("Show last N sessions", 3, min(30, total_sessions), 10, key="la_slider")
+            recent = history[-num_sessions:][::-1]
+
+            for idx, record in enumerate(recent, start=1):
+                query_preview = record.query[:100] + "..." if len(record.query) > 100 else record.query
+                success_pct = (record.success_count / len(record.models) * 100) if record.models else 0
+
+                # Color tier
+                if success_pct >= 80:
+                    tier_color = "#28a745"
+                elif success_pct >= 50:
+                    tier_color = "#ffc107"
+                else:
+                    tier_color = "#dc3545"
+
+                st.markdown(
+                    f'<div style="background:linear-gradient(90deg,{tier_color}22,{tier_color}08);'
+                    f'border-left:4px solid {tier_color};padding:10px;border-radius:6px;margin-bottom:8px;">'
+                    f'<b>#{idx}</b> &nbsp; {query_preview}'
+                    f'</div>',
+                    unsafe_allow_html=True
+                )
+                detail_cols = st.columns([3, 2, 2])
+                with detail_cols[0]:
+                    st.caption(f"🕒 {record.timestamp}")
+                with detail_cols[1]:
+                    st.caption(f"🤖 {', '.join(record.models)}")
+                with detail_cols[2]:
+                    st.caption(f"✔ {record.success_count}/{len(record.models)} ({success_pct:.0f}%)")
+
+            # Export history as JSON
+            st.markdown("---")
+            history_blob = json.dumps(
+                [{'query': r.query, 'timestamp': r.timestamp, 'models': r.models, 'success_count': r.success_count} for r in history],
+                indent=2
+            )
+            st.download_button("📥 Export History JSON", history_blob, "learning_history.json", "application/json", key="download_history")
         else:
             st.info("No learning history yet.")
 
