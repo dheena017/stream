@@ -113,7 +113,9 @@ def initialize_chat_state():
     """Initialize chat-related session state."""
     chat_defaults = {
         "messages": [],
-        "voice_mode": False
+        "voice_mode": False,
+        "enable_internet_search": False,
+        "search_result_count": 5
     }
     
     for key, value in chat_defaults.items():

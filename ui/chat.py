@@ -14,7 +14,8 @@ import google.generativeai as genai
 
 from ui.chat_utils import (
     get_openai_client, get_google_client, get_anthropic_client,
-    build_conversation_history, create_openai_messages, handle_openai_compatible_provider
+    build_conversation_history, create_openai_messages, handle_openai_compatible_provider,
+    perform_internet_search, augment_prompt_with_search
 )
 from brain import AIBrain
 from brain_learning import LearningBrain
@@ -43,7 +44,7 @@ def show_chat_page():
     """, unsafe_allow_html=True)
     
     # 2. Status Indicators
-    c1, c2, c3, c4 = st.columns(4)
+    c1, c2, c3, c4, c5 = st.columns(5)
     with c1:
         brain_mode = st.session_state.get('enable_brain_mode', False)
         status = "🧠 Brain ON" if brain_mode else "🤖 Standard"
@@ -60,6 +61,11 @@ def show_chat_page():
     with c4:
         provider = st.session_state.get('selected_provider', 'google').upper()
         st.markdown(f'<div style="background:#06b6d415;padding:8px;border-radius:10px;border-left:3px solid #06b6d4;text-align:center;"><span style="color:#06b6d4;font-weight:600">🔌 {provider}</span></div>', unsafe_allow_html=True)
+    with c5:
+        internet_mode = st.session_state.get('enable_internet_search', False)
+        status = "🌐 Web ON" if internet_mode else "📱 Local"
+        color = "#ec4899" if internet_mode else "#6b7280"
+        st.markdown(f'<div style="background:{color}15;padding:8px;border-radius:10px;border-left:3px solid {color};text-align:center;"><span style="color:{color};font-weight:600">{status}</span></div>', unsafe_allow_html=True)
 
     st.markdown("<div style='height:1rem;'></div>", unsafe_allow_html=True)
 
@@ -107,15 +113,47 @@ def show_chat_page():
                     if st.button("📋", key=f"copy_{idx}", help="Copy"):
                         st.code(msg["content"])
     
-    # 4. Input Handling
+    # 4. Internet Search Configuration
+    search_col1, search_col2, search_col3 = st.columns([2, 1, 1])
+    with search_col1:
+        enable_internet = st.checkbox(
+            "🌐 Enable Internet Search",
+            value=st.session_state.get('enable_internet_search', False),
+            help="Search the internet for real-time information to augment responses"
+        )
+        st.session_state.enable_internet_search = enable_internet
+    
+    search_results = []
+    if enable_internet:
+        with search_col2:
+            search_result_count = st.number_input(
+                "Results",
+                min_value=1,
+                max_value=10,
+                value=st.session_state.get('search_result_count', 5),
+                help="Number of search results to fetch"
+            )
+            st.session_state.search_result_count = search_result_count
+        
+        with search_col3:
+            search_type = st.selectbox(
+                "Type",
+                ["Web", "News"],
+                key="search_type",
+                help="Type of search to perform"
+            )
+    
+    # 5. Multimodal Uploads Area
+    multimodal_options = ["Images", "Documents (PDF/TXT)", "Audio Files", "Video Frames"]
+    
+    # 6. Input Handling
     prompt = None
     uploaded_images = []
     uploaded_file_info = []
     extra_context = ""
+    search_results = []
     
-    # Multimodal Uploads Area
-    multimodal_options = ["Images", "Documents (PDF/TXT)", "Audio Files", "Video Frames"]
-    
+    # 7. Multimodal Uploads Area
     with st.expander("📎 Upload Files & Images", expanded=False):
         uploaded_files = st.file_uploader(
             "Upload files",
@@ -186,6 +224,27 @@ def show_chat_page():
             final_prompt = prompt
             if extra_context:
                 final_prompt += f"\n\nContext:\n{extra_context}"
+            
+            # Internet Search Integration
+            if st.session_state.get('enable_internet_search', False):
+                with st.spinner("🔍 Searching the internet..."):
+                    search_results, search_context = perform_internet_search(
+                        prompt,
+                        enable_search=True,
+                        max_results=st.session_state.get('search_result_count', 5)
+                    )
+                    
+                    if search_results:
+                        st.success(f"📡 Found {len(search_results)} web results")
+                        
+                        # Display search results
+                        with st.expander("🌐 Search Results", expanded=False):
+                            from ui.internet_search import format_search_results_for_chat
+                            search_display = format_search_results_for_chat(search_results, "web")
+                            st.markdown(search_display)
+                        
+                        # Augment prompt with search results
+                        final_prompt = augment_prompt_with_search(prompt, search_results)
             
             # Brain Mode Logic
             if st.session_state.get('enable_brain_mode'):

@@ -2,6 +2,15 @@
 import streamlit as st
 import google.generativeai as genai
 from typing import List, Dict, Optional, Any
+import logging
+
+logger = logging.getLogger(__name__)
+
+@st.cache_resource
+def get_internet_search_engine():
+    """Cached Internet Search Engine initialization"""
+    from ui.internet_search import InternetSearchEngine
+    return InternetSearchEngine()
 
 @st.cache_resource
 def get_openai_client(api_key: str, base_url: Optional[str] = None):
@@ -100,3 +109,61 @@ def handle_openai_compatible_provider(
             response_text = "I apologize, but I couldn't generate a response."
         st.markdown(response_text)
         return response_text
+
+def perform_internet_search(query: str, enable_search: bool = True, max_results: int = 5) -> tuple[List[Dict], str]:
+    """
+    Perform internet search if enabled
+    
+    Args:
+        query: Search query string
+        enable_search: Whether to perform search
+        max_results: Maximum number of results
+    
+    Returns:
+        Tuple of (search_results, context_string)
+    """
+    if not enable_search:
+        return [], ""
+    
+    try:
+        search_engine = get_internet_search_engine()
+        results = search_engine.search(query, max_results=max_results)
+        
+        if results:
+            from ui.internet_search import create_search_context
+            context = create_search_context(results, query)
+            logger.info(f"Search completed with {len(results)} results")
+            return results, context
+        
+        return [], ""
+    
+    except Exception as e:
+        logger.error(f"Internet search failed: {str(e)}")
+        return [], ""
+
+
+def augment_prompt_with_search(prompt: str, search_results: List[Dict]) -> str:
+    """
+    Augment user prompt with internet search results for better context
+    
+    Args:
+        prompt: Original user prompt
+        search_results: List of search results
+    
+    Returns:
+        Augmented prompt with search context
+    """
+    if not search_results:
+        return prompt
+    
+    from ui.internet_search import create_search_context
+    context = create_search_context(search_results, prompt)
+    
+    augmented = f"""{prompt}
+
+[SUPPLEMENTED WITH REAL-TIME WEB SEARCH RESULTS]:
+{context}
+
+Please use the above search results to provide a current and accurate answer."""
+    
+    return augmented
