@@ -205,7 +205,9 @@ def show_login_page():
 
     # Right column: dark mode toggle and small status
     with col3:
-        dm = st.checkbox("🌙 Dark Mode", value=dark_mode, key="dark_mode")
+        # Persist preference when toggled via on_change callback
+        from ui.prefs import save_dark_mode_from_session
+        dm = st.checkbox("🌙 Dark Mode", value=dark_mode, key="dark_mode", on_change=save_dark_mode_from_session, kwargs={"username": st.session_state.get('username')})
 
     with col2:
         st.markdown('<div class="login-header"><h1>🚀 Antigravity AI</h1><div class="login-subtitle">Your intelligent multi-model AI companion</div></div>', unsafe_allow_html=True)

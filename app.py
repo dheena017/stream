@@ -46,10 +46,20 @@ def initialize_page_config():
 
 def initialize_theme():
     """Initialize and apply theme settings."""
-    if "dark_mode" not in st.session_state:
-        st.session_state.dark_mode = False
-    
-    # Apply theme CSS
+    # Load persisted preference (global or per-user) before setting defaults
+    try:
+        from ui.prefs import get_pref
+        username = st.session_state.get('username')
+        pref_dark = get_pref('dark_mode', username, None)
+        if pref_dark is not None and 'dark_mode' not in st.session_state:
+            st.session_state['dark_mode'] = bool(pref_dark)
+        if 'dark_mode' not in st.session_state:
+            st.session_state['dark_mode'] = False
+    except Exception:
+        if 'dark_mode' not in st.session_state:
+            st.session_state['dark_mode'] = False
+
+    # Apply theme CSS (uses st.session_state['dark_mode'])
     st.markdown(ui.styles.load_css(), unsafe_allow_html=True)
     logger.debug("Theme applied")
 
