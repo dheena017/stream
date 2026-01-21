@@ -230,17 +230,74 @@ def show_login_page():
     )
     
     # Modern glassmorphism login card
-    st.markdown("""
-    <div style="background: rgba(255,255,255,0.85); backdrop-filter: blur(8px); border-radius: 22px; box-shadow: 0 8px 40px rgba(102,126,234,0.10); padding: 2.5rem 2.5rem 2rem 2.5rem; margin: 2.5rem auto 2rem auto; max-width: 480px; border: 1.5px solid #e0e7ef;">
-        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 16px; padding: 1.5rem 1rem 1rem 1rem; text-align: center; margin-bottom: 1.5rem; box-shadow: 0 2px 16px rgba(102,126,234,0.10);">
-            <h1 style="color: white; margin: 0; font-size: 2.2rem; font-weight: 800; letter-spacing: 0.5px;">🤖 AI Assistant</h1>
-            <div style="color: rgba(255,255,255,0.92); font-size: 1.1rem; margin-top: 0.5rem;">Your intelligent multi-model AI companion</div>
+    # Adaptive background and card for dark/light mode
+    dark_mode = st.session_state.get("dark_mode", False)
+    login_bg = (
+        "linear-gradient(135deg, #232946 0%, #181c2f 100%)"
+        if dark_mode else
+        "linear-gradient(135deg, #f3f4f6 0%, #e0e7ef 100%)"
+    )
+    card_bg = (
+        "rgba(30,34,54,0.92)"
+        if dark_mode else
+        "rgba(255,255,255,0.92)"
+    )
+    card_border = (
+        "1.5px solid #232946"
+        if dark_mode else
+        "1.5px solid #e0e7ef"
+    )
+    card_shadow = (
+        "0 8px 40px rgba(35,41,70,0.18)"
+        if dark_mode else
+        "0 8px 40px rgba(102,126,234,0.10)"
+    )
+    st.markdown(f"""
+    <style>
+    body, .stApp {{
+        background: {login_bg} !important;
+    }}
+    .login-glass-card {{
+        background: {card_bg};
+        backdrop-filter: blur(10px);
+        border-radius: 22px;
+        box-shadow: {card_shadow};
+        padding: 2.5rem 2.5rem 2rem 2.5rem;
+        margin: 2.5rem auto 2rem auto;
+        max-width: 480px;
+        border: {card_border};
+    }}
+    .login-glass-header {{
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 16px;
+        padding: 1.5rem 1rem 1rem 1rem;
+        text-align: center;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 2px 16px rgba(102,126,234,0.10);
+    }}
+    .login-glass-header h1 {{
+        color: white;
+        margin: 0;
+        font-size: 2.2rem;
+        font-weight: 800;
+        letter-spacing: 0.5px;
+    }}
+    .login-glass-header .subtitle {{
+        color: rgba(255,255,255,0.92);
+        font-size: 1.1rem;
+        margin-top: 0.5rem;
+    }}
+    </style>
+    <div class="login-glass-card">
+        <div class="login-glass-header">
+            <h1>🤖 AI Assistant</h1>
+            <div class="subtitle">Your intelligent multi-model AI companion</div>
         </div>
         <div style="display: flex; flex-direction: column; gap: 0.7rem; margin-bottom: 1.2rem;">
-            <div class="feature-card" style="background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%); border-radius: 10px; padding: 0.8rem 1rem; border-left: 4px solid #667eea; font-size: 1rem;">✨ <strong>25+ AI Models</strong> from Google, OpenAI, Anthropic, Meta & more</div>
-            <div class="feature-card" style="background: linear-gradient(135deg, #10b98115 0%, #06b6d415 100%); border-radius: 10px; padding: 0.8rem 1rem; border-left: 4px solid #10b981; font-size: 1rem;">🧠 <strong>AI Brain Mode</strong> - Combines multiple models for enhanced responses</div>
-            <div class="feature-card" style="background: linear-gradient(135deg, #f59e0b15 0%, #fbbf2415 100%); border-radius: 10px; padding: 0.8rem 1rem; border-left: 4px solid #f59e0b; font-size: 1rem;">🌐 <strong>Internet Search</strong> - Real-time information from the web</div>
-            <div class="feature-card" style="background: linear-gradient(135deg, #f093fb15 0%, #f5576c15 100%); border-radius: 10px; padding: 0.8rem 1rem; border-left: 4px solid #f5576c; font-size: 1rem;">📎 <strong>Multimodal</strong> - Images, PDFs, Audio & Video support</div>
+            <div class="feature-card" style="background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%); border-radius: 10px; padding: 0.8rem 1rem; border-left: 4px solid #667eea; font-size: 1rem; color: {'#e0e7ef' if dark_mode else '#232946'};">✨ <strong>25+ AI Models</strong> from Google, OpenAI, Anthropic, Meta & more</div>
+            <div class="feature-card" style="background: linear-gradient(135deg, #10b98115 0%, #06b6d415 100%); border-radius: 10px; padding: 0.8rem 1rem; border-left: 4px solid #10b981; font-size: 1rem; color: {'#e0e7ef' if dark_mode else '#232946'};">🧠 <strong>AI Brain Mode</strong> - Combines multiple models for enhanced responses</div>
+            <div class="feature-card" style="background: linear-gradient(135deg, #f59e0b15 0%, #fbbf2415 100%); border-radius: 10px; padding: 0.8rem 1rem; border-left: 4px solid #f59e0b; font-size: 1rem; color: {'#e0e7ef' if dark_mode else '#232946'};">🌐 <strong>Internet Search</strong> - Real-time information from the web</div>
+            <div class="feature-card" style="background: linear-gradient(135deg, #f093fb15 0%, #f5576c15 100%); border-radius: 10px; padding: 0.8rem 1rem; border-left: 4px solid #f5576c; font-size: 1rem; color: {'#e0e7ef' if dark_mode else '#232946'};">📎 <strong>Multimodal</strong> - Images, PDFs, Audio & Video support</div>
         </div>
     """, unsafe_allow_html=True)
     # Check for Google OAuth
@@ -336,14 +393,13 @@ def show_login_page():
                 st.error("❌ Please enter a valid email address")
             else:
                 if register_user(reg_username, reg_email, reg_password, reg_name):
-                    st.success("✅ Registration successful! You can now login.")
-                    st.balloons()
-    st.markdown("</div>", unsafe_allow_html=True)
-                    else:
-                        st.error("❌ Username or email already exists")
-        
-        st.markdown("---")
-        st.caption("🔒 Your credentials are secure and never stored in plain text")
+                st.success("✅ Registration successful! You can now login.")
+                st.balloons()
+            else:
+                st.error("❌ Username or email already exists")
+    
+    st.markdown("---")
+    st.caption("🔒 Your credentials are secure and never stored in plain text")
 
 
 def logout():
