@@ -670,35 +670,98 @@ def show_dashboard():
     
     st.divider()
     
-    # Quick actions
+    # Enhanced Quick actions with descriptions
     st.markdown("### 🚀 Quick Actions")
     
-    col_action1, col_action2, col_action3, col_action4 = st.columns(4)
+    # Create action cards with descriptions
+    action_col1, action_col2 = st.columns(2)
     
-    with col_action1:
-        if st.button("💬 Start Chatting", use_container_width=True, type="primary"):
+    with action_col1:
+        st.markdown("""
+        <div style="background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%); padding: 1.5rem; border-radius: 10px; border-left: 4px solid #667eea; margin-bottom: 1rem;">
+            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">💬 Start Chatting</div>
+            <div style="color: #666; font-size: 0.9rem; margin-bottom: 1rem;">Begin a new conversation with your selected AI model or enable AI Brain for multi-model responses</div>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        if st.button("▶️ Open Chat", use_container_width=True, type="primary", key="quick_chat_btn"):
             st.session_state.current_page = "chat"
             st.rerun()
     
-    with col_action2:
-        if st.button("👤 View Profile", use_container_width=True):
+    with action_col2:
+        st.markdown("""
+        <div style="background: linear-gradient(135deg, #f093fb15 0%, #f5576c15 100%); padding: 1.5rem; border-radius: 10px; border-left: 4px solid #f5576c; margin-bottom: 1rem;">
+            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">👤 View Profile</div>
+            <div style="color: #666; font-size: 0.9rem; margin-bottom: 1rem;">Manage your account settings, preferences, and view your usage statistics</div>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        if st.button("▶️ Go to Profile", use_container_width=True, key="quick_profile_btn"):
             st.session_state.current_page = "profile"
             st.rerun()
     
-    with col_action3:
-        if st.button("🧠 View Brain Stats", use_container_width=True):
-            st.session_state.show_brain_stats = True
+    action_col3, action_col4 = st.columns(2)
     
-    with col_action4:
-        if st.button("📥 Export Chat", use_container_width=True):
+    with action_col3:
+        st.markdown("""
+        <div style="background: linear-gradient(135deg, #4facfe15 0%, #00f2fe15 100%); padding: 1.5rem; border-radius: 10px; border-left: 4px solid #00f2fe; margin-bottom: 1rem;">
+            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🧠 View Brain Stats</div>
+            <div style="color: #666; font-size: 0.9rem; margin-bottom: 1rem;">See what your AI brain has learned: topics, model performance, and insights</div>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        if st.button("▶️ Show Stats", use_container_width=True, key="quick_brain_btn"):
+            st.session_state.show_brain_stats = not st.session_state.get('show_brain_stats', False)
+            st.rerun()
+    
+    with action_col4:
+        st.markdown("""
+        <div style="background: linear-gradient(135deg, #fa709a15 0%, #fee14015 100%); padding: 1.5rem; border-radius: 10px; border-left: 4px solid #fee140; margin-bottom: 1rem;">
+            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">📥 Export Chat</div>
+            <div style="color: #666; font-size: 0.9rem; margin-bottom: 1rem;">Download your chat history as JSON for backup, analysis, or sharing</div>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        if st.button("▶️ Download", use_container_width=True, key="quick_export_btn"):
             if st.session_state.messages:
                 chat_export = json.dumps(st.session_state.messages, indent=2)
                 st.download_button(
-                    "Download Chat History",
+                    "📥 Download Chat History",
                     chat_export,
                     file_name="chat_history.json",
-                    mime="application/json"
+                    mime="application/json",
+                    use_container_width=True,
+                    key="download_chat_btn"
                 )
+            else:
+                st.warning("No chat history to export. Start a conversation first!")
+    
+    # Additional quick action shortcuts
+    st.markdown("---")
+    st.markdown("### ⚡ Additional Actions")
+    
+    quick_col1, quick_col2, quick_col3, quick_col4 = st.columns(4)
+    
+    with quick_col1:
+        if st.button("🔄 Clear Chat", use_container_width=True, key="clear_chat_quick"):
+            st.session_state.messages = []
+            st.success("✅ Chat cleared!")
+            st.rerun()
+    
+    with quick_col2:
+        if st.button("🧠 Reset Brain", use_container_width=True, key="reset_brain_quick"):
+            learning_brain = st.session_state.learning_brain
+            learning_brain.reset_learning()
+            st.success("✅ Brain reset!")
+            st.rerun()
+    
+    with quick_col3:
+        if st.button("⚙️ Settings", use_container_width=True, key="settings_quick"):
+            st.info("✅ Settings available in the sidebar Control Panel")
+    
+    with quick_col4:
+        if st.button("📊 Refresh Stats", use_container_width=True, key="refresh_stats_quick"):
+            st.rerun()
     
     # Brain stats display
     if st.session_state.get('show_brain_stats', False):
