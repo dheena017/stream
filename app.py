@@ -1167,32 +1167,153 @@ if "dark_mode" not in st.session_state:
 if st.session_state.dark_mode:
     st.markdown("""
     <style>
-    /* Dark mode theme */
+    /* Dark mode theme - comprehensive text styling */
     .stApp { background-color: #1a1a2e; color: #eaeaea; }
     .stSidebar { background-color: #16213e !important; }
     .stSidebar [data-testid="stSidebarContent"] { background-color: #16213e; }
+    .stSidebar h1, .stSidebar h2, .stSidebar h3, .stSidebar h4, .stSidebar p, .stSidebar span, .stSidebar label { color: #eaeaea !important; }
     .stChatMessage { background-color: #1f2940 !important; border-color: #2d3a4f !important; }
-    .stTextInput > div > div > input { background-color: #1f2940; color: #eaeaea; border-color: #3d4f6f; }
-    .stSelectbox > div > div { background-color: #1f2940; color: #eaeaea; }
+    .stChatMessage p, .stChatMessage span, .stChatMessage div { color: #eaeaea !important; }
+    .stTextInput > div > div > input { background-color: #1f2940; color: #eaeaea !important; border-color: #3d4f6f; }
+    .stTextInput label { color: #eaeaea !important; }
+    .stTextArea textarea { background-color: #1f2940 !important; color: #eaeaea !important; border-color: #3d4f6f !important; }
+    .stTextArea label { color: #eaeaea !important; }
+    .stSelectbox > div > div { background-color: #1f2940; color: #eaeaea !important; }
+    .stSelectbox label { color: #eaeaea !important; }
+    .stSelectbox [data-baseweb="select"] { background-color: #1f2940; }
+    .stSelectbox [data-baseweb="select"] span { color: #eaeaea !important; }
+    .stMultiSelect label { color: #eaeaea !important; }
+    .stSlider label { color: #eaeaea !important; }
+    .stSlider p { color: #eaeaea !important; }
+    .stCheckbox label { color: #eaeaea !important; }
+    .stCheckbox span { color: #eaeaea !important; }
+    .stRadio label { color: #eaeaea !important; }
     .stExpander { background-color: #1f2940; border-color: #3d4f6f; }
-    .stMarkdown, .stText, p, span, label { color: #eaeaea !important; }
-    .stButton > button { background-color: #3d4f6f; color: white; border: none; }
+    .stExpander summary { color: #eaeaea !important; }
+    .stExpander p, .stExpander span, .stExpander div { color: #eaeaea !important; }
+    div[data-testid="stExpander"] details summary span { color: #eaeaea !important; }
+    .stMarkdown, .stText { color: #eaeaea !important; }
+    .stMarkdown p, .stMarkdown span, .stMarkdown li, .stMarkdown h1, .stMarkdown h2, .stMarkdown h3, .stMarkdown h4, .stMarkdown h5 { color: #eaeaea !important; }
+    .stMarkdown a { color: #7c9eff !important; }
+    .stMarkdown code { background-color: #2d3a4f !important; color: #a8d4ff !important; }
+    .stMarkdown pre { background-color: #2d3a4f !important; }
+    .stMarkdown pre code { color: #a8d4ff !important; }
+    p, span, label, div { color: #eaeaea; }
+    h1, h2, h3, h4, h5, h6 { color: #ffffff !important; }
+    .stButton > button { background-color: #3d4f6f; color: white !important; border: none; }
     .stButton > button:hover { background-color: #4a5f8f; }
     .stMetric { background-color: #1f2940; border-radius: 8px; padding: 10px; }
+    .stMetric label { color: #aaaaaa !important; }
+    .stMetric [data-testid="stMetricValue"] { color: #ffffff !important; }
+    .stMetric [data-testid="stMetricDelta"] { color: #88cc88 !important; }
     .stDataFrame { background-color: #1f2940; }
+    .stDataFrame th { color: #eaeaea !important; background-color: #2d3a4f !important; }
+    .stDataFrame td { color: #eaeaea !important; }
     .stProgress > div > div { background-color: #667eea; }
+    .stCaption { color: #aaaaaa !important; }
+    small { color: #aaaaaa !important; }
+    .stAlert { color: #eaeaea !important; }
+    .stInfo { background-color: #1e3a5f !important; color: #eaeaea !important; }
+    .stSuccess { background-color: #1e3a2e !important; color: #88cc88 !important; }
+    .stWarning { background-color: #3a3a1e !important; color: #cccc88 !important; }
+    .stError { background-color: #3a1e1e !important; color: #cc8888 !important; }
     .chat-bubble-assistant { background: linear-gradient(135deg, #1f2940 0%, #2d3a4f 100%) !important; color: #eaeaea !important; border-color: #3d4f6f !important; }
     div[data-testid="stExpander"] { background-color: #1f2940; }
     .stTabs [data-baseweb="tab-list"] { background-color: #1f2940; }
-    .stTabs [data-baseweb="tab"] { color: #eaeaea; }
+    .stTabs [data-baseweb="tab"] { color: #eaeaea !important; }
+    .stTabs [aria-selected="true"] { color: #ffffff !important; }
+    [data-testid="stHeader"] { background-color: #1a1a2e !important; }
+    .stCodeBlock { background-color: #2d3a4f !important; }
+    .stCodeBlock code { color: #a8d4ff !important; }
+    /* Table styling */
+    table { background-color: #1f2940 !important; }
+    table th { color: #eaeaea !important; background-color: #2d3a4f !important; }
+    table td { color: #eaeaea !important; }
+    /* Chat input */
+    [data-testid="stChatInput"] { background-color: #1f2940 !important; }
+    [data-testid="stChatInput"] textarea { background-color: #1f2940 !important; color: #eaeaea !important; }
+    /* File uploader */
+    .stFileUploader label { color: #eaeaea !important; }
+    .stFileUploader section { background-color: #1f2940 !important; border-color: #3d4f6f !important; }
+    .stFileUploader section div { color: #eaeaea !important; }
+    /* Download button */
+    .stDownloadButton button { background-color: #3d4f6f !important; color: white !important; }
+    /* Tooltip */
+    [data-testid="stTooltipIcon"] { color: #aaaaaa !important; }
     </style>
     """, unsafe_allow_html=True)
 else:
     st.markdown("""
     <style>
-    /* Light mode theme (default enhancements) */
-    .stApp { background-color: #f8f9fa; }
-    .stChatMessage { border-radius: 12px; }
+    /* Light mode theme - ensure dark text for readability */
+    .stApp { background-color: #f8f9fa; color: #1a1a1a; }
+    .stSidebar { background-color: #ffffff !important; }
+    .stSidebar [data-testid="stSidebarContent"] { background-color: #ffffff; }
+    .stSidebar h1, .stSidebar h2, .stSidebar h3, .stSidebar h4, .stSidebar p, .stSidebar span, .stSidebar label { color: #1a1a1a !important; }
+    .stChatMessage { border-radius: 12px; background-color: #ffffff !important; }
+    .stChatMessage p, .stChatMessage span, .stChatMessage div { color: #1a1a1a !important; }
+    .stTextInput > div > div > input { background-color: #ffffff; color: #1a1a1a !important; border-color: #d0d0d0; }
+    .stTextInput label { color: #1a1a1a !important; }
+    .stTextArea textarea { background-color: #ffffff !important; color: #1a1a1a !important; border-color: #d0d0d0 !important; }
+    .stTextArea label { color: #1a1a1a !important; }
+    .stSelectbox > div > div { background-color: #ffffff; color: #1a1a1a !important; }
+    .stSelectbox label { color: #1a1a1a !important; }
+    .stSelectbox [data-baseweb="select"] { background-color: #ffffff; }
+    .stSelectbox [data-baseweb="select"] span { color: #1a1a1a !important; }
+    .stMultiSelect label { color: #1a1a1a !important; }
+    .stSlider label { color: #1a1a1a !important; }
+    .stSlider p { color: #1a1a1a !important; }
+    .stCheckbox label { color: #1a1a1a !important; }
+    .stCheckbox span { color: #1a1a1a !important; }
+    .stRadio label { color: #1a1a1a !important; }
+    .stExpander { background-color: #ffffff; border-color: #e0e0e0; }
+    .stExpander summary { color: #1a1a1a !important; }
+    .stExpander p, .stExpander span, .stExpander div { color: #1a1a1a !important; }
+    div[data-testid="stExpander"] details summary span { color: #1a1a1a !important; }
+    .stMarkdown, .stText { color: #1a1a1a !important; }
+    .stMarkdown p, .stMarkdown span, .stMarkdown li, .stMarkdown h1, .stMarkdown h2, .stMarkdown h3, .stMarkdown h4, .stMarkdown h5 { color: #1a1a1a !important; }
+    .stMarkdown a { color: #667eea !important; }
+    .stMarkdown code { background-color: #f0f0f0 !important; color: #333333 !important; }
+    .stMarkdown pre { background-color: #f0f0f0 !important; }
+    .stMarkdown pre code { color: #333333 !important; }
+    p, span, label, div { color: #1a1a1a; }
+    h1, h2, h3, h4, h5, h6 { color: #1a1a1a !important; }
+    .stButton > button { background-color: #667eea; color: white !important; border: none; }
+    .stButton > button:hover { background-color: #5a6fd6; }
+    .stMetric { background-color: #ffffff; border-radius: 8px; padding: 10px; }
+    .stMetric label { color: #666666 !important; }
+    .stMetric [data-testid="stMetricValue"] { color: #1a1a1a !important; }
+    .stMetric [data-testid="stMetricDelta"] { color: #28a745 !important; }
+    .stDataFrame { background-color: #ffffff; }
+    .stDataFrame th { color: #1a1a1a !important; background-color: #f0f0f0 !important; }
+    .stDataFrame td { color: #1a1a1a !important; }
+    .stProgress > div > div { background-color: #667eea; }
+    .stCaption { color: #666666 !important; }
+    small { color: #666666 !important; }
+    .stAlert { color: #1a1a1a !important; }
+    .chat-bubble-assistant { background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%) !important; color: #1a1a1a !important; border-color: #e0e0e0 !important; }
+    div[data-testid="stExpander"] { background-color: #ffffff; }
+    .stTabs [data-baseweb="tab-list"] { background-color: #ffffff; }
+    .stTabs [data-baseweb="tab"] { color: #1a1a1a !important; }
+    .stTabs [aria-selected="true"] { color: #667eea !important; }
+    [data-testid="stHeader"] { background-color: #f8f9fa !important; }
+    .stCodeBlock { background-color: #f0f0f0 !important; }
+    .stCodeBlock code { color: #333333 !important; }
+    /* Table styling */
+    table { background-color: #ffffff !important; }
+    table th { color: #1a1a1a !important; background-color: #f0f0f0 !important; }
+    table td { color: #1a1a1a !important; }
+    /* Chat input */
+    [data-testid="stChatInput"] { background-color: #ffffff !important; }
+    [data-testid="stChatInput"] textarea { background-color: #ffffff !important; color: #1a1a1a !important; }
+    /* File uploader */
+    .stFileUploader label { color: #1a1a1a !important; }
+    .stFileUploader section { background-color: #ffffff !important; border-color: #d0d0d0 !important; }
+    .stFileUploader section div { color: #1a1a1a !important; }
+    /* Download button */
+    .stDownloadButton button { background-color: #667eea !important; color: white !important; }
+    /* Tooltip */
+    [data-testid="stTooltipIcon"] { color: #666666 !important; }
     </style>
     """, unsafe_allow_html=True)
 
