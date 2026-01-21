@@ -256,36 +256,93 @@ def show_login_page():
     <style>
     body, .stApp {{
         background: {login_bg} !important;
+        min-height: 100vh;
+        animation: login-bg-move 16s ease-in-out infinite alternate;
+    }}
+    @keyframes login-bg-move {{
+        0% {{ background-position: 0% 50%; }}
+        100% {{ background-position: 100% 50%; }}
     }}
     .login-glass-card {{
         background: {card_bg};
-        backdrop-filter: blur(10px);
-        border-radius: 22px;
-        box-shadow: {card_shadow};
-        padding: 2.5rem 2.5rem 2rem 2.5rem;
-        margin: 2.5rem auto 2rem auto;
-        max-width: 480px;
+        backdrop-filter: blur(14px);
+        border-radius: 28px;
+        box-shadow: {card_shadow}, 0 2px 32px rgba(80,80,120,0.10);
+        padding: 2.7rem 2.7rem 2.2rem 2.7rem;
+        margin: 2.7rem auto 2.2rem auto;
+        max-width: 500px;
         border: {card_border};
+        transition: box-shadow 0.3s;
+    }}
+    .login-glass-card:hover {{
+        box-shadow: 0 12px 48px rgba(80,80,120,0.18), 0 2px 32px rgba(80,80,120,0.10);
     }}
     .login-glass-header {{
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border-radius: 16px;
-        padding: 1.5rem 1rem 1rem 1rem;
+        border-radius: 18px;
+        padding: 1.7rem 1.1rem 1.1rem 1.1rem;
         text-align: center;
-        margin-bottom: 1.5rem;
+        margin-bottom: 1.7rem;
         box-shadow: 0 2px 16px rgba(102,126,234,0.10);
+        border-bottom: 2px solid #e0e7ef22;
     }}
     .login-glass-header h1 {{
         color: white;
         margin: 0;
-        font-size: 2.2rem;
-        font-weight: 800;
+        font-size: 2.4rem;
+        font-weight: 900;
         letter-spacing: 0.5px;
+        text-shadow: 0 2px 8px #23294622;
     }}
     .login-glass-header .subtitle {{
-        color: rgba(255,255,255,0.92);
-        font-size: 1.1rem;
-        margin-top: 0.5rem;
+        color: rgba(255,255,255,0.95);
+        font-size: 1.15rem;
+        margin-top: 0.6rem;
+        font-weight: 500;
+    }}
+    .feature-card {{
+        box-shadow: 0 1px 8px rgba(80,80,120,0.07);
+        border-radius: 12px !important;
+        font-size: 1.05rem !important;
+        font-weight: 500;
+        margin-bottom: 0.2rem;
+        border: none !important;
+        transition: box-shadow 0.2s;
+    }}
+    .feature-card:hover {{
+        box-shadow: 0 4px 16px rgba(80,80,120,0.13);
+    }}
+    /* Enhanced input and button styles */
+    input[type="text"], input[type="password"], .stTextInput input {{
+        background: {'#232946' if dark_mode else '#f3f4f6'} !important;
+        color: {'#e0e7ef' if dark_mode else '#232946'} !important;
+        border-radius: 8px !important;
+        border: 1.5px solid {'#667eea' if dark_mode else '#cbd5e1'} !important;
+        padding: 0.7rem 1rem !important;
+        font-size: 1.05rem !important;
+        margin-bottom: 0.5rem !important;
+        box-shadow: 0 1px 4px rgba(80,80,120,0.07);
+        transition: border 0.2s, box-shadow 0.2s;
+    }}
+    input[type="text"]:focus, input[type="password"]:focus, .stTextInput input:focus {{
+        border: 1.5px solid #764ba2 !important;
+        box-shadow: 0 2px 8px #764ba222;
+    }}
+    button, .stButton button {{
+        background: linear-gradient(90deg, #667eea 0%, #764ba2 100%) !important;
+        color: #fff !important;
+        border-radius: 8px !important;
+        font-weight: 700 !important;
+        font-size: 1.08rem !important;
+        box-shadow: 0 2px 8px #667eea22;
+        border: none !important;
+        padding: 0.7rem 1.2rem !important;
+        margin-top: 0.2rem !important;
+        transition: background 0.2s, box-shadow 0.2s;
+    }}
+    button:hover, .stButton button:hover {{
+        background: linear-gradient(90deg, #764ba2 0%, #667eea 100%) !important;
+        box-shadow: 0 4px 16px #764ba222;
     }}
     </style>
     <div class="login-glass-card">
@@ -294,10 +351,10 @@ def show_login_page():
             <div class="subtitle">Your intelligent multi-model AI companion</div>
         </div>
         <div style="display: flex; flex-direction: column; gap: 0.7rem; margin-bottom: 1.2rem;">
-            <div class="feature-card" style="background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%); border-radius: 10px; padding: 0.8rem 1rem; border-left: 4px solid #667eea; font-size: 1rem; color: {'#e0e7ef' if dark_mode else '#232946'};">✨ <strong>25+ AI Models</strong> from Google, OpenAI, Anthropic, Meta & more</div>
-            <div class="feature-card" style="background: linear-gradient(135deg, #10b98115 0%, #06b6d415 100%); border-radius: 10px; padding: 0.8rem 1rem; border-left: 4px solid #10b981; font-size: 1rem; color: {'#e0e7ef' if dark_mode else '#232946'};">🧠 <strong>AI Brain Mode</strong> - Combines multiple models for enhanced responses</div>
-            <div class="feature-card" style="background: linear-gradient(135deg, #f59e0b15 0%, #fbbf2415 100%); border-radius: 10px; padding: 0.8rem 1rem; border-left: 4px solid #f59e0b; font-size: 1rem; color: {'#e0e7ef' if dark_mode else '#232946'};">🌐 <strong>Internet Search</strong> - Real-time information from the web</div>
-            <div class="feature-card" style="background: linear-gradient(135deg, #f093fb15 0%, #f5576c15 100%); border-radius: 10px; padding: 0.8rem 1rem; border-left: 4px solid #f5576c; font-size: 1rem; color: {'#e0e7ef' if dark_mode else '#232946'};">📎 <strong>Multimodal</strong> - Images, PDFs, Audio & Video support</div>
+            <div class="feature-card" style="background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%); border-left: 4px solid #667eea; color: {'#e0e7ef' if dark_mode else '#232946'};">✨ <strong>25+ AI Models</strong> from Google, OpenAI, Anthropic, Meta & more</div>
+            <div class="feature-card" style="background: linear-gradient(135deg, #10b98115 0%, #06b6d415 100%); border-left: 4px solid #10b981; color: {'#e0e7ef' if dark_mode else '#232946'};">🧠 <strong>AI Brain Mode</strong> - Combines multiple models for enhanced responses</div>
+            <div class="feature-card" style="background: linear-gradient(135deg, #f59e0b15 0%, #fbbf2415 100%); border-left: 4px solid #f59e0b; color: {'#e0e7ef' if dark_mode else '#232946'};">🌐 <strong>Internet Search</strong> - Real-time information from the web</div>
+            <div class="feature-card" style="background: linear-gradient(135deg, #f093fb15 0%, #f5576c15 100%); border-left: 4px solid #f5576c; color: {'#e0e7ef' if dark_mode else '#232946'};">📎 <strong>Multimodal</strong> - Images, PDFs, Audio & Video support</div>
         </div>
     """, unsafe_allow_html=True)
     # Check for Google OAuth
@@ -393,10 +450,10 @@ def show_login_page():
                 st.error("❌ Please enter a valid email address")
             else:
                 if register_user(reg_username, reg_email, reg_password, reg_name):
-                st.success("✅ Registration successful! You can now login.")
-                st.balloons()
-            else:
-                st.error("❌ Username or email already exists")
+                    st.success("✅ Registration successful! You can now login.")
+                    st.balloons()
+                else:
+                    st.error("❌ Username or email already exists")
     
     st.markdown("---")
     st.caption("🔒 Your credentials are secure and never stored in plain text")
