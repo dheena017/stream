@@ -1,0 +1,17 @@
+streamlit
+google-genai
+google-auth
+google-auth-oauthlib
+google-auth-httplib2
+openai
+anthropic
+together
+Pillow
+PyPDF2
+SpeechRecognition
+gTTS
+moviepy
+duckduckgo-search
+beautifulsoup4
+requests
+aiohttp
