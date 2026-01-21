@@ -120,17 +120,31 @@ class LearningBrain:
             provider = response.get('provider', 'unknown')
             text = self._normalize_response_text(response)
             success = self._is_successful_response(response, text)
+            response_time = response.get('response_time', 0)
 
             if provider not in self.model_performance:
-                self.model_performance[provider] = {'success': 0, 'total': 0, 'avg_length': 0}
+                self.model_performance[provider] = {
+                    'success': 0, 'total': 0, 'avg_length': 0,
+                    'avg_response_time': 0, 'min_response_time': float('inf'),
+                    'max_response_time': 0
+                }
 
-            self.model_performance[provider]['total'] += 1
+            perf = self.model_performance[provider]
+            perf['total'] += 1
+            
+            # Track response time metrics
+            if response_time > 0:
+                old_avg = perf.get('avg_response_time', 0)
+                perf['avg_response_time'] = (old_avg * (perf['total'] - 1) + response_time) / perf['total']
+                perf['min_response_time'] = min(perf.get('min_response_time', float('inf')), response_time)
+                perf['max_response_time'] = max(perf.get('max_response_time', 0), response_time)
+            
             if success:
-                self.model_performance[provider]['success'] += 1
+                perf['success'] += 1
                 response_length = len(text)
-                current_avg = self.model_performance[provider]['avg_length']
-                total_success = self.model_performance[provider]['success']
-                self.model_performance[provider]['avg_length'] = (
+                current_avg = perf['avg_length']
+                total_success = perf['success']
+                perf['avg_length'] = (
                     (current_avg * (total_success - 1) + response_length) / total_success
                 )
 
@@ -225,17 +239,28 @@ class LearningBrain:
             'models_tracked': len(self.model_performance),
             'model_performance': {},
             'top_topics': [],
-            'model_strengths': self.summarize_model_strengths()
+            'model_strengths': self.summarize_model_strengths(),
+            'response_time_stats': {}
         }
         
-        # Model performance
+        # Model performance with response time metrics
         for provider, perf in self.model_performance.items():
             success_rate = (perf['success'] / perf['total'] * 100) if perf['total'] > 0 else 0
             stats['model_performance'][provider] = {
                 'success_rate': round(success_rate, 1),
                 'total_queries': perf['total'],
                 'successful_queries': perf['success'],
-                'avg_response_length': round(perf['avg_length'], 0)
+                'avg_response_length': round(perf['avg_length'], 0),
+                'avg_response_time': round(perf.get('avg_response_time', 0), 2),
+                'min_response_time': round(perf.get('min_response_time', 0), 2) if perf.get('min_response_time', float('inf')) != float('inf') else 0,
+                'max_response_time': round(perf.get('max_response_time', 0), 2)
+            }
+            
+            # Response time stats by provider
+            stats['response_time_stats'][provider] = {
+                'avg': round(perf.get('avg_response_time', 0), 2),
+                'min': round(perf.get('min_response_time', 0), 2) if perf.get('min_response_time', float('inf')) != float('inf') else 0,
+                'max': round(perf.get('max_response_time', 0), 2)
             }
         
         # Top topics

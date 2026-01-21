@@ -2895,6 +2895,48 @@ if prompt:
         # Learn from the results
         learning_brain.learn_from_responses(prompt, model_responses)
         
+        # Response Comparison View - Show individual model responses side-by-side
+        if len(model_responses) > 1:
+            with st.expander("🔀 Compare Model Responses", expanded=False):
+                st.markdown("#### Side-by-Side Comparison")
+                
+                # Create columns for each model
+                num_models = len(model_responses)
+                cols = st.columns(min(num_models, 3))
+                
+                for idx, response in enumerate(model_responses):
+                    with cols[idx % 3]:
+                        provider = response.get('provider', 'Unknown')
+                        provider_icons = {"google": "🔵", "openai": "🟢", "anthropic": "🟣", "together": "🔴"}
+                        icon = provider_icons.get(provider, "⚪")
+                        
+                        # Response card header
+                        success = response.get('success', False)
+                        status_icon = "✅" if success else "❌"
+                        st.markdown(f"**{icon} {provider.upper()}** {status_icon}")
+                        
+                        # Response content
+                        text = response.get('response', response.get('error', 'No response'))
+                        if len(text) > 500:
+                            text = text[:500] + "..."
+                        st.markdown(text)
+                        
+                        # Response time if available
+                        if response.get('response_time'):
+                            st.caption(f"⚡ {response['response_time']:.2f}s")
+                
+                # Summary table
+                st.markdown("---")
+                st.markdown("#### Response Summary")
+                summary_data = []
+                for r in model_responses:
+                    summary_data.append({
+                        "Provider": r.get('provider', 'Unknown').upper(),
+                        "Status": "✅ Success" if r.get('success') else "❌ Failed",
+                        "Length": len(r.get('response', '')),
+                    })
+                st.dataframe(pd.DataFrame(summary_data), use_container_width=True, hide_index=True)
+        
         # Synthesize responses
         synthesized_response = brain.synthesize_responses(
             prompt,
@@ -2982,6 +3024,25 @@ if prompt:
         response_text = None
         response_start_time = time.time()  # Track response time
         with st.chat_message("assistant"):
+            # Loading skeleton placeholder
+            loading_placeholder = st.empty()
+            with loading_placeholder.container():
+                st.markdown("""
+                <div style="animation: pulse 1.5s infinite; background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%); 
+                background-size: 200% 100%; padding: 20px; border-radius: 10px; margin: 10px 0;">
+                    <div style="height: 16px; background: #d0d0d0; border-radius: 4px; margin-bottom: 8px; width: 80%;"></div>
+                    <div style="height: 16px; background: #d0d0d0; border-radius: 4px; margin-bottom: 8px; width: 60%;"></div>
+                    <div style="height: 16px; background: #d0d0d0; border-radius: 4px; width: 70%;"></div>
+                </div>
+                <style>
+                @keyframes pulse {
+                    0% { background-position: 200% 0; }
+                    100% { background-position: -200% 0; }
+                }
+                </style>
+                """, unsafe_allow_html=True)
+                st.caption(f"🔄 Generating response with {model_choice_label}...")
+            
             try:
                 # Route to the appropriate provider
                 if provider == "google":
@@ -3020,10 +3081,12 @@ if prompt:
                         config=config,
                     )
                     response_text = response.text
+                    loading_placeholder.empty()  # Clear loading skeleton
                     st.markdown(response_text)
                         
                 elif provider == "openai":
                     # OpenAI GPT
+                    loading_placeholder.empty()  # Clear loading skeleton
                     client = get_openai_client(resolved_api_key)
                     conversation_history = build_conversation_history(st.session_state.messages)
                     messages = create_openai_messages(conversation_history, final_prompt, system_instruction)
