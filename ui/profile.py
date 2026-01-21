@@ -159,8 +159,7 @@ def show_profile_page():
         
         prefs = st.session_state.get('profile_preferences', {})
         
-        theme = st.selectbox("Theme", ["Auto", "Light", "Dark"], 
-                           index=["Auto", "Light", "Dark"].index(prefs.get('theme', 'Auto')))
+        theme = st.selectbox("Theme", ["Dark"], index=0, help="Dark mode is now enforced.")
         
         language = st.selectbox("Language", ["English", "Spanish", "French", "German", "Chinese"],
                                index=["English", "Spanish", "French", "German", "Chinese"].index(prefs.get('language', 'English')))
@@ -182,10 +181,8 @@ def show_profile_page():
             }
             
             # Apply Theme Change
-            if theme == "Dark":
-                st.session_state["dark_mode"] = True
-            elif theme == "Light":
-                st.session_state["dark_mode"] = False
+            # Apply Theme Change
+            st.session_state["dark_mode"] = True
             
             st.success("✅ Preferences saved! reloading...")
             time.sleep(0.5)
