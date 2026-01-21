@@ -14,6 +14,7 @@ from google import genai
 from brain_learning import LearningBrain
 import streamlit as st
 from PIL import Image
+from multimodal_voice_integration import MultimodalVoiceIntegrator
 
 # Force native DNS to avoid SRV lookups that can time out in some networks
 os.environ.setdefault("GRPC_DNS_RESOLVER", "native")
@@ -1549,69 +1550,36 @@ with st.sidebar:
     
     st.divider()
     
-    # Enhanced Multimodal & Voice sections
+    # Enhanced Multimodal & Voice sections (wired to advanced modules)
     with st.expander("📎 Multimodal & Voice Features", expanded=False):
-        st.markdown("#### 📎 Multimodal Input")
-        
-        # Quick presets
-        preset_col1, preset_col2, preset_col3 = st.columns(3)
-        with preset_col1:
-            if st.button("📸 Images Only", use_container_width=True):
-                st.session_state.multimodal_preset = ["Images"]
-        with preset_col2:
-            if st.button("📄 Documents", use_container_width=True):
-                st.session_state.multimodal_preset = ["Documents (PDF/TXT)"]
-        with preset_col3:
-            if st.button("🎬 All Media", use_container_width=True):
-                st.session_state.multimodal_preset = ["Images", "Documents (PDF/TXT)", "Audio Files", "Video Frames"]
-        
-        multimodal_options = st.multiselect(
-            "Enable file types:",
-            ["Images", "Documents (PDF/TXT)", "Audio Files", "Video Frames"],
-            default=st.session_state.get('multimodal_preset', []),
-            help="Drag & drop supported • Multiple files allowed"
+        if "multimodal_voice_integrator" not in st.session_state:
+            st.session_state.multimodal_voice_integrator = MultimodalVoiceIntegrator()
+
+        integrator: MultimodalVoiceIntegrator = st.session_state.multimodal_voice_integrator
+
+        st.markdown("#### 📎 Multimodal Control Center")
+        upload_results = integrator.create_multimodal_uploader()
+
+        st.markdown("#### 🎤 Voice Control Center")
+        voice_preferences = integrator.create_voice_settings()
+        integrator.create_text_to_speech_interface(voice_preferences)
+        integrator.create_speech_to_text_interface(voice_preferences)
+
+        st.markdown("#### 📊 Processing Statistics")
+        integrator.display_multimodal_statistics()
+
+        st.markdown("#### 🔊 Voice Mode Toggle (app-wide)")
+        st.session_state.voice_mode = st.toggle(
+            "Enable voice input/output",
+            value=st.session_state.voice_mode,
+            help="Controls app-level voice behaviors like auto-speaking responses where supported."
         )
-        
-        if multimodal_options:
-            st.success(f"✅ {len(multimodal_options)} file type(s) enabled")
-            
-            # Advanced multimodal settings
-            with st.expander("⚙️ Advanced Settings", expanded=False):
-                if "Images" in multimodal_options:
-                    image_resize = st.checkbox("Auto-resize large images", value=True, help="Resize images > 2MB for faster processing")
-                    st.session_state.image_resize = image_resize
-                
-                if "Documents (PDF/TXT)" in multimodal_options:
-                    pdf_page_limit = st.slider("PDF page limit", 1, 50, 10, help="Max pages to extract from PDFs")
-                    st.session_state.pdf_page_limit = pdf_page_limit
-                
-                if "Video Frames" in multimodal_options:
-                    frame_count = st.slider("Video frames to extract", 1, 10, 5, help="Number of frames to sample from videos")
-                    st.session_state.frame_count = frame_count
-        
-        st.markdown("#### 🎤 Voice Mode")
-        voice_mode = st.toggle("🎤 Enable Voice Input/Output", value=st.session_state.voice_mode, help="Use voice input and hear responses")
-        st.session_state.voice_mode = voice_mode
-        
-        if voice_mode:
-            voice_col1, voice_col2 = st.columns(2)
-            with voice_col1:
-                auto_speak = st.checkbox("🔊 Auto-speak responses", value=True, help="Automatically read AI responses aloud")
-            with voice_col2:
-                voice_lang = st.selectbox(
-                    "Voice language",
-                    ["en", "es", "fr", "de", "it", "pt", "ru", "ja", "ko", "zh-CN"],
-                    index=0,
-                    help="Language for text-to-speech"
-                )
-                st.session_state.voice_lang = voice_lang
-            
-            voice_speed = st.slider("Speech speed", 0.5, 2.0, 1.0, 0.1, help="Text-to-speech playback speed")
-            st.session_state.voice_speed = voice_speed
-            
-            st.info("🎤 Voice mode active - Use audio recorder in chat")
-        else:
-            auto_speak = False
+
+        st.session_state.auto_speak = st.checkbox(
+            "Auto-speak responses",
+            value=st.session_state.get("auto_speak", True),
+            help="When enabled, responses will be read aloud in sections that support audio playback."
+        )
     
     st.divider()
 
@@ -2273,7 +2241,7 @@ if prompt:
             st.session_state.messages.append({"role": "assistant", "content": response_text})
             
             # Text-to-speech in voice mode
-            if st.session_state.voice_mode and auto_speak and response_text:
+            if st.session_state.voice_mode and st.session_state.get("auto_speak", False) and response_text:
                 try:
                     from gtts import gTTS  # type: ignore
                     
