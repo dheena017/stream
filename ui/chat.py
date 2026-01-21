@@ -16,7 +16,8 @@ from ui.chat_utils import (
     get_openai_client, get_google_client, get_anthropic_client,
     build_conversation_history, create_openai_messages, handle_openai_compatible_provider,
     perform_internet_search, augment_prompt_with_search,
-    process_images_for_context, transcribe_audio_file, extract_video_frame_thumbnails, generate_image_captions
+    process_images_for_context, transcribe_audio_file, extract_video_frame_thumbnails, 
+    generate_image_captions, generate_standard_response, prepare_brain_configuration
 )
 from brain import AIBrain
 from brain_learning import LearningBrain
@@ -336,28 +337,27 @@ def show_chat_page():
                         # Augment prompt with search results
                         final_prompt = augment_prompt_with_search(prompt, search_results)
             
+            # Gather API keys once
+            api_key_map = {
+                "google": st.session_state.get('google_api_key'),
+                "openai": st.session_state.get('openai_api_key'),
+                "anthropic": st.session_state.get('anthropic_api_key'),
+                "together": st.session_state.get('together_api_key'),
+                "xai": st.session_state.get('xai_api_key'),
+                "deepseek": st.session_state.get('deepseek_api_key'),
+            }
+
             # Brain Mode Logic
             if st.session_state.get('enable_brain_mode'):
                 st.info("🧠 Brain processing...")
                 brain = AIBrain()
                 brain.internet_enabled = st.session_state.get('enable_internet', True)
                 
-                # Determine models to use based on settings in sidebar
-                # We need api keys
-                google_key = st.session_state.get('google_api_key')
-                openai_key = st.session_state.get('openai_api_key')
-                anthropic_key = st.session_state.get('anthropic_api_key')
-                together_key = st.session_state.get('together_api_key')
-                
-                models_to_query = []
-                # Simple logic to pick models (in real app, use `brain_consult_models` map)
-                if google_key: models_to_query.append({"provider": "google", "model": "gemini-1.5-flash", "api_key": google_key})
-                if openai_key: models_to_query.append({"provider": "openai", "model": "gpt-4o-mini", "api_key": openai_key})
+                models_to_query = prepare_brain_configuration(api_key_map)
                 
                 if not models_to_query:
-                    response_text = "Please configure API keys to use Brain Mode."
+                    response_text = "Please configure API keys (Google, OpenAI, or Claude) to use Brain Mode."
                 else:
-                    # Async execution
                     try:
                         config = {"temperature": 0.7, "max_output_tokens": 1024}
                         
@@ -370,22 +370,18 @@ def show_chat_page():
                                     final_prompt += f"\n\nInternet Info:\n{internet_ctx}"
                         
                         # Query Models
-                        if len(models_to_query) > 0:
-                            # We can't easily run async loop here without event loop issues in some streamlit envs
-                            # We will run them sequentially for stability in this refactor, or usage `asyncio.run` cautiously
-                            responses = asyncio.run(brain.query_multiple_models(final_prompt, models_to_query, config))
-                            
-                            # Synthesize
-                            response_text = brain.synthesize_responses(prompt, responses, internet_ctx)
-                            
-                            # Show comparison
-                            with st.expander("Model Comparison"):
-                                for r in responses:
-                                    st.markdown(f"**{r['provider'].upper()}**: {r.get('success', False)}")
-                                    st.text(r.get('response', '')[:200] + "...")
-                        else:
-                            response_text = "No models available for Brain Mode."
-
+                        # Async execution wrapper
+                        responses = asyncio.run(brain.query_multiple_models(final_prompt, models_to_query, config))
+                        
+                        # Synthesize
+                        response_text = brain.synthesize_responses(prompt, responses, internet_ctx)
+                        
+                        # Show comparison
+                        with st.expander("Model Comparison"):
+                            for r in responses:
+                                st.markdown(f"**{r['provider'].upper()}**: {r.get('success', False)}")
+                                st.text(r.get('response', '')[:200] + "...")
+                                
                     except Exception as e:
                         response_text = f"Brain Error: {e}"
                 
@@ -396,75 +392,26 @@ def show_chat_page():
                 # Standard Mode
                 provider = st.session_state.get('selected_provider', 'google')
                 model_name = st.session_state.get('selected_model_name', 'gemini-1.5-flash')
-                temp = st.session_state.get('temperature', 1.0)
-                max_tok = st.session_state.get('max_tokens', 2048)
-                top_p = st.session_state.get('top_p', 0.95)
-                stream = st.session_state.get('enable_streaming', True)
+                
+                config = {
+                    "temperature": st.session_state.get('temperature', 1.0),
+                    "max_tokens": st.session_state.get('max_tokens', 2048),
+                    "top_p": st.session_state.get('top_p', 0.95),
+                    "enable_streaming": st.session_state.get('enable_streaming', True)
+                }
+                
                 sys_prompt = st.session_state.get('system_instruction', "")
                 
-                api_key_map = {
-                    "google": st.session_state.get('google_api_key'),
-                    "openai": st.session_state.get('openai_api_key'),
-                    "anthropic": st.session_state.get('anthropic_api_key'),
-                    "together": st.session_state.get('together_api_key'),
-                    "xai": st.session_state.get('xai_api_key'),
-                    "deepseek": st.session_state.get('deepseek_api_key'),
-                }
-                api_key = api_key_map.get(provider)
-                
-                if not api_key:
-                    st.error(f"❌ Missing API Key for {provider}")
-                    response_text = f"Please provide an API key for {provider} in the sidebar."
-                else:
-                    response_text = ""
-                    try:
-                        if provider == "google":
-                            client = genai.Client(api_key=api_key)
-                            cfg = {"temperature": temp, "max_output_tokens": max_tok, "top_p": top_p}
-                            if sys_prompt: cfg["system_instruction"] = sys_prompt
-                            
-                            # Handle images for Gemini
-                            contents = []
-                            if uploaded_images:
-                                for img in uploaded_images:
-                                    img_byte_arr = BytesIO()
-                                    img.save(img_byte_arr, format='PNG')
-                                    contents.append({"inline_data": {"mime_type": "image/png", "data": base64.b64encode(img_byte_arr.getvalue()).decode()}})
-                            contents.append(final_prompt)
-                            
-                            # Streaming not supported nicely with new sdk structure in this snippet, using blocked
-                            resp = client.models.generate_content(model=model_name, contents=contents, config=cfg)
-                            response_text = resp.text
-                            st.markdown(response_text)
-                            
-                        elif provider in ["openai", "together", "xai", "deepseek"]:
-                            base_urls = {
-                                "together": "https://api.together.xyz/v1",
-                                "xai": "https://api.x.ai/v1",
-                                "deepseek": "https://api.deepseek.com"
-                            }
-                            client = get_openai_client(api_key, base_urls.get(provider))
-                            msgs = create_openai_messages(build_conversation_history(st.session_state.messages), final_prompt, sys_prompt)
-                            response_text = handle_openai_compatible_provider(client, model_name, msgs, temp, max_tok, top_p, stream)
-                            
-                        elif provider == "anthropic":
-                            client = get_anthropic_client(api_key)
-                            msgs = [{"role": "user", "content": final_prompt}]
-                            if sys_prompt:
-                                # System prompt handling for Claude
-                                pass 
-                            resp = client.messages.create(
-                                model=model_name,
-                                messages=msgs,
-                                max_tokens=max_tok,
-                                temperature=temp
-                            )
-                            response_text = resp.content[0].text
-                            st.markdown(response_text)
-                            
-                    except Exception as e:
-                        st.error(f"Error: {e}")
-                        response_text = f"Error: {e}"
+                response_text = generate_standard_response(
+                    provider=provider,
+                    model_name=model_name,
+                    api_keys=api_key_map,
+                    prompt=final_prompt,
+                    chat_history=st.session_state.messages,
+                    system_instruction=sys_prompt,
+                    config=config,
+                    images=uploaded_images
+                )
             
             end_time = time.time()
             st.session_state.messages.append({

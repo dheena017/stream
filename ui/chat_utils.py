@@ -67,6 +67,135 @@ def create_openai_messages(conversation_history: List[Dict], current_prompt: str
     return messages
 
 
+# --- Provider Handlers ---
+def handle_google_provider(
+    api_key: str, 
+    model_name: str, 
+    prompt: str, 
+    system_instruction: Optional[str] = None,
+    temperature: float = 0.7,
+    max_tokens: int = 2048,
+    top_p: float = 0.95,
+    images: List = None
+) -> str:
+    try:
+        if not api_key: return "Please provide a Google API Key."
+        import google.generativeai as genai
+        client = genai.Client(api_key=api_key)
+        
+        cfg = {"temperature": temperature, "max_output_tokens": max_tokens, "top_p": top_p}
+        if system_instruction:
+            cfg["system_instruction"] = system_instruction
+            
+        contents = []
+        if images:
+            from io import BytesIO
+            import base64
+            for img in images:
+                img_byte_arr = BytesIO()
+                img.save(img_byte_arr, format='PNG')
+                b64_data = base64.b64encode(img_byte_arr.getvalue()).decode()
+                contents.append({"inline_data": {"mime_type": "image/png", "data": b64_data}})
+        
+        contents.append(prompt)
+        
+        # Note: Streaming is conditionally supported; using non-stream for stability in this refactor
+        resp = client.models.generate_content(model=model_name, contents=contents, config=cfg)
+        return resp.text
+    except Exception as e:
+        logger.error(f"Google provider error: {e}")
+        return f"Error connecting to Google Gemini: {str(e)}"
+
+def handle_anthropic_provider(
+    api_key: str,
+    model_name: str,
+    messages: List[Dict],
+    system_instruction: Optional[str] = None,
+    temperature: float = 0.7,
+    max_tokens: int = 2048
+) -> str:
+    try:
+        if not api_key: return "Please provide an Anthropic API Key."
+        from anthropic import Anthropic
+        client = Anthropic(api_key=api_key)
+        
+        kwargs = {
+             "model": model_name,
+             "messages": messages,
+             "max_tokens": max_tokens,
+             "temperature": temperature
+        }
+        if system_instruction:
+             kwargs["system"] = system_instruction
+             
+        resp = client.messages.create(**kwargs)
+        return resp.content[0].text
+    except Exception as e:
+         logger.error(f"Anthropic provider error: {e}")
+         return f"Error connecting to Anthropic Claude: {str(e)}"
+
+def generate_standard_response(
+    provider: str,
+    model_name: str,
+    api_keys: Dict[str, str],
+    prompt: str,
+    chat_history: List[Dict],
+    system_instruction: str = "",
+    config: Dict[str, Any] = {},
+    images: List = None
+) -> str:
+    """Unified dispatcher for standard mode chat generation"""
+    api_key = api_keys.get(provider)
+    if not api_key:
+        return f"❌ Missing API Key for {provider}. Please check sidebar settings."
+
+    try:
+        temp = config.get('temperature', 0.7)
+        max_tok = config.get('max_tokens', 2048)
+        top_p = config.get('top_p', 0.95)
+        stream = config.get('enable_streaming', False)
+
+        if provider == "google":
+            return handle_google_provider(api_key, model_name, prompt, system_instruction, temp, max_tok, top_p, images)
+            
+        elif provider in ["openai", "together", "xai", "deepseek"]:
+            base_urls = {
+                "together": "https://api.together.xyz/v1",
+                "xai": "https://api.x.ai/v1",
+                "deepseek": "https://api.deepseek.com"
+            }
+            client = get_openai_client(api_key, base_urls.get(provider))
+            msgs = create_openai_messages(build_conversation_history(chat_history), prompt, system_instruction)
+            return handle_openai_compatible_provider(client, model_name, msgs, temp, max_tok, top_p, stream)
+            
+        elif provider == "anthropic":
+            # Anthropic expects just user/assistant messages
+            msgs = [{"role": "user", "content": prompt}] # Simplified for this call; ideally use full history if supported
+            return handle_anthropic_provider(api_key, model_name, msgs, system_instruction, temp, max_tok)
+            
+        return "Provider not supported."
+        
+    except Exception as e:
+        return f"Generation Error: {str(e)}"
+
+def prepare_brain_configuration(api_keys: Dict[str, str], requested_models: List[str] = None) -> List[Dict[str, Any]]:
+    """Helper to build the list of models for Brain Mode based on available keys"""
+    models_to_query = []
+    
+    # Default strategy: Use available keys (simplified)
+    # In a real app, 'requested_models' would come from user config
+    
+    if api_keys.get('google'):
+        models_to_query.append({"provider": "google", "model": "gemini-1.5-flash", "api_key": api_keys['google']})
+        
+    if api_keys.get('openai'):
+        models_to_query.append({"provider": "openai", "model": "gpt-4o-mini", "api_key": api_keys['openai']})
+        
+    if api_keys.get('anthropic'):
+         models_to_query.append({"provider": "anthropic", "model": "claude-3-haiku-20240307", "api_key": api_keys['anthropic']})
+
+    return models_to_query
+
 def handle_openai_compatible_provider(
     client: Any,
     model_name: str,
