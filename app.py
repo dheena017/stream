@@ -1114,13 +1114,28 @@ with st.sidebar:
             st.caption(f"📅 Member since: {joined_date}")
             st.caption(f"💬 Total sessions: {st.session_state.get('total_sessions', 1)}")
             
-        # Quick actions
+        # Quick actions with enhanced styling
+        st.markdown("#### ⚡ Quick Actions")
         col_action1, col_action2 = st.columns(2)
+        
         with col_action1:
-            if st.button("👤 View Profile", use_container_width=True, key="view_profile_btn"):
+            st.markdown("""
+            <div style="background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%); padding: 1rem; border-radius: 8px; border-left: 4px solid #667eea; text-align: center;">
+                <div style="font-size: 1.2rem; margin-bottom: 0.5rem;">👤 Profile</div>
+                <div style="color: #666; font-size: 0.8rem;">View & manage account</div>
+            </div>
+            """, unsafe_allow_html=True)
+            if st.button("▶️ Open", use_container_width=True, key="view_profile_btn"):
                 st.session_state.show_profile_modal = True
+        
         with col_action2:
-            if st.button("🚪 Logout", use_container_width=True, type="secondary", key="logout_oauth_btn"):
+            st.markdown("""
+            <div style="background: linear-gradient(135deg, #fa709a15 0%, #fee14015 100%); padding: 1rem; border-radius: 8px; border-left: 4px solid #fee140; text-align: center;">
+                <div style="font-size: 1.2rem; margin-bottom: 0.5rem;">🚪 Logout</div>
+                <div style="color: #666; font-size: 0.8rem;">End session</div>
+            </div>
+            """, unsafe_allow_html=True)
+            if st.button("▶️ Sign Out", use_container_width=True, type="secondary", key="logout_oauth_btn"):
                 logout()
                 
     else:
@@ -1206,13 +1221,28 @@ with st.sidebar:
             st.caption(f"📅 Member since: {joined_date}")
             st.caption(f"💬 Total sessions: {st.session_state.get('total_sessions', 1)}")
         
-        # Quick actions
+        # Quick actions with enhanced styling
+        st.markdown("#### ⚡ Quick Actions")
         col_action1, col_action2 = st.columns(2)
+        
         with col_action1:
-            if st.button("👤 View Profile", use_container_width=True, key="view_profile_trad_btn"):
+            st.markdown("""
+            <div style="background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%); padding: 1rem; border-radius: 8px; border-left: 4px solid #667eea; text-align: center;">
+                <div style="font-size: 1.2rem; margin-bottom: 0.5rem;">👤 Profile</div>
+                <div style="color: #666; font-size: 0.8rem;">View & manage account</div>
+            </div>
+            """, unsafe_allow_html=True)
+            if st.button("▶️ Open", use_container_width=True, key="view_profile_trad_btn"):
                 st.session_state.show_profile_modal = True
+        
         with col_action2:
-            if st.button("🚪 Logout", use_container_width=True, type="secondary", key="logout_trad_btn"):
+            st.markdown("""
+            <div style="background: linear-gradient(135deg, #fa709a15 0%, #fee14015 100%); padding: 1rem; border-radius: 8px; border-left: 4px solid #fee140; text-align: center;">
+                <div style="font-size: 1.2rem; margin-bottom: 0.5rem;">🚪 Logout</div>
+                <div style="color: #666; font-size: 0.8rem;">End session</div>
+            </div>
+            """, unsafe_allow_html=True)
+            if st.button("▶️ Sign Out", use_container_width=True, type="secondary", key="logout_trad_btn"):
                 logout()
     
     st.divider()
