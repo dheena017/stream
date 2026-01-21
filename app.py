@@ -184,7 +184,7 @@ def show_login_page():
             margin-bottom: 0.5rem;
         }
         .login-subtitle {
-            color: #666;
+            color: var(--text-secondary, #666);
             font-size: 1.2rem;
             margin-bottom: 1rem;
         }
@@ -811,9 +811,9 @@ def show_dashboard():
     
     with action_col1:
         st.markdown("""
-        <div style="background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%); padding: 1.5rem; border-radius: 10px; border-left: 4px solid #667eea; margin-bottom: 1rem;">
+        <div class="quick-action-card" style="background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%); padding: 1.5rem; border-radius: 10px; border-left: 4px solid #667eea; margin-bottom: 1rem;">
             <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">💬 Start Chatting</div>
-            <div style="color: #666; font-size: 0.9rem; margin-bottom: 1rem;">Begin a new conversation with your selected AI model or enable AI Brain for multi-model responses</div>
+            <div class="card-description" style="font-size: 0.9rem; margin-bottom: 1rem;">Begin a new conversation with your selected AI model or enable AI Brain for multi-model responses</div>
         </div>
         """, unsafe_allow_html=True)
         
@@ -823,9 +823,9 @@ def show_dashboard():
     
     with action_col2:
         st.markdown("""
-        <div style="background: linear-gradient(135deg, #f093fb15 0%, #f5576c15 100%); padding: 1.5rem; border-radius: 10px; border-left: 4px solid #f5576c; margin-bottom: 1rem;">
+        <div class="quick-action-card" style="background: linear-gradient(135deg, #f093fb15 0%, #f5576c15 100%); padding: 1.5rem; border-radius: 10px; border-left: 4px solid #f5576c; margin-bottom: 1rem;">
             <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">👤 View Profile</div>
-            <div style="color: #666; font-size: 0.9rem; margin-bottom: 1rem;">Manage your account settings, preferences, and view your usage statistics</div>
+            <div class="card-description" style="font-size: 0.9rem; margin-bottom: 1rem;">Manage your account settings, preferences, and view your usage statistics</div>
         </div>
         """, unsafe_allow_html=True)
         
@@ -837,9 +837,9 @@ def show_dashboard():
     
     with action_col3:
         st.markdown("""
-        <div style="background: linear-gradient(135deg, #4facfe15 0%, #00f2fe15 100%); padding: 1.5rem; border-radius: 10px; border-left: 4px solid #00f2fe; margin-bottom: 1rem;">
+        <div class="quick-action-card" style="background: linear-gradient(135deg, #4facfe15 0%, #00f2fe15 100%); padding: 1.5rem; border-radius: 10px; border-left: 4px solid #00f2fe; margin-bottom: 1rem;">
             <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🧠 View Brain Stats</div>
-            <div style="color: #666; font-size: 0.9rem; margin-bottom: 1rem;">See what your AI brain has learned: topics, model performance, and insights</div>
+            <div class="card-description" style="font-size: 0.9rem; margin-bottom: 1rem;">See what your AI brain has learned: topics, model performance, and insights</div>
         </div>
         """, unsafe_allow_html=True)
         
@@ -849,9 +849,9 @@ def show_dashboard():
     
     with action_col4:
         st.markdown("""
-        <div style="background: linear-gradient(135deg, #fa709a15 0%, #fee14015 100%); padding: 1.5rem; border-radius: 10px; border-left: 4px solid #fee140; margin-bottom: 1rem;">
+        <div class="quick-action-card" style="background: linear-gradient(135deg, #fa709a15 0%, #fee14015 100%); padding: 1.5rem; border-radius: 10px; border-left: 4px solid #fee140; margin-bottom: 1rem;">
             <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">📥 Export Chat</div>
-            <div style="color: #666; font-size: 0.9rem; margin-bottom: 1rem;">Download your chat history as JSON for backup, analysis, or sharing</div>
+            <div class="card-description" style="font-size: 0.9rem; margin-bottom: 1rem;">Download your chat history as JSON for backup, analysis, or sharing</div>
         </div>
         """, unsafe_allow_html=True)
         
@@ -886,7 +886,7 @@ def show_dashboard():
     }
     .action-card:hover { transform: translateY(-2px); }
     .action-icon { font-size: 1.5rem; }
-    .action-label { font-size: 0.85rem; color: #555; margin-top: 4px; }
+    .action-label { font-size: 0.85rem; color: var(--text-secondary, #555); margin-top: 4px; }
     </style>
     """, unsafe_allow_html=True)
 
@@ -1168,7 +1168,8 @@ if st.session_state.dark_mode:
     st.markdown("""
     <style>
     /* Dark mode theme - comprehensive text styling */
-    .stApp { background-color: #1a1a2e; color: #eaeaea; }
+    :root { --text-primary: #eaeaea; --text-secondary: #b0b0b0; --text-muted: #888888; --bg-primary: #1a1a2e; --bg-secondary: #1f2940; --bg-card: #252c3d; --border-color: #3d4f6f; --accent-color: #667eea; }
+    .stApp { background-color: var(--bg-primary); color: var(--text-primary); }
     .stSidebar { background-color: #16213e !important; }
     .stSidebar [data-testid="stSidebarContent"] { background-color: #16213e; }
     .stSidebar h1, .stSidebar h2, .stSidebar h3, .stSidebar h4, .stSidebar p, .stSidebar span, .stSidebar label { color: #eaeaea !important; }
@@ -1192,6 +1193,16 @@ if st.session_state.dark_mode:
     .stExpander summary { color: #eaeaea !important; }
     .stExpander p, .stExpander span, .stExpander div { color: #eaeaea !important; }
     div[data-testid="stExpander"] details summary span { color: #eaeaea !important; }
+    /* Theme adaptive classes for inline styles */
+    .login-subtitle, .card-subtitle, .card-description, .action-label, .muted-text { color: #b0b0b0 !important; }
+    .feature-card, .action-card, .info-card { background: linear-gradient(135deg, #2d3a4f 0%, #1f2940 100%) !important; border-color: #3d4f6f !important; }
+    .quick-action-card { border-left-color: inherit !important; }
+    .quick-action-card div { color: #eaeaea !important; }
+    .quick-action-card .card-description { color: #b0b0b0 !important; }
+    [style*="color: #666"], [style*="color:#666"], [style*="color: #555"], [style*="color:#555"] { color: #b0b0b0 !important; }
+    div[style*="background: linear-gradient"] { color: #eaeaea !important; }
+    div[style*="background: linear-gradient"] div { color: #b0b0b0 !important; }
+    div[style*="background: linear-gradient"] div:first-child { color: #eaeaea !important; }
     .stMarkdown, .stText { color: #eaeaea !important; }
     .stMarkdown p, .stMarkdown span, .stMarkdown li, .stMarkdown h1, .stMarkdown h2, .stMarkdown h3, .stMarkdown h4, .stMarkdown h5 { color: #eaeaea !important; }
     .stMarkdown a { color: #7c9eff !important; }
@@ -1240,12 +1251,25 @@ if st.session_state.dark_mode:
     .stDownloadButton button { background-color: #3d4f6f !important; color: white !important; }
     /* Tooltip */
     [data-testid="stTooltipIcon"] { color: #aaaaaa !important; }
+    /* Override inline colors */
+    .stMarkdown div[style], .stMarkdown span[style] { color: #eaeaea !important; }
+    /* Cards and containers with inline backgrounds */
+    div[style*="padding: 1.5rem"] { color: #eaeaea !important; }
+    div[style*="padding: 1.5rem"] > div { color: #b0b0b0 !important; }
+    div[style*="padding: 1.5rem"] > div:first-child { color: #eaeaea !important; }
+    /* Action card labels */
+    .action-label { color: #b0b0b0 !important; }
+    /* Number badge */
+    [style*="background:"] span, [style*="background-color:"] span { color: inherit !important; }
+    /* Streamlit columns with colored content */
+    [data-testid="column"] div[style] { color: #eaeaea !important; }
     </style>
     """, unsafe_allow_html=True)
 else:
     st.markdown("""
     <style>
     /* Light mode theme - ensure dark text for readability */
+    :root { --text-primary: #1a1a1a; --text-secondary: #555555; --text-muted: #666666; --bg-primary: #f8f9fa; --bg-secondary: #ffffff; --bg-card: #f5f7fa; --border-color: #e0e0e0; --accent-color: #667eea; }
     .stApp { background-color: #f8f9fa; color: #1a1a1a; }
     .stSidebar { background-color: #ffffff !important; }
     .stSidebar [data-testid="stSidebarContent"] { background-color: #ffffff; }
@@ -1314,6 +1338,23 @@ else:
     .stDownloadButton button { background-color: #667eea !important; color: white !important; }
     /* Tooltip */
     [data-testid="stTooltipIcon"] { color: #666666 !important; }
+    /* Override inline colors for light mode */
+    .stMarkdown div[style], .stMarkdown span[style] { color: #1a1a1a !important; }
+    /* Cards and containers with inline backgrounds */
+    div[style*="padding: 1.5rem"] { color: #1a1a1a !important; }
+    div[style*="padding: 1.5rem"] > div { color: #555555 !important; }
+    div[style*="padding: 1.5rem"] > div:first-child { color: #1a1a1a !important; }
+    /* Action card labels */
+    .action-label { color: #555555 !important; }
+    /* Card description text */
+    .card-description { color: #555555 !important; }
+    /* Quick action card */
+    .quick-action-card div { color: #1a1a1a !important; }
+    .quick-action-card .card-description { color: #555555 !important; }
+    /* Streamlit columns with colored content */
+    [data-testid="column"] div[style] { color: #1a1a1a !important; }
+    /* Login subtitle */
+    .login-subtitle { color: #555555 !important; }
     </style>
     """, unsafe_allow_html=True)
 
@@ -1511,9 +1552,9 @@ with st.sidebar:
         
         with col_action1:
             st.markdown("""
-            <div style="background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%); padding: 1rem; border-radius: 8px; border-left: 4px solid #667eea; text-align: center;">
+            <div class="quick-action-card" style="background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%); padding: 1rem; border-radius: 8px; border-left: 4px solid #667eea; text-align: center;">
                 <div style="font-size: 1.2rem; margin-bottom: 0.5rem;">👤 Profile</div>
-                <div style="color: #666; font-size: 0.8rem;">View & manage account</div>
+                <div class="card-description" style="font-size: 0.8rem;">View & manage account</div>
             </div>
             """, unsafe_allow_html=True)
             if st.button("▶️ Open", use_container_width=True, key="view_profile_btn"):
@@ -1521,9 +1562,9 @@ with st.sidebar:
         
         with col_action2:
             st.markdown("""
-            <div style="background: linear-gradient(135deg, #fa709a15 0%, #fee14015 100%); padding: 1rem; border-radius: 8px; border-left: 4px solid #fee140; text-align: center;">
+            <div class="quick-action-card" style="background: linear-gradient(135deg, #fa709a15 0%, #fee14015 100%); padding: 1rem; border-radius: 8px; border-left: 4px solid #fee140; text-align: center;">
                 <div style="font-size: 1.2rem; margin-bottom: 0.5rem;">🚪 Logout</div>
-                <div style="color: #666; font-size: 0.8rem;">End session</div>
+                <div class="card-description" style="font-size: 0.8rem;">End session</div>
             </div>
             """, unsafe_allow_html=True)
             if st.button("▶️ Sign Out", use_container_width=True, type="secondary", key="logout_oauth_btn"):
@@ -1618,9 +1659,9 @@ with st.sidebar:
         
         with col_action1:
             st.markdown("""
-            <div style="background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%); padding: 1rem; border-radius: 8px; border-left: 4px solid #667eea; text-align: center;">
+            <div class="quick-action-card" style="background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%); padding: 1rem; border-radius: 8px; border-left: 4px solid #667eea; text-align: center;">
                 <div style="font-size: 1.2rem; margin-bottom: 0.5rem;">👤 Profile</div>
-                <div style="color: #666; font-size: 0.8rem;">View & manage account</div>
+                <div class="card-description" style="font-size: 0.8rem;">View & manage account</div>
             </div>
             """, unsafe_allow_html=True)
             if st.button("▶️ Open", use_container_width=True, key="view_profile_trad_btn"):
@@ -1628,9 +1669,9 @@ with st.sidebar:
         
         with col_action2:
             st.markdown("""
-            <div style="background: linear-gradient(135deg, #fa709a15 0%, #fee14015 100%); padding: 1rem; border-radius: 8px; border-left: 4px solid #fee140; text-align: center;">
+            <div class="quick-action-card" style="background: linear-gradient(135deg, #fa709a15 0%, #fee14015 100%); padding: 1rem; border-radius: 8px; border-left: 4px solid #fee140; text-align: center;">
                 <div style="font-size: 1.2rem; margin-bottom: 0.5rem;">🚪 Logout</div>
-                <div style="color: #666; font-size: 0.8rem;">End session</div>
+                <div class="card-description" style="font-size: 0.8rem;">End session</div>
             </div>
             """, unsafe_allow_html=True)
             if st.button("▶️ Sign Out", use_container_width=True, type="secondary", key="logout_trad_btn"):
@@ -1838,10 +1879,10 @@ with st.sidebar:
     caps = model_capabilities.get(model_name, [])
     caps_str = " ".join(caps) if caps else "—"
     st.markdown(
-        f'<div style="background:linear-gradient(90deg,#667eea15,#764ba210);'
+        f'<div class="quick-action-card" style="background:linear-gradient(90deg,#667eea15,#764ba210);'
         f'border-left:4px solid #667eea;padding:12px;border-radius:8px;margin:8px 0;">'
         f'<b>{provider_icons.get(provider, "⚪")} {model_choice_label}</b><br/>'
-        f'<span style="font-size:0.85rem;color:#555;">Provider: {provider_labels.get(provider, provider.upper())}</span><br/>'
+        f'<span class="card-description" style="font-size:0.85rem;">Provider: {provider_labels.get(provider, provider.upper())}</span><br/>'
         f'<span style="font-size:0.8rem;">{caps_str}</span>'
         f'</div>',
         unsafe_allow_html=True
@@ -1872,8 +1913,8 @@ with st.sidebar:
     # Enhanced AI Behavior & Settings with better organization
     with st.expander("🎛️ AI Behavior & Settings", expanded=True):
         st.markdown("""
-        <div style="background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%); padding: 1.5rem; border-radius: 10px; border-left: 4px solid #667eea; margin-bottom: 1.5rem;">
-            <div style="font-size: 0.95rem; color: #555;">
+        <div class="quick-action-card" style="background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%); padding: 1.5rem; border-radius: 10px; border-left: 4px solid #667eea; margin-bottom: 1.5rem;">
+            <div class="card-description" style="font-size: 0.95rem;">
                 <strong>💡 Tip:</strong> Fine-tune how the AI behaves and generates responses. Adjust parameters to match your needs.
             </div>
         </div>
