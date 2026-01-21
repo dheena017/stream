@@ -1851,14 +1851,23 @@ if multimodal_options:
                 try:
                     import PyPDF2  # type: ignore
                     pdf_reader = PyPDF2.PdfReader(file)
+                    page_limit = st.session_state.get('pdf_page_limit', 10)
                     text = ""
-                    for page in pdf_reader.pages:
-                        text += page.extract_text() + "\n"
-                    extra_context += f"\n\n--- Content from {file.name} ---\n{text[:2000]}..." if len(text) > 2000 else f"\n\n--- Content from {file.name} ---\n{text}"
-                    st.success(f"✅ Extracted {len(pdf_reader.pages)} pages from {file.name}")
+                    pages_to_read = min(len(pdf_reader.pages), page_limit)
+                    
+                    with st.spinner(f"📄 Extracting text from {file.name}..."):
+                        for i, page in enumerate(pdf_reader.pages[:pages_to_read]):
+                            text += page.extract_text() + "\n"
+                    
+                    extra_context += f"\n\n--- Content from {file.name} (pages 1-{pages_to_read}) ---\n{text[:3000]}..." if len(text) > 3000 else f"\n\n--- Content from {file.name} ---\n{text}"
+                    
+                    st.success(f"✅ **{file.name}** • Extracted {pages_to_read}/{len(pdf_reader.pages)} pages")
+                    with st.expander("📄 Preview extracted text"):
+                        st.text(text[:500] + "..." if len(text) > 500 else text)
+                    
                     uploaded_file_info.append({"name": file.name, "type": "PDF Document"})
                 except ImportError:
-                    st.warning("⚠️ PDF support requires PyPDF2: pip install PyPDF2")
+                    st.warning("⚠️ PDF support requires PyPDF2: `pip install PyPDF2`")
                 except Exception as e:
                     st.error(f"❌ Failed to read PDF: {e}")
             
@@ -1870,7 +1879,7 @@ if multimodal_options:
                 uploaded_file_info.append({"name": file.name, "type": "Text Document"})
             
             # Handle audio files
-            elif file_ext in ["mp3", "wav", "m4a", "ogg"]:
+            elif file_ext in ["mp3", "wav", "m4a", "ogg", "flac"]:
                 try:
                     import speech_recognition as sr  # type: ignore
                     
@@ -1881,25 +1890,28 @@ if multimodal_options:
                     
                     recognizer = sr.Recognizer()
                     
-                    # Convert to WAV if needed and transcribe
-                    if file_ext != 'wav':
-                        st.info(f"🎵 Processing audio file {file.name}...")
-                    
-                    with sr.AudioFile(tmp_path) as source:
-                        audio = recognizer.record(source)
-                        transcription = recognizer.recognize_google(audio)
-                        extra_context += f"\n\n--- Transcription from {file.name} ---\n{transcription}"
-                        st.success(f"✅ Transcribed {file.name}")
-                        uploaded_file_info.append({"name": file.name, "type": "Audio"})
+                    with st.spinner(f"🎵 Transcribing {file.name}..."):
+                        with sr.AudioFile(tmp_path) as source:
+                            # Adjust for ambient noise
+                            recognizer.adjust_for_ambient_noise(source, duration=0.5)
+                            audio = recognizer.record(source)
+                            transcription = recognizer.recognize_google(audio)
+                            extra_context += f"\n\n--- Transcription from {file.name} ---\n{transcription}"
+                            
+                            st.success(f"✅ **{file.name}** transcribed successfully")
+                            with st.expander("🎧 View transcription"):
+                                st.write(transcription)
+                            
+                            uploaded_file_info.append({"name": file.name, "type": "Audio"})
                     
                     os.unlink(tmp_path)
                 except ImportError:
-                    st.warning("⚠️ Audio transcription requires SpeechRecognition: pip install SpeechRecognition")
+                    st.warning("⚠️ Audio transcription requires SpeechRecognition: `pip install SpeechRecognition`")
                 except Exception as e:
                     st.error(f"❌ Audio processing failed: {e}")
             
             # Handle video files (extract frames)
-            elif file_ext in ["mp4", "avi", "mov", "mkv"]:
+            elif file_ext in ["mp4", "avi", "mov", "mkv", "webm"]:
                 try:
                     from moviepy.editor import VideoFileClip  # type: ignore
                     
@@ -1908,26 +1920,34 @@ if multimodal_options:
                         tmp.write(file.read())
                         tmp_path = tmp.name
                     
-                    with st.spinner(f"🎬 Extracting frames from {file.name}..."):
+                    with st.spinner(f"🎬 Processing video {file.name}..."):
                         clip = VideoFileClip(tmp_path)
                         duration = clip.duration
+                        fps = clip.fps
                         
                         # Extract frames at intervals
-                        num_frames = min(5, int(duration))  # Max 5 frames
+                        num_frames = st.session_state.get('frame_count', 5)
+                        num_frames = min(num_frames, int(duration))
+                        
+                        st.info(f"🎬 **{file.name}** • Duration: {duration:.1f}s • FPS: {fps:.0f}")
+                        
+                        frame_cols = st.columns(min(num_frames, 5))
                         for i in range(num_frames):
-                            t = (i * duration) / num_frames
+                            t = (i * duration) / num_frames if num_frames > 1 else 0
                             frame = clip.get_frame(t)
                             img = Image.fromarray(frame)
                             uploaded_images.append(img)
-                            st.image(img, caption=f"{file.name} @ {t:.1f}s", width=150)
+                            
+                            with frame_cols[i % 5]:
+                                st.image(img, caption=f"@{t:.1f}s", use_container_width=True)
                         
                         clip.close()
-                        st.success(f"✅ Extracted {num_frames} frames from {file.name}")
+                        st.success(f"✅ Extracted {num_frames} frame{'s' if num_frames != 1 else ''} from {file.name}")
                         uploaded_file_info.append({"name": file.name, "type": "Video"})
                     
                     os.unlink(tmp_path)
                 except ImportError:
-                    st.warning("⚠️ Video support requires moviepy: pip install moviepy")
+                    st.warning("⚠️ Video support requires moviepy: `pip install moviepy`")
                 except Exception as e:
                     st.error(f"❌ Video processing failed: {e}")
 
