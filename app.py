@@ -2438,10 +2438,64 @@ if st.session_state.voice_mode:
                 st.error(f"❌ Audio transcription failed: {e}")
                 st.stop()
 else:
-    # Text input mode
+    # Text input mode with prompt templates
+    
+    # Prompt templates library
+    PROMPT_TEMPLATES = {
+        "None": "",
+        "💻 Code Review": "Please review the following code for bugs, best practices, and potential improvements:\n\n",
+        "💻 Explain Code": "Please explain what this code does step by step:\n\n",
+        "💻 Debug Help": "I'm getting an error with this code. Please help me debug it:\n\nCode:\n\nError:\n",
+        "💻 Write Function": "Write a function that does the following:\n\n",
+        "💻 Convert Code": "Convert the following code from [source language] to [target language]:\n\n",
+        "📝 Summarize": "Please summarize the following text in a concise manner:\n\n",
+        "📝 Improve Writing": "Please improve the following text for clarity and readability:\n\n",
+        "📝 Fix Grammar": "Please fix any grammar and spelling errors in the following text:\n\n",
+        "📝 Translate": "Translate the following text to [target language]:\n\n",
+        "🔬 Explain Concept": "Explain the following concept in simple terms:\n\n",
+        "🔬 Compare & Contrast": "Compare and contrast the following:\n\n",
+        "🔬 Pros and Cons": "List the pros and cons of:\n\n",
+        "🎯 Step-by-Step Guide": "Provide a step-by-step guide for:\n\n",
+        "🎯 Best Practices": "What are the best practices for:\n\n",
+        "📊 Analyze Data": "Analyze the following data and provide insights:\n\n",
+        "💡 Brainstorm Ideas": "Brainstorm creative ideas for:\n\n",
+        "📧 Write Email": "Write a professional email about:\n\n",
+        "📄 Create Outline": "Create a detailed outline for:\n\n",
+    }
+    
+    # Template selector
+    template_col1, template_col2 = st.columns([1, 3])
+    with template_col1:
+        selected_template = st.selectbox(
+            "📋 Templates",
+            list(PROMPT_TEMPLATES.keys()),
+            index=0,
+            key="prompt_template",
+            label_visibility="collapsed"
+        )
+    with template_col2:
+        if selected_template != "None":
+            st.caption(f"Template: {selected_template}")
+    
+    # Apply template to session state if changed
+    if selected_template != "None":
+        template_text = PROMPT_TEMPLATES[selected_template]
+        if st.session_state.get("last_template") != selected_template:
+            st.session_state.template_prefix = template_text
+            st.session_state.last_template = selected_template
+    else:
+        st.session_state.template_prefix = ""
+    
     prompt = st.chat_input("Ask me anything...")
 
 if prompt:
+    # Apply template prefix if set
+    template_prefix = st.session_state.get("template_prefix", "")
+    if template_prefix:
+        prompt = template_prefix + prompt
+        st.session_state.template_prefix = ""  # Clear after use
+        st.session_state.last_template = "None"
+    
     # AI Brain Mode - Multi-model + Internet
     if enable_brain_mode:
         from brain import AIBrain
@@ -2541,7 +2595,11 @@ if prompt:
         brain.add_to_memory(prompt, synthesized_response)
         
         # Display user message
-        user_message = {"role": "user", "content": prompt}
+        user_message = {
+            "role": "user",
+            "content": prompt,
+            "timestamp": datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        }
         st.session_state.messages.append(user_message)
         
         with st.chat_message("user"):
@@ -2551,7 +2609,13 @@ if prompt:
         with st.chat_message("assistant"):
             st.markdown(synthesized_response)
         
-        st.session_state.messages.append({"role": "assistant", "content": synthesized_response})
+        st.session_state.messages.append({
+            "role": "assistant",
+            "content": synthesized_response,
+            "timestamp": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            "model": "brain-mode",
+            "provider": "multi"
+        })
         st.rerun()
     
     # Standard Single Model Mode
