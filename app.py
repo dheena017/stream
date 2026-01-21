@@ -379,10 +379,46 @@ def get_anthropic_client(api_key: str):
     from anthropic import Anthropic
     return Anthropic(api_key=api_key)
 
-def build_conversation_history(messages: List[Dict], exclude_last: bool = True) -> List[Dict]:
-    """Build conversation history from messages"""
+def build_conversation_history(messages: List[Dict], exclude_last: bool = True, max_messages: int = 20, max_chars: int = 50000) -> List[Dict]:
+    """Build conversation history from messages with smart summarization for long chats.
+    
+    Args:
+        messages: List of message dictionaries
+        exclude_last: Whether to exclude the last message
+        max_messages: Maximum number of recent messages to include in full
+        max_chars: Maximum total characters before summarizing older messages
+    """
     history = messages[:-1] if exclude_last and len(messages) > 0 else messages
-    return [{"role": msg["role"], "content": msg["content"]} for msg in history]
+    
+    if not history:
+        return []
+    
+    # Convert to simple format
+    formatted = [{"role": msg["role"], "content": msg["content"]} for msg in history]
+    
+    # Check if summarization is needed
+    total_chars = sum(len(m["content"]) for m in formatted)
+    
+    if len(formatted) > max_messages or total_chars > max_chars:
+        # Split into older and recent messages
+        older = formatted[:-max_messages] if len(formatted) > max_messages else []
+        recent = formatted[-max_messages:]
+        
+        if older:
+            # Create a summary of older messages
+            older_summary_parts = []
+            for msg in older[-10:]:  # Summarize last 10 of older messages
+                content_preview = msg["content"][:200] + "..." if len(msg["content"]) > 200 else msg["content"]
+                older_summary_parts.append(f"{msg['role'].upper()}: {content_preview}")
+            
+            summary_text = "[Earlier conversation summary]\n" + "\n".join(older_summary_parts)
+            
+            # Return summary + recent messages
+            return [{"role": "system", "content": summary_text}] + recent
+        else:
+            return recent
+    
+    return formatted
 
 def create_openai_messages(
     conversation_history: List[Dict],
@@ -1728,6 +1764,31 @@ with st.sidebar:
             
             enable_internet = st.checkbox("🌐 Enable Internet Search", value=True, help="Search the web for current information")
             
+            # Auto-select mode
+            auto_select_model = st.checkbox(
+                "🤖 Auto-Select Best Model",
+                value=True,
+                help="Let the brain automatically choose the best model based on query type and past performance"
+            )
+            
+            if auto_select_model:
+                st.caption("Brain will analyze your query and pick the optimal model(s)")
+                
+                # Query type detection hints
+                st.markdown("**Query Type Detection:**")
+                type_hints = {
+                    "💻 Code": ["code", "function", "debug", "error", "programming", "python", "javascript"],
+                    "📝 Writing": ["write", "essay", "article", "email", "summarize", "translate"],
+                    "🔬 Analysis": ["analyze", "compare", "explain", "why", "how does"],
+                    "💡 Creative": ["brainstorm", "ideas", "creative", "story", "imagine"],
+                    "📊 Data": ["data", "chart", "statistics", "calculate", "math"],
+                }
+                hint_cols = st.columns(5)
+                for i, (hint_type, _) in enumerate(type_hints.items()):
+                    with hint_cols[i]:
+                        st.caption(hint_type)
+            
+            st.markdown("---")
             st.markdown("#### Select Models to Consult")
             st.caption("Choose which AI models the brain should query")
             
@@ -1741,9 +1802,13 @@ with st.sidebar:
             
             selected_brain_models = sum([brain_use_google, brain_use_openai, brain_use_anthropic, brain_use_together])
             st.info(f"✅ {selected_brain_models} model(s) selected for brain consultation")
+            
+            # Store auto-select preference
+            st.session_state.brain_auto_select = auto_select_model
         else:
             enable_internet = False
             brain_use_google = brain_use_openai = brain_use_anthropic = brain_use_together = False
+            st.session_state.brain_auto_select = False
     
     st.divider()
     
