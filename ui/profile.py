@@ -1,5 +1,6 @@
 
 import streamlit as st
+import time
 from datetime import datetime
 import json
 import logging
@@ -8,7 +9,10 @@ from ui.auth import load_user_credentials, save_user_credentials, hash_password
 
 def show_profile_page():
     """Display full profile page"""
-    st.markdown('<div class="login-header"><h1>👤 My Profile</h1></div>', unsafe_allow_html=True)
+    st.markdown("""
+    <div class="main-header" style="margin-bottom: 30px;">
+        <h1>👤 My Profile</h1>
+    </div>""", unsafe_allow_html=True)
     
     # Get user info
     user_info = st.session_state.get('user_info', {})
@@ -176,7 +180,16 @@ def show_profile_page():
                 'notifications': notifications,
                 'auto_save': auto_save
             }
-            st.success("✅ Preferences saved!")
+            
+            # Apply Theme Change
+            if theme == "Dark":
+                st.session_state["dark_mode"] = True
+            elif theme == "Light":
+                st.session_state["dark_mode"] = False
+            
+            st.success("✅ Preferences saved! reloading...")
+            time.sleep(0.5)
+            st.rerun()
     
     with tab4:
         st.markdown("### 🔒 Security")

@@ -27,19 +27,15 @@ def show_chat_page():
     """Display the main chat interface"""
     # 1. Header
     st.markdown("""
-    <div style="background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%); 
-    padding: 2rem 2.5rem; border-radius: 16px; margin-bottom: 1.5rem; 
-    box-shadow: 0 10px 40px rgba(0,0,0,0.12);">
-        <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
-            <div style="font-size: 3rem;">🤖</div>
-            <div>
-                <h1 style="color: var(--text-primary); margin: 0; font-size: 2rem; font-weight: 700;">
-                    Multi-Provider AI Chat
-                </h1>
-                <p style="color: var(--text-secondary); margin: 0.25rem 0 0 0; font-size: 1rem;">
-                    GPT-4 • Claude • Gemini • Llama • Grok • DeepSeek
-                </p>
-            </div>
+    <div class="main-header">
+        <div style="font-size: 3rem;">🤖</div>
+        <div>
+            <h1 style="color: white; margin: 0; font-size: 2rem; font-weight: 700;">
+                Multi-Provider AI Chat
+            </h1>
+            <p style="color: rgba(255,255,255,0.8); margin: 0.25rem 0 0 0; font-size: 1rem;">
+                GPT-4 • Claude • Gemini • Llama • Grok • DeepSeek
+            </p>
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -49,24 +45,24 @@ def show_chat_page():
     with c1:
         brain_mode = st.session_state.get('enable_brain_mode', False)
         status = "🧠 Brain ON" if brain_mode else "🤖 Standard"
-        color = "var(--accent-primary)" if brain_mode else "var(--text-secondary)"
-        st.markdown(f'<div style="background:rgba(0,0,0,0.03);padding:8px;border-radius:10px;border-left:3px solid {color};text-align:center;"><span style="color:{color};font-weight:600">{status}</span></div>', unsafe_allow_html=True)
+        cls = "status-badge active" if brain_mode else "status-badge"
+        st.markdown(f'<div class="{cls}">{status}</div>', unsafe_allow_html=True)
     with c2:
         voice_mode = st.session_state.get('voice_mode', False)
         status = "🎤 Voice ON" if voice_mode else "⌨️ Text Mode"
-        color = "var(--accent-secondary)" if voice_mode else "var(--accent-primary)"
-        st.markdown(f'<div style="background:rgba(0,0,0,0.03);padding:8px;border-radius:10px;border-left:3px solid {color};text-align:center;"><span style="color:{color};font-weight:600">{status}</span></div>', unsafe_allow_html=True)
+        cls = "status-badge active" if voice_mode else "status-badge"
+        st.markdown(f'<div class="{cls}">{status}</div>', unsafe_allow_html=True)
     with c3:
         count = len(st.session_state.get('messages', []))
-        st.markdown(f'<div style="background:rgba(0,0,0,0.03);padding:8px;border-radius:10px;border-left:3px solid var(--accent-secondary);text-align:center;"><span style="color:var(--accent-secondary);font-weight:600">💬 {count} Messages</span></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="status-badge">💬 {count} Messages</div>', unsafe_allow_html=True)
     with c4:
         provider = st.session_state.get('selected_provider', 'google').upper()
-        st.markdown(f'<div style="background:rgba(0,0,0,0.03);padding:8px;border-radius:10px;border-left:3px solid var(--accent-primary);text-align:center;"><span style="color:var(--accent-primary);font-weight:600">🔌 {provider}</span></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="status-badge active">🔌 {provider}</div>', unsafe_allow_html=True)
     with c5:
         internet_mode = st.session_state.get('enable_internet_search', False)
         status = "🌐 Web ON" if internet_mode else "📱 Local"
-        color = "var(--accent-secondary)" if internet_mode else "var(--text-secondary)"
-        st.markdown(f'<div style="background:rgba(0,0,0,0.03);padding:8px;border-radius:10px;border-left:3px solid {color};text-align:center;"><span style="color:{color};font-weight:600">{status}</span></div>', unsafe_allow_html=True)
+        cls = "status-badge active" if internet_mode else "status-badge"
+        st.markdown(f'<div class="{cls}">{status}</div>', unsafe_allow_html=True)
 
     st.markdown("<div style='height:1rem;'></div>", unsafe_allow_html=True)
 

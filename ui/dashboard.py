@@ -12,20 +12,17 @@ def show_dashboard():
     """Display user dashboard with stats and activity"""
     
     # Modern gradient header for dashboard
+    # Modern gradient header for dashboard
     st.markdown("""
-    <div style="background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%); 
-    padding: 2rem 2.5rem; border-radius: 16px; margin-bottom: 1.5rem; 
-    box-shadow: 0 10px 40px rgba(0,0,0,0.12);">
-        <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
-            <div style="font-size: 3rem;">📊</div>
-            <div>
-                <h1 style="color: var(--text-primary); margin: 0; font-size: 2rem; font-weight: 700;">
-                    Dashboard
-                </h1>
-                <p style="color: var(--text-secondary); margin: 0.25rem 0 0 0; font-size: 1rem;">
-                    Your AI activity at a glance
-                </p>
-            </div>
+    <div class="main-header">
+        <div style="font-size: 3rem;">📊</div>
+        <div>
+            <h1 style="color: white; margin: 0; font-size: 2rem; font-weight: 700;">
+                Dashboard
+            </h1>
+            <p style="color: rgba(255,255,255,0.8); margin: 0.25rem 0 0 0; font-size: 1rem;">
+                Your AI activity at a glance
+            </p>
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -36,10 +33,10 @@ def show_dashboard():
     user_email = user_info.get('email', '')
     
     # Welcome card
+    # Welcome card
     st.markdown(f"""
-    <div style="background: linear-gradient(135deg, var(--accent-primary)15 0%, var(--accent-secondary)15 100%); 
-    padding: 1.25rem 1.5rem; border-radius: 12px; border-left: 4px solid var(--accent-primary); margin-bottom: 1rem;">
-        <h3 style="margin: 0 0 0.25rem 0; color: var(--text-primary);">Welcome back, {user_name}! 👋</h3>
+    <div class="glass-panel" style="margin-bottom: 2rem;">
+        <h3 style="margin: 0 0 0.5rem 0; color: var(--text-primary);">Welcome back, {user_name}! 👋</h3>
         {"<p style='color: var(--text-secondary); margin: 0;'>📧 " + user_email + "</p>" if user_email else ""}
     </div>
     """, unsafe_allow_html=True)
@@ -53,41 +50,33 @@ def show_dashboard():
     
     with col1:
         st.markdown(f"""
-        <div class="gradient-card-purple" style="background: linear-gradient(135deg, var(--accent-primary)20 0%, var(--accent-secondary)20 100%); 
-        padding: 1.25rem; border-radius: 12px; border-left: 4px solid var(--accent-primary); text-align: center;">
-            <div style="font-size: 2rem; font-weight: 700; background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)); 
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;">{total_messages}</div>
-            <div style="color: var(--text-secondary); font-size: 0.85rem; font-weight: 600;">💬 Messages</div>
+        <div class="dashboard-card">
+            <div class="metric-value">{total_messages}</div>
+            <div class="metric-label">💬 Messages</div>
         </div>
         """, unsafe_allow_html=True)
     with col2:
         topics = stats.get('total_topics', 0)
         st.markdown(f"""
-        <div class="gradient-card-green" style="background: linear-gradient(135deg, #10b98120 0%, #06b6d420 100%); 
-        padding: 1.25rem; border-radius: 12px; border-left: 4px solid #10b981; text-align: center;">
-            <div style="font-size: 2rem; font-weight: 700; background: linear-gradient(135deg, #10b981, #06b6d4); 
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;">{topics}</div>
-            <div style="color: #64748b; font-size: 0.85rem; font-weight: 600;">🧠 Topics</div>
+        <div class="dashboard-card">
+            <div class="metric-value">{topics}</div>
+            <div class="metric-label">🧠 Topics</div>
         </div>
         """, unsafe_allow_html=True)
     with col3:
         models = stats.get('models_tracked', 0)
         st.markdown(f"""
-        <div class="gradient-card-blue" style="background: linear-gradient(135deg, #3b82f620 0%, #8b5cf620 100%); 
-        padding: 1.25rem; border-radius: 12px; border-left: 4px solid #3b82f6; text-align: center;">
-            <div style="font-size: 2rem; font-weight: 700; background: linear-gradient(135deg, #3b82f6, #8b5cf6); 
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;">{models}</div>
-            <div style="color: #64748b; font-size: 0.85rem; font-weight: 600;">🤖 Models</div>
+        <div class="dashboard-card">
+            <div class="metric-value">{models}</div>
+            <div class="metric-label">🤖 Models</div>
         </div>
         """, unsafe_allow_html=True)
     with col4:
         convos = stats.get('total_conversations', 0)
         st.markdown(f"""
-        <div class="gradient-card-orange" style="background: linear-gradient(135deg, #f59e0b20 0%, #ef444420 100%); 
-        padding: 1.25rem; border-radius: 12px; border-left: 4px solid #f59e0b; text-align: center;">
-            <div style="font-size: 2rem; font-weight: 700; background: linear-gradient(135deg, #f59e0b, #ef4444); 
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;">{convos}</div>
-            <div style="color: #64748b; font-size: 0.85rem; font-weight: 600;">📚 Convos</div>
+        <div class="dashboard-card">
+            <div class="metric-value">{convos}</div>
+            <div class="metric-label">📚 Convos</div>
         </div>
         """, unsafe_allow_html=True)
     
@@ -105,9 +94,9 @@ def show_dashboard():
     
     with action_col1:
         st.markdown(f"""
-        <div class="quick-action-card" style="background: linear-gradient(135deg, var(--accent-primary)15 0%, var(--accent-secondary)15 100%); padding: 1.5rem; border-radius: 10px; border-left: 4px solid var(--accent-primary); margin-bottom: 1rem; color: var(--text-primary);">
-            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">💬 Start Chatting</div>
-            <div class="card-description" style="font-size: 0.9rem; margin-bottom: 1rem; color: var(--text-secondary);">Begin a new conversation with your selected AI model or enable AI Brain for multi-model responses</div>
+        <div class="action-card">
+            <div class="action-title">💬 Start Chatting</div>
+            <div class="action-desc">Begin a new conversation with your selected AI model or enable AI Brain for multi-model responses</div>
         </div>
         """, unsafe_allow_html=True)
         
@@ -117,9 +106,9 @@ def show_dashboard():
     
     with action_col2:
         st.markdown("""
-        <div class="quick-action-card" style="background: linear-gradient(135deg, #f093fb15 0%, #f5576c15 100%); padding: 1.5rem; border-radius: 10px; border-left: 4px solid #f5576c; margin-bottom: 1rem;">
-            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">👤 View Profile</div>
-            <div class="card-description" style="font-size: 0.9rem; margin-bottom: 1rem;">Manage your account settings, preferences, and view your usage statistics</div>
+        <div class="action-card">
+            <div class="action-title">👤 View Profile</div>
+            <div class="action-desc">Manage your account settings, preferences, and view your usage statistics</div>
         </div>
         """, unsafe_allow_html=True)
         
@@ -131,9 +120,9 @@ def show_dashboard():
     
     with action_col3:
         st.markdown("""
-        <div class="quick-action-card" style="background: linear-gradient(135deg, #4facfe15 0%, #00f2fe15 100%); padding: 1.5rem; border-radius: 10px; border-left: 4px solid #00f2fe; margin-bottom: 1rem;">
-            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🧠 View Brain Stats</div>
-            <div class="card-description" style="font-size: 0.9rem; margin-bottom: 1rem;">See what your AI brain has learned: topics, model performance, and insights</div>
+        <div class="action-card">
+            <div class="action-title">🧠 View Brain Stats</div>
+            <div class="action-desc">See what your AI brain has learned: topics, model performance, and insights</div>
         </div>
         """, unsafe_allow_html=True)
         
@@ -143,9 +132,9 @@ def show_dashboard():
     
     with action_col4:
         st.markdown("""
-        <div class="quick-action-card" style="background: linear-gradient(135deg, #fa709a15 0%, #fee14015 100%); padding: 1.5rem; border-radius: 10px; border-left: 4px solid #fee140; margin-bottom: 1rem;">
-            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">📥 Export Chat</div>
-            <div class="card-description" style="font-size: 0.9rem; margin-bottom: 1rem;">Download your chat history as JSON for backup, analysis, or sharing</div>
+        <div class="action-card">
+            <div class="action-title">📥 Export Chat</div>
+            <div class="action-desc">Download your chat history as JSON for backup, analysis, or sharing</div>
         </div>
         """, unsafe_allow_html=True)
         

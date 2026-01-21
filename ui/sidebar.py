@@ -17,7 +17,7 @@ def render_sidebar():
     with st.sidebar:
         # 1. Header & Theme
         st.markdown("""
-        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 1.25rem 1rem; border-radius: 14px; text-align: center; margin-bottom: 1.2rem; box-shadow: 0 4px 24px rgba(102,126,234,0.10);">
+        <div class="sidebar-header">
             <h1 style="color: white; margin: 0; font-size: 1.4rem; font-weight: 800; letter-spacing: 0.5px;">⚙️ Control Panel</h1>
         </div>
         """, unsafe_allow_html=True)
@@ -46,10 +46,10 @@ def render_sidebar():
         auth_type = '🔐 Google' if 'google_oauth_token' in st.session_state else '🔐 Login'
         
         st.markdown(f"""
-        <div style="background: linear-gradient(135deg, #10b98115 0%, #06b6d415 100%); padding: 1rem; border-radius: 10px; margin-bottom: 1rem; border-left: 4px solid #10b981;">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <span style="font-weight: 600; color: #10b981;">👤 {username}</span>
-                <span style="font-size: 0.8rem; background: #fff; padding: 2px 6px; border-radius: 4px;">{auth_type}</span>
+        <div class="sidebar-user-card">
+            <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+                <span style="font-weight: 600; color: var(--text-primary);">👤 {username}</span>
+                <span style="font-size: 0.8rem; background: var(--bg-tertiary); padding: 2px 6px; border-radius: 4px; color: var(--text-secondary);">{auth_type}</span>
             </div>
         </div>
         """, unsafe_allow_html=True)

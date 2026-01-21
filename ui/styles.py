@@ -183,6 +183,155 @@ def load_css():
         .highlight-text { color: var(--accent-primary); font-weight: 600; }
         .subtle-text { color: var(--text-secondary); font-size: 0.9rem; }
         </style>
+        /* --- Layout & Utility Classes --- */
+        .main-header {
+            background: var(--gradient-primary);
+            padding: 2rem 2.5rem;
+            border-radius: 16px;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-card);
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .glass-panel {
+            background: rgba(var(--bg-secondary-rgb), 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-card);
+        }
+
+        /* --- Sidebar Specific --- */
+        .sidebar-header {
+            background: var(--gradient-primary); 
+            padding: 1.25rem 1rem; 
+            border-radius: 14px; 
+            text-align: center; 
+            margin-bottom: 1.5rem; 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+        
+        .sidebar-user-card {
+            background: var(--bg-tertiary);
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--accent-primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* --- Dashboard Cards --- */
+        .dashboard-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+        .dashboard-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-card);
+            border-color: var(--accent-primary);
+        }
+        .dashboard-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; bottom: 0; width: 4px;
+            background: var(--gradient-primary);
+        }
+        
+        .metric-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+        .metric-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* --- Quick Actions --- */
+        .action-card {
+            background: var(--bg-tertiary);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid var(--border-subtle);
+            transition: all 0.2s ease;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .action-card:hover {
+            border-color: var(--accent-primary);
+            transform: translateY(-2px);
+        }
+        .action-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .action-desc {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        /* --- Status Indicators (Chat) --- */
+        .status-badge {
+            background: var(--bg-tertiary);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-subtle);
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        .status-badge.active {
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        /* Custom Scrollbars & Utilities */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { 
+            background: var(--text-secondary); 
+            border-radius: 4px; 
+            opacity: 0.5;
+        }
+        ::-webkit-scrollbar-thumb:hover { background: var(--text-primary); }
+        
+        .highlight-text { color: var(--accent-primary); font-weight: 600; }
+        .subtle-text { color: var(--text-secondary); font-size: 0.85rem; }
+        </style>
         """
     else:
         # Premium Light Mode Theme
@@ -192,18 +341,18 @@ def load_css():
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
         
         :root {
-            /* Color Palette */
-            --bg-primary: #FFFFFF;      /* Pure white */
-            --bg-secondary: #F8FAFC;    /* Very light gray/blue */
-            --bg-tertiary: #F1F5F9;     /* Input bg */
+            --bg-primary: #FFFFFF;
+            --bg-secondary: #F8FAFC;
+            --bg-tertiary: #F1F5F9;
+            --bg-secondary-rgb: 248, 250, 252;
             
-            --text-primary: #0F172A;    /* Dark slate */
-            --text-secondary: #475569;  /* Slate */
-            --text-muted: #94A3B8;      /* Lighter slate */
+            --text-primary: #0F172A;
+            --text-secondary: #64748B;
+            --text-muted: #94A3B8;
             
-            --accent-primary: #4F46E5;  /* Indigo */
-            --accent-secondary: #7C3AED; /* Violet */
-            --accent-subtle: #EEF2FF;   /* Very light indigo bg */
+            --accent-primary: #4F46E5;
+            --accent-secondary: #7C3AED;
+            --accent-subtle: #EEF2FF;
             
             --border-subtle: #E2E8F0;
             --border-focus: #4F46E5;
@@ -213,6 +362,7 @@ def load_css():
             --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
             --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
             --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
+            --shadow-card: var(--shadow-md);
         }
 
         html, body, [class*="css"] {
@@ -226,48 +376,140 @@ def load_css():
             background-image: radial-gradient(circle at top right, #f1f5f9 0%, transparent 40%);
         }
 
+        /* --- Main Header --- */
+        .main-header {
+            background: var(--gradient-primary);
+            padding: 2rem 2.5rem;
+            border-radius: 16px;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-lg);
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
         /* --- Sidebar --- */
         [data-testid="stSidebar"] {
             background-color: #FAFAFA !important;
             border-right: 1px solid var(--border-subtle);
         }
         
-        /* Sidebar Navigation */
-        [data-testid="stSidebar"] .stButton > button {
-            background: white !important;
-            border: 1px solid var(--border-subtle) !important;
-            color: var(--text-secondary) !important;
-            justify-content: flex-start;
-            padding-left: 1rem;
+        .sidebar-header {
+            background: var(--gradient-primary); 
+            padding: 1.25rem 1rem; 
+            border-radius: 14px; 
+            text-align: center; 
+            margin-bottom: 1.5rem; 
+            box-shadow: var(--shadow-md);
+            color: white;
+        }
+
+        .sidebar-user-card {
+            background: white;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--accent-primary);
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* --- Dashboard Cards --- */
+        .dashboard-card {
+            background: white;
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.2s ease;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
             box-shadow: var(--shadow-sm);
         }
-        [data-testid="stSidebar"] .stButton > button:hover {
-            border-color: var(--accent-primary) !important;
-            color: var(--accent-primary) !important;
-            background: var(--accent-subtle) !important;
+        .dashboard-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--accent-primary);
         }
-        [data-testid="stSidebar"] .stButton > button[kind="primary"] {
-            background: var(--gradient-primary) !important;
-            border: none !important;
-            color: white !important;
-        }
-
-        /* --- Typography --- */
-        h1, h2, h3, h4 {
-            color: var(--text-primary) !important;
-            letter-spacing: -0.01em;
-            font-weight: 700 !important;
-        }
-        p, .stMarkdown {
-            color: var(--text-secondary) !important;
-            line-height: 1.6;
-        }
-        code, .stCodeBlock {
-            font-family: 'JetBrains Mono', monospace !important;
-            background-color: var(--bg-secondary) !important;
+        .dashboard-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; bottom: 0; width: 4px;
+            background: var(--gradient-primary);
         }
 
-        /* --- Inputs --- */
+        .metric-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+        .metric-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        /* --- Quick Actions --- */
+        .action-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid var(--border-subtle);
+            box-shadow: var(--shadow-sm);
+            transition: all 0.2s ease;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .action-card:hover {
+            border-color: var(--accent-primary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        .action-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .action-desc {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+        
+        /* --- Status Indicators --- */
+        .status-badge {
+            background: white;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-subtle);
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+            box-shadow: var(--shadow-sm);
+            color: var(--text-secondary);
+        }
+        .status-badge.active {
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
+            background: var(--accent-subtle);
+        }
+
+        /* --- Inputs, Buttons, etc --- */
         .stTextInput > div > div > input, 
         .stTextArea textarea, 
         .stSelectbox > div > div {
@@ -276,85 +518,20 @@ def load_css():
             border: 1px solid var(--border-subtle) !important;
             border-radius: 8px !important;
             box-shadow: var(--shadow-sm);
-            transition: all 0.2s ease;
-        }
-        
-        .stTextInput > div > div > input:focus,
-        .stTextArea textarea:focus {
-            border-color: var(--accent-primary) !important;
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1) !important;
-        }
-
-        /* --- Cards & Containers --- */
-        div[data-testid="stExpander"], .stCard {
-            background: white !important;
-            border: 1px solid var(--border-subtle) !important;
-            border-radius: 12px !important;
-            box-shadow: var(--shadow-sm);
-        }
-        
-        /* Metrics */
-        [data-testid="stMetric"] {
-            background: white !important;
-            border: 1px solid var(--border-subtle) !important;
-            border-radius: 12px;
-            padding: 16px !important;
-            box-shadow: var(--shadow-sm);
-            transition: transform 0.2s ease;
-        }
-        [data-testid="stMetric"]:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-        [data-testid="stMetricLabel"] { color: var(--text-secondary) !important; font-weight: 500; }
-        [data-testid="stMetricValue"] { color: var(--accent-primary) !important; font-weight: 700; }
-
-        /* --- Chat Interface --- */
-        .stChatMessage {
-            background-color: white !important;
-            border: 1px solid var(--border-subtle) !important;
-            border-radius: 16px !important;
-            box-shadow: var(--shadow-sm);
-        }
-        .stChatMessage.user-message {
-            background-color: #F8FAFC !important;
-        }
-        [data-testid="chatAvatarIcon-assistant"] {
-            background: var(--gradient-primary) !important;
-        }
-
-        /* --- Buttons --- */
-        .stButton > button {
-            border-radius: 8px !important;
-            font-weight: 600 !important;
-            transition: all 0.2s;
         }
         .stButton > button[kind="primary"] {
             background: var(--gradient-primary) !important;
             border: none !important;
             box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.3);
+            color: white !important;
         }
-        .stButton > button[kind="primary"]:hover {
-            box-shadow: 0 6px 8px -1px rgba(79, 70, 229, 0.4);
-            transform: translateY(-1px);
-        }
-        .stButton > button[kind="secondary"] {
-            background: white !important;
-            border: 1px solid var(--border-subtle) !important;
-            color: var(--text-secondary) !important;
-            box-shadow: var(--shadow-sm);
-        }
-        .stButton > button[kind="secondary"]:hover {
-            border-color: var(--text-secondary) !important;
-            background: var(--bg-secondary) !important;
-        }
-        
+
         /* --- Scrollbars --- */
-        ::-webkit-scrollbar { width: 10px; height: 10px; }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { 
             background: #CBD5E1; 
-            border-radius: 5px; 
+            border-radius: 4px; 
             border: 2px solid white;
         }
         ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
