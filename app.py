@@ -287,7 +287,7 @@ def show_login_page():
         border-bottom: 2px solid #e0e7ef22;
     }}
     .login-glass-header h1 {{
-        color: white;
+        color: #fff;
         margin: 0;
         font-size: 2.4rem;
         font-weight: 900;
@@ -295,20 +295,27 @@ def show_login_page():
         text-shadow: 0 2px 8px #23294622;
     }}
     .login-glass-header .subtitle {{
-        color: rgba(255,255,255,0.95);
+        color: #f3f4f6;
         font-size: 1.15rem;
         margin-top: 0.6rem;
         font-weight: 500;
+        text-shadow: 0 1px 4px #23294622;
     }}
     .feature-card {{
         box-shadow: 0 1px 8px rgba(80,80,120,0.07);
         border-radius: 12px !important;
-        font-size: 1.05rem !important;
-        font-weight: 500;
+        font-size: 1.08rem !important;
+        font-weight: 600;
         margin-bottom: 0.2rem;
         border: none !important;
         transition: box-shadow 0.2s;
+        color: #fff !important;
+        text-shadow: 0 1px 4px #23294622;
     }}
+    .feature-card.fc-blue {{ background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important; border-left: 4px solid #667eea; }}
+    .feature-card.fc-green {{ background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%) !important; border-left: 4px solid #10b981; }}
+    .feature-card.fc-yellow {{ background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%) !important; border-left: 4px solid #f59e0b; color: #232946 !important; }}
+    .feature-card.fc-pink {{ background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%) !important; border-left: 4px solid #f5576c; }}
     .feature-card:hover {{
         box-shadow: 0 4px 16px rgba(80,80,120,0.13);
     }}
@@ -319,7 +326,7 @@ def show_login_page():
         border-radius: 8px !important;
         border: 1.5px solid {'#667eea' if dark_mode else '#cbd5e1'} !important;
         padding: 0.7rem 1rem !important;
-        font-size: 1.05rem !important;
+        font-size: 1.08rem !important;
         margin-bottom: 0.5rem !important;
         box-shadow: 0 1px 4px rgba(80,80,120,0.07);
         transition: border 0.2s, box-shadow 0.2s;
@@ -333,7 +340,7 @@ def show_login_page():
         color: #fff !important;
         border-radius: 8px !important;
         font-weight: 700 !important;
-        font-size: 1.08rem !important;
+        font-size: 1.12rem !important;
         box-shadow: 0 2px 8px #667eea22;
         border: none !important;
         padding: 0.7rem 1.2rem !important;
@@ -344,6 +351,21 @@ def show_login_page():
         background: linear-gradient(90deg, #764ba2 0%, #667eea 100%) !important;
         box-shadow: 0 4px 16px #764ba222;
     }}
+    /* Info popover styling */
+    .popover-content, .stPopover {{
+        background: linear-gradient(135deg, #f3f4f6 0%, #e0e7ef 100%) !important;
+        color: #232946 !important;
+        border-radius: 12px !important;
+        box-shadow: 0 2px 16px #667eea22;
+        padding: 1.1rem 1.2rem !important;
+        font-size: 1.05rem !important;
+    }}
+    .popover-content code, .stPopover code {{
+        background: #23294611 !important;
+        color: #764ba2 !important;
+        border-radius: 6px;
+        padding: 2px 6px;
+    }}
     </style>
     <div class="login-glass-card">
         <div class="login-glass-header">
@@ -351,10 +373,10 @@ def show_login_page():
             <div class="subtitle">Your intelligent multi-model AI companion</div>
         </div>
         <div style="display: flex; flex-direction: column; gap: 0.7rem; margin-bottom: 1.2rem;">
-            <div class="feature-card" style="background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%); border-left: 4px solid #667eea; color: {'#e0e7ef' if dark_mode else '#232946'};">✨ <strong>25+ AI Models</strong> from Google, OpenAI, Anthropic, Meta & more</div>
-            <div class="feature-card" style="background: linear-gradient(135deg, #10b98115 0%, #06b6d415 100%); border-left: 4px solid #10b981; color: {'#e0e7ef' if dark_mode else '#232946'};">🧠 <strong>AI Brain Mode</strong> - Combines multiple models for enhanced responses</div>
-            <div class="feature-card" style="background: linear-gradient(135deg, #f59e0b15 0%, #fbbf2415 100%); border-left: 4px solid #f59e0b; color: {'#e0e7ef' if dark_mode else '#232946'};">🌐 <strong>Internet Search</strong> - Real-time information from the web</div>
-            <div class="feature-card" style="background: linear-gradient(135deg, #f093fb15 0%, #f5576c15 100%); border-left: 4px solid #f5576c; color: {'#e0e7ef' if dark_mode else '#232946'};">📎 <strong>Multimodal</strong> - Images, PDFs, Audio & Video support</div>
+            <div class="feature-card fc-blue">✨ <strong>25+ AI Models</strong> from Google, OpenAI, Anthropic, Meta & more</div>
+            <div class="feature-card fc-green">🧠 <strong>AI Brain Mode</strong> - Combines multiple models for enhanced responses</div>
+            <div class="feature-card fc-yellow">🌐 <strong>Internet Search</strong> - Real-time information from the web</div>
+            <div class="feature-card fc-pink">📎 <strong>Multimodal</strong> - Images, PDFs, Audio & Video support</div>
         </div>
     """, unsafe_allow_html=True)
     # Check for Google OAuth
