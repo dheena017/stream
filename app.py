@@ -194,7 +194,7 @@ def show_login_page():
             margin-bottom: 0.5rem;
         }
         .login-subtitle {
-            color: #666;
+            color: var(--text-secondary, #666);
             font-size: 1.2rem;
             margin-bottom: 1rem;
         }
@@ -488,6 +488,26 @@ def get_cached_model_strengths(_learning_brain):
     """Cached model strengths summary"""
     return _learning_brain.summarize_model_strengths()
 
+@st.cache_resource
+def get_google_client(api_key: str):
+    """Cached Google Gemini client initialization"""
+    return genai.Client(api_key=api_key)
+
+@st.cache_data(ttl=3600)
+def get_model_pricing():
+    """Cached model pricing data"""
+    return MODEL_PRICING.copy()
+
+@st.cache_data(ttl=60)
+def get_cached_learning_stats(_learning_brain):
+    """Cached learning stats - refreshes every minute"""
+    return _learning_brain.get_learning_stats()
+
+@st.cache_data(ttl=300)
+def get_cached_model_strengths(_learning_brain):
+    """Cached model strengths summary"""
+    return _learning_brain.summarize_model_strengths()
+
 def build_conversation_history(messages: List[Dict], exclude_last: bool = True, max_messages: int = 20, max_chars: int = 50000) -> List[Dict]:
     """Build conversation history from messages with smart summarization for long chats.
     
@@ -568,7 +588,8 @@ def handle_openai_compatible_provider(
                 collected_chunks.append(piece)
                 yield piece
         st.write_stream(_iter_chunks())
-        return "".join(collected_chunks)
+        response_text = "".join(collected_chunks)
+        return response_text if response_text else "I apologize, but I couldn't generate a response. Please try again."
     else:
         response = client.chat.completions.create(
             model=model_name,
@@ -578,6 +599,8 @@ def handle_openai_compatible_provider(
             top_p=top_p,
         )
         response_text = response.choices[0].message.content
+        if not response_text:
+            response_text = "I apologize, but I couldn't generate a response. Please try again."
         st.markdown(response_text)
         return response_text
 
@@ -800,26 +823,47 @@ def show_profile_page():
     st.divider()
     
     # Back button
-    if st.button("← Back to Dashboard", use_container_width=True):
+    if st.button("← Back to Dashboard", width="stretch"):
         st.session_state.current_page = "dashboard"
         st.rerun()
 
 def show_dashboard():
     """Display user dashboard with stats and activity"""
-    st.markdown('<div class="login-header"><h1>📊 Dashboard</h1></div>', unsafe_allow_html=True)
+    
+    # Modern gradient header for dashboard
+    st.markdown("""
+    <div style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); 
+    padding: 2rem 2.5rem; border-radius: 16px; margin-bottom: 1.5rem; 
+    box-shadow: 0 10px 40px rgba(17, 153, 142, 0.3);">
+        <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+            <div style="font-size: 3rem;">📊</div>
+            <div>
+                <h1 style="color: white; margin: 0; font-size: 2rem; font-weight: 700;">
+                    Dashboard
+                </h1>
+                <p style="color: rgba(255,255,255,0.85); margin: 0.25rem 0 0 0; font-size: 1rem;">
+                    Your AI activity at a glance
+                </p>
+            </div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
     
     # User info
     user_info = st.session_state.get('user_info', {})
     user_name = user_info.get('name', st.session_state.username)
     user_email = user_info.get('email', '')
     
-    st.markdown(f"### Welcome back, {user_name}! 👋")
-    if user_email:
-        st.caption(f"📧 {user_email}")
+    # Welcome card
+    st.markdown(f"""
+    <div style="background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%); 
+    padding: 1.25rem 1.5rem; border-radius: 12px; border-left: 4px solid #667eea; margin-bottom: 1rem;">
+        <h3 style="margin: 0 0 0.25rem 0;">Welcome back, {user_name}! 👋</h3>
+        {"<p style='color: #64748b; margin: 0;'>📧 " + user_email + "</p>" if user_email else ""}
+    </div>
+    """, unsafe_allow_html=True)
     
-    st.divider()
-    
-    # Activity metrics
+    # Activity metrics with modern cards
     col1, col2, col3, col4 = st.columns(4)
     
     total_messages = len(st.session_state.get('messages', []))
@@ -827,43 +871,78 @@ def show_dashboard():
     stats = learning_brain.get_learning_stats() if learning_brain else {}
     
     with col1:
-        st.metric("💬 Total Messages", total_messages, delta=None)
+        st.markdown(f"""
+        <div class="gradient-card-purple" style="background: linear-gradient(135deg, #667eea20 0%, #764ba220 100%); 
+        padding: 1.25rem; border-radius: 12px; border-left: 4px solid #667eea; text-align: center;">
+            <div style="font-size: 2rem; font-weight: 700; background: linear-gradient(135deg, #667eea, #764ba2); 
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;">{total_messages}</div>
+            <div style="color: #64748b; font-size: 0.85rem; font-weight: 600;">💬 Messages</div>
+        </div>
+        """, unsafe_allow_html=True)
     with col2:
-        st.metric("🧠 Topics Learned", stats.get('total_topics', 0))
+        topics = stats.get('total_topics', 0)
+        st.markdown(f"""
+        <div class="gradient-card-green" style="background: linear-gradient(135deg, #10b98120 0%, #06b6d420 100%); 
+        padding: 1.25rem; border-radius: 12px; border-left: 4px solid #10b981; text-align: center;">
+            <div style="font-size: 2rem; font-weight: 700; background: linear-gradient(135deg, #10b981, #06b6d4); 
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;">{topics}</div>
+            <div style="color: #64748b; font-size: 0.85rem; font-weight: 600;">🧠 Topics</div>
+        </div>
+        """, unsafe_allow_html=True)
     with col3:
-        st.metric("🤖 Models Used", stats.get('models_tracked', 0))
+        models = stats.get('models_tracked', 0)
+        st.markdown(f"""
+        <div class="gradient-card-blue" style="background: linear-gradient(135deg, #3b82f620 0%, #8b5cf620 100%); 
+        padding: 1.25rem; border-radius: 12px; border-left: 4px solid #3b82f6; text-align: center;">
+            <div style="font-size: 2rem; font-weight: 700; background: linear-gradient(135deg, #3b82f6, #8b5cf6); 
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;">{models}</div>
+            <div style="color: #64748b; font-size: 0.85rem; font-weight: 600;">🤖 Models</div>
+        </div>
+        """, unsafe_allow_html=True)
     with col4:
-        st.metric("📚 Conversations", stats.get('total_conversations', 0))
+        convos = stats.get('total_conversations', 0)
+        st.markdown(f"""
+        <div class="gradient-card-orange" style="background: linear-gradient(135deg, #f59e0b20 0%, #ef444420 100%); 
+        padding: 1.25rem; border-radius: 12px; border-left: 4px solid #f59e0b; text-align: center;">
+            <div style="font-size: 2rem; font-weight: 700; background: linear-gradient(135deg, #f59e0b, #ef4444); 
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;">{convos}</div>
+            <div style="color: #64748b; font-size: 0.85rem; font-weight: 600;">📚 Convos</div>
+        </div>
+        """, unsafe_allow_html=True)
     
-    st.divider()
+    st.markdown("<div style='height: 1.5rem;'></div>", unsafe_allow_html=True)
     
     # Enhanced Quick actions with descriptions
-    st.markdown("### 🚀 Quick Actions")
+    st.markdown("""
+    <h3 style="display: flex; align-items: center; gap: 0.5rem;">
+        <span>🚀</span> Quick Actions
+    </h3>
+    """, unsafe_allow_html=True)
     
     # Create action cards with descriptions
     action_col1, action_col2 = st.columns(2)
     
     with action_col1:
         st.markdown("""
-        <div style="background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%); padding: 1.5rem; border-radius: 10px; border-left: 4px solid #667eea; margin-bottom: 1rem;">
+        <div class="quick-action-card" style="background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%); padding: 1.5rem; border-radius: 10px; border-left: 4px solid #667eea; margin-bottom: 1rem;">
             <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">💬 Start Chatting</div>
-            <div style="color: #666; font-size: 0.9rem; margin-bottom: 1rem;">Begin a new conversation with your selected AI model or enable AI Brain for multi-model responses</div>
+            <div class="card-description" style="font-size: 0.9rem; margin-bottom: 1rem;">Begin a new conversation with your selected AI model or enable AI Brain for multi-model responses</div>
         </div>
         """, unsafe_allow_html=True)
         
-        if st.button("▶️ Open Chat", use_container_width=True, type="primary", key="quick_chat_btn"):
+        if st.button("▶️ Open Chat", width="stretch", type="primary", key="quick_chat_btn"):
             st.session_state.current_page = "chat"
             st.rerun()
     
     with action_col2:
         st.markdown("""
-        <div style="background: linear-gradient(135deg, #f093fb15 0%, #f5576c15 100%); padding: 1.5rem; border-radius: 10px; border-left: 4px solid #f5576c; margin-bottom: 1rem;">
+        <div class="quick-action-card" style="background: linear-gradient(135deg, #f093fb15 0%, #f5576c15 100%); padding: 1.5rem; border-radius: 10px; border-left: 4px solid #f5576c; margin-bottom: 1rem;">
             <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">👤 View Profile</div>
-            <div style="color: #666; font-size: 0.9rem; margin-bottom: 1rem;">Manage your account settings, preferences, and view your usage statistics</div>
+            <div class="card-description" style="font-size: 0.9rem; margin-bottom: 1rem;">Manage your account settings, preferences, and view your usage statistics</div>
         </div>
         """, unsafe_allow_html=True)
         
-        if st.button("▶️ Go to Profile", use_container_width=True, key="quick_profile_btn"):
+        if st.button("▶️ Go to Profile", width="stretch", key="quick_profile_btn"):
             st.session_state.current_page = "profile"
             st.rerun()
     
@@ -871,25 +950,25 @@ def show_dashboard():
     
     with action_col3:
         st.markdown("""
-        <div style="background: linear-gradient(135deg, #4facfe15 0%, #00f2fe15 100%); padding: 1.5rem; border-radius: 10px; border-left: 4px solid #00f2fe; margin-bottom: 1rem;">
+        <div class="quick-action-card" style="background: linear-gradient(135deg, #4facfe15 0%, #00f2fe15 100%); padding: 1.5rem; border-radius: 10px; border-left: 4px solid #00f2fe; margin-bottom: 1rem;">
             <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🧠 View Brain Stats</div>
-            <div style="color: #666; font-size: 0.9rem; margin-bottom: 1rem;">See what your AI brain has learned: topics, model performance, and insights</div>
+            <div class="card-description" style="font-size: 0.9rem; margin-bottom: 1rem;">See what your AI brain has learned: topics, model performance, and insights</div>
         </div>
         """, unsafe_allow_html=True)
         
-        if st.button("▶️ Show Stats", use_container_width=True, key="quick_brain_btn"):
+        if st.button("▶️ Show Stats", width="stretch", key="quick_brain_btn"):
             st.session_state.show_brain_stats = not st.session_state.get('show_brain_stats', False)
             st.rerun()
     
     with action_col4:
         st.markdown("""
-        <div style="background: linear-gradient(135deg, #fa709a15 0%, #fee14015 100%); padding: 1.5rem; border-radius: 10px; border-left: 4px solid #fee140; margin-bottom: 1rem;">
+        <div class="quick-action-card" style="background: linear-gradient(135deg, #fa709a15 0%, #fee14015 100%); padding: 1.5rem; border-radius: 10px; border-left: 4px solid #fee140; margin-bottom: 1rem;">
             <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">📥 Export Chat</div>
-            <div style="color: #666; font-size: 0.9rem; margin-bottom: 1rem;">Download your chat history as JSON for backup, analysis, or sharing</div>
+            <div class="card-description" style="font-size: 0.9rem; margin-bottom: 1rem;">Download your chat history as JSON for backup, analysis, or sharing</div>
         </div>
         """, unsafe_allow_html=True)
         
-        if st.button("▶️ Download", use_container_width=True, key="quick_export_btn"):
+        if st.button("▶️ Download", width="stretch", key="quick_export_btn"):
             if st.session_state.messages:
                 chat_export = json.dumps(st.session_state.messages, indent=2)
                 st.download_button(
@@ -897,7 +976,7 @@ def show_dashboard():
                     chat_export,
                     file_name="chat_history.json",
                     mime="application/json",
-                    use_container_width=True,
+                    width="stretch",
                     key="download_chat_btn"
                 )
             else:
@@ -920,7 +999,7 @@ def show_dashboard():
     }
     .action-card:hover { transform: translateY(-2px); }
     .action-icon { font-size: 1.5rem; }
-    .action-label { font-size: 0.85rem; color: #555; margin-top: 4px; }
+    .action-label { font-size: 0.85rem; color: var(--text-secondary, #555); margin-top: 4px; }
     </style>
     """, unsafe_allow_html=True)
 
@@ -929,14 +1008,14 @@ def show_dashboard():
     quick_col1, quick_col2, quick_col3, quick_col4 = st.columns(4)
 
     with quick_col1:
-        if st.button("🔄 Clear Chat", use_container_width=True, key="clear_chat_quick"):
+        if st.button("🔄 Clear Chat", width="stretch", key="clear_chat_quick"):
             st.session_state.messages = []
             st.success("✅ Chat cleared!")
             st.rerun()
         st.caption("Reset conversation")
 
     with quick_col2:
-        if st.button("🧠 Reset Brain", use_container_width=True, key="reset_brain_quick"):
+        if st.button("🧠 Reset Brain", width="stretch", key="reset_brain_quick"):
             learning_brain = st.session_state.learning_brain
             learning_brain.reset_learning()
             st.success("✅ Brain reset!")
@@ -944,7 +1023,7 @@ def show_dashboard():
         st.caption("Clear learning data")
 
     with quick_col3:
-        if st.button("💾 Save Brain", use_container_width=True, key="save_brain_quick"):
+        if st.button("💾 Save Brain", width="stretch", key="save_brain_quick"):
             learning_brain = st.session_state.learning_brain
             path = st.session_state.get("brain_state_path", "learning_brain_state.json")
             if learning_brain.save_to_file(path):
@@ -954,7 +1033,7 @@ def show_dashboard():
         st.caption("Persist to disk")
 
     with quick_col4:
-        if st.button("📂 Load Brain", use_container_width=True, key="load_brain_quick"):
+        if st.button("📂 Load Brain", width="stretch", key="load_brain_quick"):
             learning_brain = st.session_state.learning_brain
             path = st.session_state.get("brain_state_path", "learning_brain_state.json")
             if learning_brain.load_from_file(path):
@@ -969,12 +1048,12 @@ def show_dashboard():
     sec_col1, sec_col2, sec_col3, sec_col4 = st.columns(4)
 
     with sec_col1:
-        if st.button("📊 Refresh Stats", use_container_width=True, key="refresh_stats_quick"):
+        if st.button("📊 Refresh Stats", width="stretch", key="refresh_stats_quick"):
             st.rerun()
         st.caption("Update UI")
 
     with sec_col2:
-        if st.button("📥 Export Chat", use_container_width=True, key="export_chat_quick"):
+        if st.button("📥 Export Chat", width="stretch", key="export_chat_quick"):
             messages = st.session_state.get("messages", [])
             if messages:
                 chat_blob = "\n\n".join([f"{m['role'].upper()}: {m['content']}" for m in messages])
@@ -984,14 +1063,14 @@ def show_dashboard():
         st.caption("Save conversation")
 
     with sec_col3:
-        if st.button("📄 Download Report", use_container_width=True, key="dl_report_quick"):
+        if st.button("📄 Download Report", width="stretch", key="dl_report_quick"):
             learning_brain = st.session_state.learning_brain
             report = learning_brain.format_learning_report()
             st.download_button("Download", report, "learning_report.md", "text/markdown", key="dl_rpt_quick2")
         st.caption("Brain insights")
 
     with sec_col4:
-        if st.button("🔗 Copy Session ID", use_container_width=True, key="copy_session_quick"):
+        if st.button("🔗 Copy Session ID", width="stretch", key="copy_session_quick"):
             session_id = st.session_state.get("session_id", "N/A")
             st.code(session_id)
         st.caption("For debugging")
@@ -1186,7 +1265,7 @@ Platform: {platform.system()}
 Python: {platform.python_version()}
 """
         
-        if st.button("📋 Copy Session Info", use_container_width=True):
+        if st.button("📋 Copy Session Info", width="stretch"):
             st.success("✅ Session info copied to clipboard!")
             st.code(session_info)
 
@@ -1201,32 +1280,194 @@ if "dark_mode" not in st.session_state:
 if st.session_state.dark_mode:
     st.markdown("""
     <style>
-    /* Dark mode theme */
-    .stApp { background-color: #1a1a2e; color: #eaeaea; }
+    /* Dark mode theme - comprehensive text styling */
+    :root { --text-primary: #eaeaea; --text-secondary: #b0b0b0; --text-muted: #888888; --bg-primary: #1a1a2e; --bg-secondary: #1f2940; --bg-card: #252c3d; --border-color: #3d4f6f; --accent-color: #667eea; }
+    .stApp { background-color: var(--bg-primary); color: var(--text-primary); }
     .stSidebar { background-color: #16213e !important; }
     .stSidebar [data-testid="stSidebarContent"] { background-color: #16213e; }
+    .stSidebar h1, .stSidebar h2, .stSidebar h3, .stSidebar h4, .stSidebar p, .stSidebar span, .stSidebar label { color: #eaeaea !important; }
     .stChatMessage { background-color: #1f2940 !important; border-color: #2d3a4f !important; }
-    .stTextInput > div > div > input { background-color: #1f2940; color: #eaeaea; border-color: #3d4f6f; }
-    .stSelectbox > div > div { background-color: #1f2940; color: #eaeaea; }
+    .stChatMessage p, .stChatMessage span, .stChatMessage div { color: #eaeaea !important; }
+    .stTextInput > div > div > input { background-color: #1f2940; color: #eaeaea !important; border-color: #3d4f6f; }
+    .stTextInput label { color: #eaeaea !important; }
+    .stTextArea textarea { background-color: #1f2940 !important; color: #eaeaea !important; border-color: #3d4f6f !important; }
+    .stTextArea label { color: #eaeaea !important; }
+    .stSelectbox > div > div { background-color: #1f2940; color: #eaeaea !important; }
+    .stSelectbox label { color: #eaeaea !important; }
+    .stSelectbox [data-baseweb="select"] { background-color: #1f2940; }
+    .stSelectbox [data-baseweb="select"] span { color: #eaeaea !important; }
+    .stMultiSelect label { color: #eaeaea !important; }
+    .stSlider label { color: #eaeaea !important; }
+    .stSlider p { color: #eaeaea !important; }
+    .stCheckbox label { color: #eaeaea !important; }
+    .stCheckbox span { color: #eaeaea !important; }
+    .stRadio label { color: #eaeaea !important; }
     .stExpander { background-color: #1f2940; border-color: #3d4f6f; }
-    .stMarkdown, .stText, p, span, label { color: #eaeaea !important; }
-    .stButton > button { background-color: #3d4f6f; color: white; border: none; }
+    .stExpander summary { color: #eaeaea !important; }
+    .stExpander p, .stExpander span, .stExpander div { color: #eaeaea !important; }
+    div[data-testid="stExpander"] details summary span { color: #eaeaea !important; }
+    /* Theme adaptive classes for inline styles */
+    .login-subtitle, .card-subtitle, .card-description, .action-label, .muted-text { color: #b0b0b0 !important; }
+    .feature-card, .action-card, .info-card { background: linear-gradient(135deg, #2d3a4f 0%, #1f2940 100%) !important; border-color: #3d4f6f !important; }
+    .quick-action-card { border-left-color: inherit !important; }
+    .quick-action-card div { color: #eaeaea !important; }
+    .quick-action-card .card-description { color: #b0b0b0 !important; }
+    [style*="color: #666"], [style*="color:#666"], [style*="color: #555"], [style*="color:#555"] { color: #b0b0b0 !important; }
+    div[style*="background: linear-gradient"] { color: #eaeaea !important; }
+    div[style*="background: linear-gradient"] div { color: #b0b0b0 !important; }
+    div[style*="background: linear-gradient"] div:first-child { color: #eaeaea !important; }
+    .stMarkdown, .stText { color: #eaeaea !important; }
+    .stMarkdown p, .stMarkdown span, .stMarkdown li, .stMarkdown h1, .stMarkdown h2, .stMarkdown h3, .stMarkdown h4, .stMarkdown h5 { color: #eaeaea !important; }
+    .stMarkdown a { color: #7c9eff !important; }
+    .stMarkdown code { background-color: #2d3a4f !important; color: #a8d4ff !important; }
+    .stMarkdown pre { background-color: #2d3a4f !important; }
+    .stMarkdown pre code { color: #a8d4ff !important; }
+    p, span, label, div { color: #eaeaea; }
+    h1, h2, h3, h4, h5, h6 { color: #ffffff !important; }
+    .stButton > button { background-color: #3d4f6f; color: white !important; border: none; }
     .stButton > button:hover { background-color: #4a5f8f; }
     .stMetric { background-color: #1f2940; border-radius: 8px; padding: 10px; }
+    .stMetric label { color: #aaaaaa !important; }
+    .stMetric [data-testid="stMetricValue"] { color: #ffffff !important; }
+    .stMetric [data-testid="stMetricDelta"] { color: #88cc88 !important; }
     .stDataFrame { background-color: #1f2940; }
+    .stDataFrame th { color: #eaeaea !important; background-color: #2d3a4f !important; }
+    .stDataFrame td { color: #eaeaea !important; }
     .stProgress > div > div { background-color: #667eea; }
+    .stCaption { color: #aaaaaa !important; }
+    small { color: #aaaaaa !important; }
+    .stAlert { color: #eaeaea !important; }
+    .stInfo { background-color: #1e3a5f !important; color: #eaeaea !important; }
+    .stSuccess { background-color: #1e3a2e !important; color: #88cc88 !important; }
+    .stWarning { background-color: #3a3a1e !important; color: #cccc88 !important; }
+    .stError { background-color: #3a1e1e !important; color: #cc8888 !important; }
     .chat-bubble-assistant { background: linear-gradient(135deg, #1f2940 0%, #2d3a4f 100%) !important; color: #eaeaea !important; border-color: #3d4f6f !important; }
     div[data-testid="stExpander"] { background-color: #1f2940; }
     .stTabs [data-baseweb="tab-list"] { background-color: #1f2940; }
-    .stTabs [data-baseweb="tab"] { color: #eaeaea; }
+    .stTabs [data-baseweb="tab"] { color: #eaeaea !important; }
+    .stTabs [aria-selected="true"] { color: #ffffff !important; }
+    [data-testid="stHeader"] { background-color: #1a1a2e !important; }
+    .stCodeBlock { background-color: #2d3a4f !important; }
+    .stCodeBlock code { color: #a8d4ff !important; }
+    /* Table styling */
+    table { background-color: #1f2940 !important; }
+    table th { color: #eaeaea !important; background-color: #2d3a4f !important; }
+    table td { color: #eaeaea !important; }
+    /* Chat input */
+    [data-testid="stChatInput"] { background-color: #1f2940 !important; }
+    [data-testid="stChatInput"] textarea { background-color: #1f2940 !important; color: #eaeaea !important; }
+    /* File uploader */
+    .stFileUploader label { color: #eaeaea !important; }
+    .stFileUploader section { background-color: #1f2940 !important; border-color: #3d4f6f !important; }
+    .stFileUploader section div { color: #eaeaea !important; }
+    /* Download button */
+    .stDownloadButton button { background-color: #3d4f6f !important; color: white !important; }
+    /* Tooltip */
+    [data-testid="stTooltipIcon"] { color: #aaaaaa !important; }
+    /* Override inline colors */
+    .stMarkdown div[style], .stMarkdown span[style] { color: #eaeaea !important; }
+    /* Cards and containers with inline backgrounds */
+    div[style*="padding: 1.5rem"] { color: #eaeaea !important; }
+    div[style*="padding: 1.5rem"] > div { color: #b0b0b0 !important; }
+    div[style*="padding: 1.5rem"] > div:first-child { color: #eaeaea !important; }
+    /* Action card labels */
+    .action-label { color: #b0b0b0 !important; }
+    /* Number badge */
+    [style*="background:"] span, [style*="background-color:"] span { color: inherit !important; }
+    /* Streamlit columns with colored content */
+    [data-testid="column"] div[style] { color: #eaeaea !important; }
     </style>
     """, unsafe_allow_html=True)
 else:
     st.markdown("""
     <style>
-    /* Light mode theme (default enhancements) */
-    .stApp { background-color: #f8f9fa; }
-    .stChatMessage { border-radius: 12px; }
+    /* Light mode theme - ensure dark text for readability */
+    :root { --text-primary: #1a1a1a; --text-secondary: #555555; --text-muted: #666666; --bg-primary: #f8f9fa; --bg-secondary: #ffffff; --bg-card: #f5f7fa; --border-color: #e0e0e0; --accent-color: #667eea; }
+    .stApp { background-color: #f8f9fa; color: #1a1a1a; }
+    .stSidebar { background-color: #ffffff !important; }
+    .stSidebar [data-testid="stSidebarContent"] { background-color: #ffffff; }
+    .stSidebar h1, .stSidebar h2, .stSidebar h3, .stSidebar h4, .stSidebar p, .stSidebar span, .stSidebar label { color: #1a1a1a !important; }
+    .stChatMessage { border-radius: 12px; background-color: #ffffff !important; }
+    .stChatMessage p, .stChatMessage span, .stChatMessage div { color: #1a1a1a !important; }
+    .stTextInput > div > div > input { background-color: #ffffff; color: #1a1a1a !important; border-color: #d0d0d0; }
+    .stTextInput label { color: #1a1a1a !important; }
+    .stTextArea textarea { background-color: #ffffff !important; color: #1a1a1a !important; border-color: #d0d0d0 !important; }
+    .stTextArea label { color: #1a1a1a !important; }
+    .stSelectbox > div > div { background-color: #ffffff; color: #1a1a1a !important; }
+    .stSelectbox label { color: #1a1a1a !important; }
+    .stSelectbox [data-baseweb="select"] { background-color: #ffffff; }
+    .stSelectbox [data-baseweb="select"] span { color: #1a1a1a !important; }
+    .stMultiSelect label { color: #1a1a1a !important; }
+    .stSlider label { color: #1a1a1a !important; }
+    .stSlider p { color: #1a1a1a !important; }
+    .stCheckbox label { color: #1a1a1a !important; }
+    .stCheckbox span { color: #1a1a1a !important; }
+    .stRadio label { color: #1a1a1a !important; }
+    .stExpander { background-color: #ffffff; border-color: #e0e0e0; }
+    .stExpander summary { color: #1a1a1a !important; }
+    .stExpander p, .stExpander span, .stExpander div { color: #1a1a1a !important; }
+    div[data-testid="stExpander"] details summary span { color: #1a1a1a !important; }
+    .stMarkdown, .stText { color: #1a1a1a !important; }
+    .stMarkdown p, .stMarkdown span, .stMarkdown li, .stMarkdown h1, .stMarkdown h2, .stMarkdown h3, .stMarkdown h4, .stMarkdown h5 { color: #1a1a1a !important; }
+    .stMarkdown a { color: #667eea !important; }
+    .stMarkdown code { background-color: #f0f0f0 !important; color: #333333 !important; }
+    .stMarkdown pre { background-color: #f0f0f0 !important; }
+    .stMarkdown pre code { color: #333333 !important; }
+    p, span, label, div { color: #1a1a1a; }
+    h1, h2, h3, h4, h5, h6 { color: #1a1a1a !important; }
+    .stButton > button { background-color: #667eea; color: white !important; border: none; }
+    .stButton > button:hover { background-color: #5a6fd6; }
+    .stMetric { background-color: #ffffff; border-radius: 8px; padding: 10px; }
+    .stMetric label { color: #666666 !important; }
+    .stMetric [data-testid="stMetricValue"] { color: #1a1a1a !important; }
+    .stMetric [data-testid="stMetricDelta"] { color: #28a745 !important; }
+    .stDataFrame { background-color: #ffffff; }
+    .stDataFrame th { color: #1a1a1a !important; background-color: #f0f0f0 !important; }
+    .stDataFrame td { color: #1a1a1a !important; }
+    .stProgress > div > div { background-color: #667eea; }
+    .stCaption { color: #666666 !important; }
+    small { color: #666666 !important; }
+    .stAlert { color: #1a1a1a !important; }
+    .chat-bubble-assistant { background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%) !important; color: #1a1a1a !important; border-color: #e0e0e0 !important; }
+    div[data-testid="stExpander"] { background-color: #ffffff; }
+    .stTabs [data-baseweb="tab-list"] { background-color: #ffffff; }
+    .stTabs [data-baseweb="tab"] { color: #1a1a1a !important; }
+    .stTabs [aria-selected="true"] { color: #667eea !important; }
+    [data-testid="stHeader"] { background-color: #f8f9fa !important; }
+    .stCodeBlock { background-color: #f0f0f0 !important; }
+    .stCodeBlock code { color: #333333 !important; }
+    /* Table styling */
+    table { background-color: #ffffff !important; }
+    table th { color: #1a1a1a !important; background-color: #f0f0f0 !important; }
+    table td { color: #1a1a1a !important; }
+    /* Chat input */
+    [data-testid="stChatInput"] { background-color: #ffffff !important; }
+    [data-testid="stChatInput"] textarea { background-color: #ffffff !important; color: #1a1a1a !important; }
+    /* File uploader */
+    .stFileUploader label { color: #1a1a1a !important; }
+    .stFileUploader section { background-color: #ffffff !important; border-color: #d0d0d0 !important; }
+    .stFileUploader section div { color: #1a1a1a !important; }
+    /* Download button */
+    .stDownloadButton button { background-color: #667eea !important; color: white !important; }
+    /* Tooltip */
+    [data-testid="stTooltipIcon"] { color: #666666 !important; }
+    /* Override inline colors for light mode */
+    .stMarkdown div[style], .stMarkdown span[style] { color: #1a1a1a !important; }
+    /* Cards and containers with inline backgrounds */
+    div[style*="padding: 1.5rem"] { color: #1a1a1a !important; }
+    div[style*="padding: 1.5rem"] > div { color: #555555 !important; }
+    div[style*="padding: 1.5rem"] > div:first-child { color: #1a1a1a !important; }
+    /* Action card labels */
+    .action-label { color: #555555 !important; }
+    /* Card description text */
+    .card-description { color: #555555 !important; }
+    /* Quick action card */
+    .quick-action-card div { color: #1a1a1a !important; }
+    .quick-action-card .card-description { color: #555555 !important; }
+    /* Streamlit columns with colored content */
+    [data-testid="column"] div[style] { color: #1a1a1a !important; }
+    /* Login subtitle */
+    .login-subtitle { color: #555555 !important; }
     </style>
     """, unsafe_allow_html=True)
 
@@ -1311,36 +1552,51 @@ MODEL_OPTIONS = [
 ]
 
 with st.sidebar:
-    # Enhanced header with gradient
+    # Modern sidebar header
     st.markdown("""
-        <style>
-        .sidebar-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 1rem;
-            border-radius: 10px;
-            text-align: center;
-            margin-bottom: 1rem;
-            color: white;
-        }
-        .sidebar-header h1 {
-            margin: 0;
-            font-size: 1.5rem;
-            font-weight: 700;
-        }
-        .nav-button {
-            margin: 0.25rem 0;
-        }
-        .stat-card {
-            background: linear-gradient(135deg, #667eea10 0%, #764ba210 100%);
-            padding: 0.75rem;
-            border-radius: 8px;
-            border-left: 3px solid #667eea;
-            margin: 0.5rem 0;
-        }
-        </style>
-        <div class="sidebar-header">
-            <h1>⚙️ Control Panel</h1>
-        </div>
+    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 1.25rem 1rem; border-radius: 14px; text-align: center; margin-bottom: 1.2rem; box-shadow: 0 4px 24px rgba(102,126,234,0.10);">
+        <h1 style="color: white; margin: 0; font-size: 1.4rem; font-weight: 800; letter-spacing: 0.5px;">⚙️ Control Panel</h1>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Theme toggle (Dark/Light mode) in a card
+    st.markdown("""
+    <div style="background: linear-gradient(135deg, #f59e0b15 0%, #fbbf2415 100%); padding: 0.8rem 1rem; border-radius: 10px; margin-bottom: 1rem; border-left: 4px solid #f59e0b; display: flex; align-items: center; gap: 1rem;">
+        <span style="font-weight: 600; color: #f59e0b;">🎨 Theme</span>
+    </div>
+    """, unsafe_allow_html=True)
+    theme_col1, theme_col2 = st.columns([1, 1])
+    with theme_col1:
+        st.markdown(":art: <span style='color:#f59e0b;font-weight:600;'>Theme</span>", unsafe_allow_html=True)
+    with theme_col2:
+        dark_mode = st.toggle("🌙", value=st.session_state.dark_mode, key="dark_mode_toggle", help="Toggle dark mode")
+        if dark_mode != st.session_state.dark_mode:
+            st.session_state.dark_mode = dark_mode
+            st.rerun()
+    st.markdown("<div style='height:0.5rem;'></div>", unsafe_allow_html=True)
+    
+    # Navigation in a modern card
+    st.markdown("""
+    <div style="background: linear-gradient(135deg, #06b6d415 0%, #3b82f615 100%); padding: 1rem; border-radius: 10px; margin-bottom: 1rem; border-left: 4px solid #06b6d4;">
+        <span style="font-weight: 600; color: #06b6d4;">📍 Navigation</span>
+    </div>
+    """, unsafe_allow_html=True)
+    col_nav1, col_nav2 = st.columns(2)
+    with col_nav1:
+        if st.button("📊 Dashboard", width="stretch", type="primary" if st.session_state.current_page == "dashboard" else "secondary"):
+            st.session_state.current_page = "dashboard"
+            st.rerun()
+    with col_nav2:
+        if st.button("💬 Chat", width="stretch", type="primary" if st.session_state.current_page == "chat" else "secondary"):
+            st.session_state.current_page = "chat"
+            st.rerun()
+    st.markdown("<div style='height:0.5rem;'></div>", unsafe_allow_html=True)
+    
+    # Profile section in a modern card
+    st.markdown("""
+    <div style="background: linear-gradient(135deg, #10b98115 0%, #06b6d415 100%); padding: 1rem; border-radius: 10px; margin-bottom: 1rem; border-left: 4px solid #10b981;">
+        <span style="font-weight: 600; color: #10b981;">👤 User Profile</span>
+    </div>
     """, unsafe_allow_html=True)
     
     # Theme toggle (Dark/Light mode)
@@ -1357,15 +1613,15 @@ with st.sidebar:
     st.markdown("### 📍 Navigation")
     col_nav1, col_nav2 = st.columns(2)
     with col_nav1:
-        if st.button("📊 Dashboard", use_container_width=True, type="primary" if st.session_state.current_page == "dashboard" else "secondary"):
+        if st.button("📊 Dashboard", width="stretch", type="primary" if st.session_state.current_page == "dashboard" else "secondary"):
             st.session_state.current_page = "dashboard"
             st.rerun()
     with col_nav2:
-        if st.button("💬 Chat", use_container_width=True, type="primary" if st.session_state.current_page == "chat" else "secondary"):
+        if st.button("💬 Chat", width="stretch", type="primary" if st.session_state.current_page == "chat" else "secondary"):
             st.session_state.current_page = "chat"
             st.rerun()
     
-    st.divider()
+    st.markdown("<div style='height:0.5rem;'></div>", unsafe_allow_html=True)
     
     # Enhanced user profile section with expandable details
     st.markdown("### 👤 User Profile")
@@ -1388,7 +1644,7 @@ with st.sidebar:
         col_pic, col_info = st.columns([1, 3])
         with col_pic:
             if user_info.get('picture'):
-                st.image(user_info['picture'], width=60, use_container_width=False)
+                st.image(user_info['picture'], width=60)
             else:
                 st.markdown('<div style="font-size: 3rem; text-align: center;">👤</div>', unsafe_allow_html=True)
         with col_info:
@@ -1424,22 +1680,22 @@ with st.sidebar:
         
         with col_action1:
             st.markdown("""
-            <div style="background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%); padding: 1rem; border-radius: 8px; border-left: 4px solid #667eea; text-align: center;">
+            <div class="quick-action-card" style="background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%); padding: 1rem; border-radius: 8px; border-left: 4px solid #667eea; text-align: center;">
                 <div style="font-size: 1.2rem; margin-bottom: 0.5rem;">👤 Profile</div>
-                <div style="color: #666; font-size: 0.8rem;">View & manage account</div>
+                <div class="card-description" style="font-size: 0.8rem;">View & manage account</div>
             </div>
             """, unsafe_allow_html=True)
-            if st.button("▶️ Open", use_container_width=True, key="view_profile_btn"):
+            if st.button("▶️ Open", width="stretch", key="view_profile_btn"):
                 st.session_state.show_profile_modal = True
         
         with col_action2:
             st.markdown("""
-            <div style="background: linear-gradient(135deg, #fa709a15 0%, #fee14015 100%); padding: 1rem; border-radius: 8px; border-left: 4px solid #fee140; text-align: center;">
+            <div class="quick-action-card" style="background: linear-gradient(135deg, #fa709a15 0%, #fee14015 100%); padding: 1rem; border-radius: 8px; border-left: 4px solid #fee140; text-align: center;">
                 <div style="font-size: 1.2rem; margin-bottom: 0.5rem;">🚪 Logout</div>
-                <div style="color: #666; font-size: 0.8rem;">End session</div>
+                <div class="card-description" style="font-size: 0.8rem;">End session</div>
             </div>
             """, unsafe_allow_html=True)
-            if st.button("▶️ Sign Out", use_container_width=True, type="secondary", key="logout_oauth_btn"):
+            if st.button("▶️ Sign Out", width="stretch", type="secondary", key="logout_oauth_btn"):
                 logout()
                 
     else:
@@ -1469,7 +1725,7 @@ with st.sidebar:
             new_name = st.text_input("Display Name", value=user_data.get('name', st.session_state.username), key="edit_name")
             new_email = st.text_input("Email", value=user_data.get('email', ''), key="edit_email")
             
-            if st.button("💾 Save Profile Changes", use_container_width=True, key="save_profile_btn"):
+            if st.button("💾 Save Profile Changes", width="stretch", key="save_profile_btn"):
                 users = load_user_credentials()
                 if st.session_state.username in users:
                     users[st.session_state.username]['name'] = new_name
@@ -1491,7 +1747,7 @@ with st.sidebar:
             new_password = st.text_input("New Password", type="password", key="new_pwd")
             confirm_password = st.text_input("Confirm New Password", type="password", key="confirm_pwd")
             
-            if st.button("🔒 Update Password", use_container_width=True, key="update_pwd_btn"):
+            if st.button("🔒 Update Password", width="stretch", key="update_pwd_btn"):
                 if not all([current_password, new_password, confirm_password]):
                     st.warning("⚠️ Please fill all password fields")
                 elif new_password != confirm_password:
@@ -1531,37 +1787,41 @@ with st.sidebar:
         
         with col_action1:
             st.markdown("""
-            <div style="background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%); padding: 1rem; border-radius: 8px; border-left: 4px solid #667eea; text-align: center;">
+            <div class="quick-action-card" style="background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%); padding: 1rem; border-radius: 8px; border-left: 4px solid #667eea; text-align: center;">
                 <div style="font-size: 1.2rem; margin-bottom: 0.5rem;">👤 Profile</div>
-                <div style="color: #666; font-size: 0.8rem;">View & manage account</div>
+                <div class="card-description" style="font-size: 0.8rem;">View & manage account</div>
             </div>
             """, unsafe_allow_html=True)
-            if st.button("▶️ Open", use_container_width=True, key="view_profile_trad_btn"):
+            if st.button("▶️ Open", width="stretch", key="view_profile_trad_btn"):
                 st.session_state.show_profile_modal = True
         
         with col_action2:
             st.markdown("""
-            <div style="background: linear-gradient(135deg, #fa709a15 0%, #fee14015 100%); padding: 1rem; border-radius: 8px; border-left: 4px solid #fee140; text-align: center;">
+            <div class="quick-action-card" style="background: linear-gradient(135deg, #fa709a15 0%, #fee14015 100%); padding: 1rem; border-radius: 8px; border-left: 4px solid #fee140; text-align: center;">
                 <div style="font-size: 1.2rem; margin-bottom: 0.5rem;">🚪 Logout</div>
-                <div style="color: #666; font-size: 0.8rem;">End session</div>
+                <div class="card-description" style="font-size: 0.8rem;">End session</div>
             </div>
             """, unsafe_allow_html=True)
-            if st.button("▶️ Sign Out", use_container_width=True, type="secondary", key="logout_trad_btn"):
+            if st.button("▶️ Sign Out", width="stretch", type="secondary", key="logout_trad_btn"):
                 logout()
     
     st.divider()
     
-    # Session stats
+    # Session stats in a modern card
     total_messages = len(st.session_state.get('messages', []))
     if total_messages > 0:
-        st.markdown("### 📊 Session Stats")
+        st.markdown("""
+        <div style="background: linear-gradient(135deg, #8b5cf615 0%, #f59e0b15 100%); padding: 1rem; border-radius: 10px; margin-bottom: 1rem; border-left: 4px solid #8b5cf6;">
+            <span style="font-weight: 600; color: #8b5cf6;">📊 Session Stats</span>
+        </div>
+        """, unsafe_allow_html=True)
         col_msg, col_chars = st.columns(2)
         with col_msg:
             st.metric("Messages", total_messages)
         with col_chars:
             total_chars = sum(len(msg.get('content', '')) for msg in st.session_state.messages)
             st.metric("Characters", f"{total_chars:,}")
-        st.divider()
+        st.markdown("<div style='height:0.5rem;'></div>", unsafe_allow_html=True)
     
     # Initialize API keys in session state from environment on first run
     if "api_keys_initialized" not in st.session_state:
@@ -1593,7 +1853,12 @@ with st.sidebar:
         bool(st.session_state.deepseek_api_key)
     ])
     
-    # API Keys dropdown section
+    # API Keys dropdown section in a modern card
+    st.markdown("""
+    <div style="background: linear-gradient(135deg, #f093fb15 0%, #f5576c15 100%); padding: 1rem; border-radius: 10px; margin-bottom: 1rem; border-left: 4px solid #f5576c;">
+        <span style="font-weight: 600; color: #f5576c;">🔑 API Keys</span>
+    </div>
+    """, unsafe_allow_html=True)
     with st.expander(f"🔑 API Keys ({configured_keys}/6 configured)", expanded=False):
         # Toggle for showing/hiding keys with warning
         show_keys = st.checkbox(
@@ -1752,10 +2017,10 @@ with st.sidebar:
     caps = model_capabilities.get(model_name, [])
     caps_str = " ".join(caps) if caps else "—"
     st.markdown(
-        f'<div style="background:linear-gradient(90deg,#667eea15,#764ba210);'
+        f'<div class="quick-action-card" style="background:linear-gradient(90deg,#667eea15,#764ba210);'
         f'border-left:4px solid #667eea;padding:12px;border-radius:8px;margin:8px 0;">'
         f'<b>{provider_icons.get(provider, "⚪")} {model_choice_label}</b><br/>'
-        f'<span style="font-size:0.85rem;color:#555;">Provider: {provider_labels.get(provider, provider.upper())}</span><br/>'
+        f'<span class="card-description" style="font-size:0.85rem;">Provider: {provider_labels.get(provider, provider.upper())}</span><br/>'
         f'<span style="font-size:0.8rem;">{caps_str}</span>'
         f'</div>',
         unsafe_allow_html=True
@@ -1777,7 +2042,7 @@ with st.sidebar:
             if strengths:
                 cmp_df = pd.DataFrame(strengths)[['model', 'success_rate', 'total']]
                 cmp_df = cmp_df.rename(columns={'model': 'Model', 'success_rate': 'Success %', 'total': 'Queries'})
-                st.dataframe(cmp_df, use_container_width=True)
+                st.dataframe(cmp_df, width="stretch")
             else:
                 st.info("No performance data yet.")
     
@@ -1786,8 +2051,8 @@ with st.sidebar:
     # Enhanced AI Behavior & Settings with better organization
     with st.expander("🎛️ AI Behavior & Settings", expanded=True):
         st.markdown("""
-        <div style="background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%); padding: 1.5rem; border-radius: 10px; border-left: 4px solid #667eea; margin-bottom: 1.5rem;">
-            <div style="font-size: 0.95rem; color: #555;">
+        <div class="quick-action-card" style="background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%); padding: 1.5rem; border-radius: 10px; border-left: 4px solid #667eea; margin-bottom: 1.5rem;">
+            <div class="card-description" style="font-size: 0.95rem;">
                 <strong>💡 Tip:</strong> Fine-tune how the AI behaves and generates responses. Adjust parameters to match your needs.
             </div>
         </div>
@@ -2006,20 +2271,20 @@ with st.sidebar:
 
         bcol1, bcol2, bcol3 = st.columns(3)
         with bcol1:
-            if st.button("💾 Save", use_container_width=True, key="save_brain"):
+            if st.button("💾 Save", width="stretch", key="save_brain"):
                 if learning_brain.save_to_file(state_path):
                     st.success(f"✓ Saved")
                 else:
                     st.error("❌ Failed")
         with bcol2:
-            if st.button("📂 Load", use_container_width=True, key="load_brain"):
+            if st.button("📂 Load", width="stretch", key="load_brain"):
                 if learning_brain.load_from_file(state_path):
                     st.success(f"✓ Loaded")
                     st.rerun()
                 else:
                     st.warning("⚠️ Not found")
         with bcol3:
-            if st.button("♻️ Reset", use_container_width=True, key="reset_brain"):
+            if st.button("♻️ Reset", width="stretch", key="reset_brain"):
                 learning_brain.reset_learning()
                 st.success("✓ Cleared")
                 st.rerun()
@@ -2045,7 +2310,7 @@ with st.sidebar:
                 export_blob,
                 "brain_state.json",
                 "application/json",
-                use_container_width=True,
+                width="stretch",
                 key="download_brain"
             )
         # --- Added: Visualizations, model table, feedback, topic viewer, report download
@@ -2196,7 +2461,7 @@ with st.sidebar:
             df_cmp = pd.DataFrame(strengths)
             df_cmp = df_cmp[['model', 'success_rate', 'success', 'total']]
             df_cmp = df_cmp.rename(columns={'model': 'Model', 'success_rate': 'Success %', 'success': 'Successes', 'total': 'Queries'})
-            st.dataframe(df_cmp, use_container_width=True)
+            st.dataframe(df_cmp, width="stretch")
 
             # Success rate bar chart
             st.markdown("#### Success Rate by Model")
@@ -2369,18 +2634,18 @@ with st.sidebar:
             {"Model": k, "Input": f"${v[0]:.2f}", "Output": f"${v[1]:.2f}"}
             for k, v in list(MODEL_PRICING.items())[:8]
         ])
-        st.dataframe(pricing_df, use_container_width=True, hide_index=True)
+        st.dataframe(pricing_df, width="stretch", hide_index=True)
     
     st.divider()
     
     # Chat controls
     col1, col2 = st.columns(2)
     with col1:
-        if st.button("🗑️ Clear", use_container_width=True):
+        if st.button("🗑️ Clear", width="stretch"):
             st.session_state.messages = []
             st.rerun()
     with col2:
-        if st.button("💾 Export", use_container_width=True):
+        if st.button("💾 Export", width="stretch"):
             if st.session_state.get("messages"):
                 chat_export = "\n\n".join(
                     [f"{msg['role'].upper()}: {msg['content']}" for msg in st.session_state.messages]
@@ -2390,18 +2655,74 @@ with st.sidebar:
                     chat_export,
                     "chat_history.txt",
                     "text/plain",
-                    use_container_width=True
+                    width="stretch"
                 )
     
     st.caption(f"Provider: {provider.upper()} | Model: {model_name}")
     st.caption(f"Messages: {len(st.session_state.get('messages', []))}")
 
 # --- 3. MAIN CHAT INTERFACE ---
-st.title("🤖 Multi-Provider AI Chat")
-if st.session_state.voice_mode:
-    st.caption("GPT-4, Claude, Gemini, Llama, Grok, DeepSeek | 🎤 Voice Mode Active")
-else:
-    st.caption("GPT-4, Claude, Gemini, Llama, Grok, DeepSeek")
+
+# Modern gradient header
+st.markdown("""
+<div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+padding: 2rem 2.5rem; border-radius: 16px; margin-bottom: 1.5rem; 
+box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);">
+    <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+        <div style="font-size: 3rem;">🤖</div>
+        <div>
+            <h1 style="color: white; margin: 0; font-size: 2rem; font-weight: 700;">
+                Multi-Provider AI Chat
+            </h1>
+            <p style="color: rgba(255,255,255,0.85); margin: 0.25rem 0 0 0; font-size: 1rem;">
+                GPT-4 • Claude • Gemini • Llama • Grok • DeepSeek
+            </p>
+        </div>
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+# Status indicators
+status_col1, status_col2, status_col3, status_col4 = st.columns(4)
+with status_col1:
+    brain_status = "🧠 Brain ON" if st.session_state.get('enable_brain_mode', False) else "🤖 Standard"
+    brain_color = "#10b981" if st.session_state.get('enable_brain_mode', False) else "#64748b"
+    st.markdown(f"""
+    <div style="background: {brain_color}15; padding: 8px 12px; border-radius: 10px; 
+    border-left: 3px solid {brain_color}; text-align: center;">
+        <span style="font-weight: 600; color: {brain_color};">{brain_status}</span>
+    </div>
+    """, unsafe_allow_html=True)
+
+with status_col2:
+    voice_status = "🎤 Voice ON" if st.session_state.voice_mode else "⌨️ Text Mode"
+    voice_color = "#f59e0b" if st.session_state.voice_mode else "#3b82f6"
+    st.markdown(f"""
+    <div style="background: {voice_color}15; padding: 8px 12px; border-radius: 10px; 
+    border-left: 3px solid {voice_color}; text-align: center;">
+        <span style="font-weight: 600; color: {voice_color};">{voice_status}</span>
+    </div>
+    """, unsafe_allow_html=True)
+
+with status_col3:
+    msg_count = len(st.session_state.get('messages', []))
+    st.markdown(f"""
+    <div style="background: #8b5cf615; padding: 8px 12px; border-radius: 10px; 
+    border-left: 3px solid #8b5cf6; text-align: center;">
+        <span style="font-weight: 600; color: #8b5cf6;">💬 {msg_count} Messages</span>
+    </div>
+    """, unsafe_allow_html=True)
+
+with status_col4:
+    provider_name = st.session_state.get('selected_provider', 'google').upper()
+    st.markdown(f"""
+    <div style="background: #06b6d415; padding: 8px 12px; border-radius: 10px; 
+    border-left: 3px solid #06b6d4; text-align: center;">
+        <span style="font-weight: 600; color: #06b6d4;">🔌 {provider_name}</span>
+    </div>
+    """, unsafe_allow_html=True)
+
+st.markdown("<div style='height: 1rem;'></div>", unsafe_allow_html=True)
 
 # Keyboard shortcuts
 st.markdown("""
@@ -2449,103 +2770,500 @@ with st.expander("⌨️ Keyboard Shortcuts", expanded=False):
     | `Enter` | Send message (in chat input) |
     """)
 
-# Chat interface styling
+# Chat interface styling - Enhanced Modern UI
 st.markdown("""
 <style>
+/* ===== MODERN AI CHAT STYLING ===== */
+
+/* Enhanced Chat Bubbles */
 .chat-bubble-user {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
-    padding: 12px 16px;
-    border-radius: 18px 18px 4px 18px;
-    margin: 8px 0;
+    padding: 16px 20px;
+    border-radius: 20px 20px 4px 20px;
+    margin: 12px 0;
     max-width: 85%;
     margin-left: auto;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    animation: slideInRight 0.3s ease-out;
 }
+
 .chat-bubble-assistant {
-    background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
-    color: #333;
-    padding: 12px 16px;
-    border-radius: 18px 18px 18px 4px;
-    margin: 8px 0;
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    color: #1a1a2e;
+    padding: 16px 20px;
+    border-radius: 20px 20px 20px 4px;
+    margin: 12px 0;
     max-width: 85%;
-    border: 1px solid #e0e0e0;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    animation: slideInLeft 0.3s ease-out;
 }
+
+@keyframes slideInRight {
+    from { opacity: 0; transform: translateX(20px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideInLeft {
+    from { opacity: 0; transform: translateX(-20px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+/* Chat Message Container */
+[data-testid="stChatMessage"] {
+    padding: 16px 20px !important;
+    border-radius: 16px !important;
+    margin: 10px 0 !important;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+[data-testid="stChatMessage"]:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* User message styling */
+[data-testid="stChatMessage"][data-testid*="user"] {
+    background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%) !important;
+    border-left: 4px solid #667eea !important;
+}
+
+/* Assistant message styling */
+[data-testid="stChatMessage"][data-testid*="assistant"] {
+    background: linear-gradient(135deg, #f8fafc 0%, #eef2f7 100%) !important;
+    border-left: 4px solid #10b981 !important;
+}
+
+/* Chat metadata */
 .chat-meta {
     font-size: 0.75rem;
-    color: #888;
-    margin-top: 4px;
+    color: #64748b;
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
-.copy-btn {
-    background: transparent;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    padding: 2px 8px;
-    font-size: 0.75rem;
+
+/* Action buttons */
+.copy-btn, .action-btn {
+    background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-size: 0.8rem;
     cursor: pointer;
-    margin-left: 8px;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
 }
-.copy-btn:hover { background: #f0f0f0; }
-.favorite-star { cursor: pointer; font-size: 1rem; }
-.response-time { font-size: 0.7rem; color: #888; margin-left: 8px; }
+
+.copy-btn:hover, .action-btn:hover {
+    background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.favorite-star {
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: transform 0.2s ease;
+}
+
+.favorite-star:hover {
+    transform: scale(1.2);
+}
+
+.response-time {
+    font-size: 0.75rem;
+    color: #64748b;
+    background: #f1f5f9;
+    padding: 4px 8px;
+    border-radius: 12px;
+}
+
+/* ===== MODERN CARD STYLING ===== */
+.modern-card {
+    background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e2e8f0;
+    transition: all 0.3s ease;
+    margin: 12px 0;
+}
+
+.modern-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+}
+
+.modern-card-header {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.modern-card-body {
+    color: #475569;
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+/* Gradient Cards */
+.gradient-card-purple {
+    background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+    border-left: 4px solid #667eea;
+}
+
+.gradient-card-green {
+    background: linear-gradient(135deg, #10b98115 0%, #059b6915 100%);
+    border-left: 4px solid #10b981;
+}
+
+.gradient-card-blue {
+    background: linear-gradient(135deg, #3b82f615 0%, #1d4ed815 100%);
+    border-left: 4px solid #3b82f6;
+}
+
+.gradient-card-orange {
+    background: linear-gradient(135deg, #f5930015 0%, #ea580c15 100%);
+    border-left: 4px solid #f59300;
+}
+
+/* ===== ENHANCED INPUT STYLING ===== */
+[data-testid="stChatInput"] {
+    border-radius: 24px !important;
+    border: 2px solid #e2e8f0 !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05) !important;
+}
+
+[data-testid="stChatInput"]:focus-within {
+    border-color: #667eea !important;
+    box-shadow: 0 4px 25px rgba(102, 126, 234, 0.2) !important;
+}
+
+[data-testid="stChatInput"] textarea {
+    font-size: 1rem !important;
+    padding: 12px 20px !important;
+}
+
+/* ===== BUTTON ENHANCEMENTS ===== */
+.stButton > button {
+    border-radius: 12px !important;
+    font-weight: 600 !important;
+    padding: 10px 20px !important;
+    transition: all 0.3s ease !important;
+    border: none !important;
+}
+
+.stButton > button:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
+}
+
+.stButton > button[kind="primary"] {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+}
+
+.stButton > button[kind="secondary"] {
+    background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%) !important;
+    color: #475569 !important;
+}
+
+/* ===== METRIC CARDS ===== */
+[data-testid="stMetric"] {
+    background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%) !important;
+    border-radius: 16px !important;
+    padding: 20px !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05) !important;
+    border: 1px solid #e2e8f0 !important;
+    transition: all 0.3s ease !important;
+}
+
+[data-testid="stMetric"]:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1) !important;
+}
+
+[data-testid="stMetricValue"] {
+    font-size: 2rem !important;
+    font-weight: 800 !important;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    background-clip: text !important;
+}
+
+/* ===== EXPANDER STYLING ===== */
+[data-testid="stExpander"] {
+    border-radius: 12px !important;
+    border: 1px solid #e2e8f0 !important;
+    overflow: hidden !important;
+    margin: 8px 0 !important;
+}
+
+[data-testid="stExpander"] summary {
+    padding: 16px 20px !important;
+    font-weight: 600 !important;
+}
+
+/* ===== SIDEBAR ENHANCEMENTS ===== */
+[data-testid="stSidebar"] {
+    background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%) !important;
+}
+
+[data-testid="stSidebar"] .stButton > button {
+    background: linear-gradient(135deg, #3d4f6f 0%, #2d3a4f 100%) !important;
+    border: 1px solid #4a5f8f !important;
+}
+
+[data-testid="stSidebar"] .stButton > button:hover {
+    background: linear-gradient(135deg, #4a5f8f 0%, #3d4f6f 100%) !important;
+}
+
+/* ===== LOADING ANIMATION ===== */
+.loading-dots {
+    display: inline-flex;
+    gap: 4px;
+}
+
+.loading-dots span {
+    width: 8px;
+    height: 8px;
+    background: #667eea;
+    border-radius: 50%;
+    animation: bounce 1.4s ease-in-out infinite;
+}
+
+.loading-dots span:nth-child(1) { animation-delay: 0s; }
+.loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+.loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes bounce {
+    0%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-10px); }
+}
+
+/* ===== GLASSMORPHISM EFFECTS ===== */
+.glass-card {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(20px);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+/* ===== SCROLLBAR STYLING ===== */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #5a6fd6 0%, #6a4190 100%);
+}
+
+/* ===== RESPONSIVE TYPOGRAPHY ===== */
+.heading-xl {
+    font-size: 2.5rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 1rem;
+}
+
+.heading-lg {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 0.75rem;
+}
+
+.text-muted {
+    color: #64748b;
+    font-size: 0.9rem;
+}
+
+/* ===== STATUS BADGES ===== */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.status-online {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.status-processing {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.status-error {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+/* ===== TOOLTIP STYLING ===== */
+.custom-tooltip {
+    position: relative;
+}
+
+.custom-tooltip::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 8px 12px;
+    background: #1e293b;
+    color: white;
+    font-size: 0.75rem;
+    border-radius: 8px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+}
+
+.custom-tooltip:hover::after {
+    opacity: 1;
+}
 </style>
 """, unsafe_allow_html=True)
 
 # Conversation search
+def clear_chat_search():
+    st.session_state.chat_search_value = ""
+
+if "chat_search_value" not in st.session_state:
+    st.session_state.chat_search_value = ""
+
 search_col1, search_col2 = st.columns([4, 1])
 with search_col1:
-    chat_search = st.text_input("🔍 Search conversation", "", key="chat_search", label_visibility="collapsed", placeholder="Search messages...")
+    chat_search = st.text_input("🔍 Search conversation", st.session_state.chat_search_value, key="chat_search", label_visibility="collapsed", placeholder="Search messages...")
+    st.session_state.chat_search_value = chat_search
 with search_col2:
-    clear_search = st.button("Clear", key="clear_search", use_container_width=True)
-    if clear_search:
-        st.session_state.chat_search = ""
+    if st.button("Clear", key="clear_search", width="stretch"):
+        st.session_state.chat_search_value = ""
         st.rerun()
 
 # Filter messages based on search
 messages_to_display = st.session_state.messages
-if chat_search:
-    messages_to_display = [m for m in st.session_state.messages if chat_search.lower() in m.get("content", "").lower()]
-    st.caption(f"Found {len(messages_to_display)} message(s) matching '{chat_search}'")
+if st.session_state.chat_search_value:
+    messages_to_display = [m for m in st.session_state.messages if st.session_state.chat_search_value.lower() in m.get("content", "").lower()]
+    st.markdown(f"""
+    <div style="background: linear-gradient(135deg, #3b82f615 0%, #1d4ed815 100%); 
+    padding: 12px 16px; border-radius: 12px; border-left: 4px solid #3b82f6; margin: 10px 0;">
+        <span style="font-weight: 600;">🔍 Search Results:</span> Found <strong>{len(messages_to_display)}</strong> message(s) matching '<em>{st.session_state.chat_search_value}</em>'
+    </div>
+    """, unsafe_allow_html=True)
+
+# Model icons for display
+model_icons = {
+    "google": "🔷", "openai": "🟢", "anthropic": "🟠", 
+    "together": "🔵", "xai": "⚡", "deepseek": "🌊", "brain-mode": "🧠"
+}
 
 # Display previous messages with enhanced UI
 for idx, message in enumerate(messages_to_display):
     with st.chat_message(message["role"]):
         # Display images if present
         if "images" in message and message["images"]:
+            st.markdown("**📷 Attached Images:**")
             cols = st.columns(min(len(message["images"]), 3))
             for img_idx, img_data in enumerate(message["images"]):
                 with cols[img_idx % 3]:
-                    st.image(img_data, use_container_width=True)
+                    st.image(img_data, width="stretch")
         
         # Display file info if present
         if "files" in message and message["files"]:
             for file_info in message["files"]:
-                st.caption(f"📎 {file_info['name']} ({file_info['type']})")
+                st.markdown(f"""
+                <div style="display: inline-flex; align-items: center; gap: 8px; 
+                background: #f1f5f9; padding: 6px 12px; border-radius: 8px; margin: 4px 0;">
+                    <span>📎</span> <strong>{file_info['name']}</strong> 
+                    <span style="color: #64748b; font-size: 0.8rem;">({file_info['type']})</span>
+                </div>
+                """, unsafe_allow_html=True)
         
-        # Message content
-        st.markdown(message["content"])
+        # Message content with enhanced formatting
+        content = message["content"]
+        st.markdown(content)
         
-        # Message metadata row
-        meta_col1, meta_col2, meta_col3 = st.columns([2, 1, 1])
+        # Enhanced metadata row
+        st.markdown("---")
+        meta_col1, meta_col2, meta_col3, meta_col4 = st.columns([2, 1, 1, 1])
+        
         with meta_col1:
-            # Timestamp
+            # Model badge and timestamp
+            model_name = message.get("model", "")
+            provider = message.get("provider", "")
             timestamp = message.get("timestamp", "")
-            if timestamp:
+            
+            if message["role"] == "assistant" and (model_name or provider):
+                icon = model_icons.get(provider, "🤖")
+                st.markdown(f"""
+                <div style="display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                    <span style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                    color: white; padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 600;">
+                        {icon} {model_name[:20] if model_name else provider}
+                    </span>
+                    <span style="color: #64748b; font-size: 0.75rem;">🕒 {timestamp}</span>
+                </div>
+                """, unsafe_allow_html=True)
+            elif timestamp:
                 st.caption(f"🕒 {timestamp}")
-            # Response time for assistant messages
-            if message["role"] == "assistant" and message.get("response_time"):
-                st.caption(f"⚡ {message['response_time']:.2f}s")
         
         with meta_col2:
-            # Copy button
-            if st.button("📋 Copy", key=f"copy_{idx}", use_container_width=True):
-                st.code(message["content"], language=None)
-                st.success("Copied to clipboard area above!")
+            # Response time for assistant messages
+            if message["role"] == "assistant" and message.get("response_time"):
+                response_time = message['response_time']
+                time_color = "#10b981" if response_time < 2 else "#f59e0b" if response_time < 5 else "#ef4444"
+                st.markdown(f"""
+                <div style="background: {time_color}15; color: {time_color}; padding: 4px 10px; 
+                border-radius: 12px; font-size: 0.75rem; font-weight: 600; text-align: center;">
+                    ⚡ {response_time:.2f}s
+                </div>
+                """, unsafe_allow_html=True)
         
         with meta_col3:
+            # Copy button
+            if st.button("📋 Copy", key=f"copy_{idx}", width="stretch"):
+                st.code(message["content"], language=None)
+                st.toast("📋 Content copied to clipboard area!", icon="✅")
+        
+        with meta_col4:
             # Favorite/bookmark toggle
             fav_key = f"fav_{idx}"
             is_fav = st.session_state.get(fav_key, message.get("favorite", False))
-            if st.button("⭐" if is_fav else "☆", key=f"fav_btn_{idx}", use_container_width=True):
+            btn_label = "⭐ Saved" if is_fav else "☆ Save"
+            if st.button(btn_label, key=f"fav_btn_{idx}", width="stretch"):
                 st.session_state[fav_key] = not is_fav
                 if idx < len(st.session_state.messages):
                     st.session_state.messages[idx]["favorite"] = not is_fav
@@ -2704,7 +3422,7 @@ if multimodal_options:
                             uploaded_images.append(img)
                             
                             with frame_cols[i % 5]:
-                                st.image(img, caption=f"@{t:.1f}s", use_container_width=True)
+                                st.image(img, caption=f"@{t:.1f}s", width="stretch")
                         
                         clip.close()
                         st.success(f"✅ Extracted {num_frames} frame{'s' if num_frames != 1 else ''} from {file.name}")
@@ -2930,6 +3648,48 @@ if prompt:
         # Learn from the results
         learning_brain.learn_from_responses(prompt, model_responses)
         
+        # Response Comparison View - Show individual model responses side-by-side
+        if len(model_responses) > 1:
+            with st.expander("🔀 Compare Model Responses", expanded=False):
+                st.markdown("#### Side-by-Side Comparison")
+                
+                # Create columns for each model
+                num_models = len(model_responses)
+                cols = st.columns(min(num_models, 3))
+                
+                for idx, response in enumerate(model_responses):
+                    with cols[idx % 3]:
+                        provider = response.get('provider', 'Unknown')
+                        provider_icons = {"google": "🔵", "openai": "🟢", "anthropic": "🟣", "together": "🔴"}
+                        icon = provider_icons.get(provider, "⚪")
+                        
+                        # Response card header
+                        success = response.get('success', False)
+                        status_icon = "✅" if success else "❌"
+                        st.markdown(f"**{icon} {provider.upper()}** {status_icon}")
+                        
+                        # Response content
+                        text = response.get('response', response.get('error', 'No response'))
+                        if len(text) > 500:
+                            text = text[:500] + "..."
+                        st.markdown(text)
+                        
+                        # Response time if available
+                        if response.get('response_time'):
+                            st.caption(f"⚡ {response['response_time']:.2f}s")
+                
+                # Summary table
+                st.markdown("---")
+                st.markdown("#### Response Summary")
+                summary_data = []
+                for r in model_responses:
+                    summary_data.append({
+                        "Provider": r.get('provider', 'Unknown').upper(),
+                        "Status": "✅ Success" if r.get('success') else "❌ Failed",
+                        "Length": len(r.get('response', '')),
+                    })
+                st.dataframe(pd.DataFrame(summary_data), width="stretch", hide_index=True)
+        
         # Synthesize responses
         synthesized_response = brain.synthesize_responses(
             prompt,
@@ -3007,7 +3767,7 @@ if prompt:
                 cols = st.columns(min(len(uploaded_images), 3))
                 for idx, img in enumerate(uploaded_images):
                     with cols[idx % 3]:
-                        st.image(img, use_container_width=True)
+                        st.image(img, width="stretch")
             if uploaded_file_info:
                 for file_info in uploaded_file_info:
                     st.caption(f"📎 {file_info['name']} ({file_info['type']})")
@@ -3017,6 +3777,25 @@ if prompt:
         response_text = None
         response_start_time = time.time()  # Track response time
         with st.chat_message("assistant"):
+            # Loading skeleton placeholder
+            loading_placeholder = st.empty()
+            with loading_placeholder.container():
+                st.markdown("""
+                <div style="animation: pulse 1.5s infinite; background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%); 
+                background-size: 200% 100%; padding: 20px; border-radius: 10px; margin: 10px 0;">
+                    <div style="height: 16px; background: #d0d0d0; border-radius: 4px; margin-bottom: 8px; width: 80%;"></div>
+                    <div style="height: 16px; background: #d0d0d0; border-radius: 4px; margin-bottom: 8px; width: 60%;"></div>
+                    <div style="height: 16px; background: #d0d0d0; border-radius: 4px; width: 70%;"></div>
+                </div>
+                <style>
+                @keyframes pulse {
+                    0% { background-position: 200% 0; }
+                    100% { background-position: -200% 0; }
+                }
+                </style>
+                """, unsafe_allow_html=True)
+                st.caption(f"🔄 Generating response with {model_choice_label}...")
+            
             try:
                 # Route to the appropriate provider
                 if provider == "google":
@@ -3055,10 +3834,14 @@ if prompt:
                         config=config,
                     )
                     response_text = response.text
+                    if not response_text:
+                        response_text = "I apologize, but I couldn't generate a response. Please try again."
+                    loading_placeholder.empty()  # Clear loading skeleton
                     st.markdown(response_text)
                         
                 elif provider == "openai":
                     # OpenAI GPT
+                    loading_placeholder.empty()  # Clear loading skeleton
                     client = get_openai_client(resolved_api_key)
                     conversation_history = build_conversation_history(st.session_state.messages)
                     messages = create_openai_messages(conversation_history, final_prompt, system_instruction)
@@ -3068,6 +3851,7 @@ if prompt:
                         
                 elif provider == "anthropic":
                     # Anthropic Claude
+                    loading_placeholder.empty()  # Clear loading skeleton
                     from anthropic import Anthropic
                     client = Anthropic(api_key=resolved_api_key)
                     
@@ -3080,6 +3864,7 @@ if prompt:
                     messages.append({"role": "user", "content": final_prompt})
                     
                     if enable_streaming:
+                        collected_text = []
                         with client.messages.stream(
                             model=model_name,
                             messages=messages,
@@ -3088,7 +3873,12 @@ if prompt:
                             top_p=top_p,
                             system=system_instruction if system_instruction else None,
                         ) as stream:
-                            response_text = st.write_stream(stream.text_stream)
+                            for text in stream.text_stream:
+                                collected_text.append(text)
+                                st.write(text)
+                        response_text = "".join(collected_text)
+                        if not response_text:
+                            response_text = "I apologize, but I couldn't generate a response. Please try again."
                     else:
                         response = client.messages.create(
                             model=model_name,
@@ -3099,10 +3889,13 @@ if prompt:
                             system=system_instruction if system_instruction else None,
                         )
                         response_text = response.content[0].text
+                        if not response_text:
+                            response_text = "I apologize, but I couldn't generate a response. Please try again."
                         st.markdown(response_text)
                         
                 elif provider == "together":
                     # Together AI (for Llama)
+                    loading_placeholder.empty()  # Clear loading skeleton
                     client = get_openai_client(resolved_api_key, base_url="https://api.together.xyz/v1")
                     conversation_history = build_conversation_history(st.session_state.messages)
                     messages = create_openai_messages(conversation_history, final_prompt, system_instruction)
@@ -3112,6 +3905,7 @@ if prompt:
                         
                 elif provider == "xai":
                     # xAI Grok (uses OpenAI-compatible API)
+                    loading_placeholder.empty()  # Clear loading skeleton
                     client = get_openai_client(resolved_api_key, base_url="https://api.x.ai/v1")
                     conversation_history = build_conversation_history(st.session_state.messages)
                     messages = create_openai_messages(conversation_history, final_prompt, system_instruction)
@@ -3121,6 +3915,7 @@ if prompt:
                         
                 elif provider == "deepseek":
                     # DeepSeek (uses OpenAI-compatible API)
+                    loading_placeholder.empty()  # Clear loading skeleton
                     client = get_openai_client(resolved_api_key, base_url="https://api.deepseek.com")
                     conversation_history = build_conversation_history(st.session_state.messages)
                     messages = create_openai_messages(conversation_history, final_prompt, system_instruction)
