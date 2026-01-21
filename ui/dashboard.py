@@ -1,0 +1,451 @@
+
+import streamlit as st
+import time
+import json
+import sys
+import platform
+from datetime import datetime
+import pandas as pd
+from ui.common import logout
+
+def show_dashboard():
+    """Display user dashboard with stats and activity"""
+    
+    # Modern gradient header for dashboard
+    st.markdown("""
+    <div style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); 
+    padding: 2rem 2.5rem; border-radius: 16px; margin-bottom: 1.5rem; 
+    box-shadow: 0 10px 40px rgba(17, 153, 142, 0.3);">
+        <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+            <div style="font-size: 3rem;">📊</div>
+            <div>
+                <h1 style="color: white; margin: 0; font-size: 2rem; font-weight: 700;">
+                    Dashboard
+                </h1>
+                <p style="color: rgba(255,255,255,0.85); margin: 0.25rem 0 0 0; font-size: 1rem;">
+                    Your AI activity at a glance
+                </p>
+            </div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # User info
+    user_info = st.session_state.get('user_info', {})
+    user_name = user_info.get('name', st.session_state.username)
+    user_email = user_info.get('email', '')
+    
+    # Welcome card
+    st.markdown(f"""
+    <div style="background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%); 
+    padding: 1.25rem 1.5rem; border-radius: 12px; border-left: 4px solid #667eea; margin-bottom: 1rem;">
+        <h3 style="margin: 0 0 0.25rem 0;">Welcome back, {user_name}! 👋</h3>
+        {"<p style='color: #64748b; margin: 0;'>📧 " + user_email + "</p>" if user_email else ""}
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Activity metrics with modern cards
+    col1, col2, col3, col4 = st.columns(4)
+    
+    total_messages = len(st.session_state.get('messages', []))
+    learning_brain = st.session_state.get('learning_brain')
+    stats = learning_brain.get_learning_stats() if learning_brain else {}
+    
+    with col1:
+        st.markdown(f"""
+        <div class="gradient-card-purple" style="background: linear-gradient(135deg, #667eea20 0%, #764ba220 100%); 
+        padding: 1.25rem; border-radius: 12px; border-left: 4px solid #667eea; text-align: center;">
+            <div style="font-size: 2rem; font-weight: 700; background: linear-gradient(135deg, #667eea, #764ba2); 
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;">{total_messages}</div>
+            <div style="color: #64748b; font-size: 0.85rem; font-weight: 600;">💬 Messages</div>
+        </div>
+        """, unsafe_allow_html=True)
+    with col2:
+        topics = stats.get('total_topics', 0)
+        st.markdown(f"""
+        <div class="gradient-card-green" style="background: linear-gradient(135deg, #10b98120 0%, #06b6d420 100%); 
+        padding: 1.25rem; border-radius: 12px; border-left: 4px solid #10b981; text-align: center;">
+            <div style="font-size: 2rem; font-weight: 700; background: linear-gradient(135deg, #10b981, #06b6d4); 
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;">{topics}</div>
+            <div style="color: #64748b; font-size: 0.85rem; font-weight: 600;">🧠 Topics</div>
+        </div>
+        """, unsafe_allow_html=True)
+    with col3:
+        models = stats.get('models_tracked', 0)
+        st.markdown(f"""
+        <div class="gradient-card-blue" style="background: linear-gradient(135deg, #3b82f620 0%, #8b5cf620 100%); 
+        padding: 1.25rem; border-radius: 12px; border-left: 4px solid #3b82f6; text-align: center;">
+            <div style="font-size: 2rem; font-weight: 700; background: linear-gradient(135deg, #3b82f6, #8b5cf6); 
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;">{models}</div>
+            <div style="color: #64748b; font-size: 0.85rem; font-weight: 600;">🤖 Models</div>
+        </div>
+        """, unsafe_allow_html=True)
+    with col4:
+        convos = stats.get('total_conversations', 0)
+        st.markdown(f"""
+        <div class="gradient-card-orange" style="background: linear-gradient(135deg, #f59e0b20 0%, #ef444420 100%); 
+        padding: 1.25rem; border-radius: 12px; border-left: 4px solid #f59e0b; text-align: center;">
+            <div style="font-size: 2rem; font-weight: 700; background: linear-gradient(135deg, #f59e0b, #ef4444); 
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;">{convos}</div>
+            <div style="color: #64748b; font-size: 0.85rem; font-weight: 600;">📚 Convos</div>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    st.markdown("<div style='height: 1.5rem;'></div>", unsafe_allow_html=True)
+    
+    # Enhanced Quick actions with descriptions
+    st.markdown("""
+    <h3 style="display: flex; align-items: center; gap: 0.5rem;">
+        <span>🚀</span> Quick Actions
+    </h3>
+    """, unsafe_allow_html=True)
+    
+    # Create action cards with descriptions
+    action_col1, action_col2 = st.columns(2)
+    
+    with action_col1:
+        st.markdown("""
+        <div class="quick-action-card" style="background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%); padding: 1.5rem; border-radius: 10px; border-left: 4px solid #667eea; margin-bottom: 1rem;">
+            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">💬 Start Chatting</div>
+            <div class="card-description" style="font-size: 0.9rem; margin-bottom: 1rem;">Begin a new conversation with your selected AI model or enable AI Brain for multi-model responses</div>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        if st.button("▶️ Open Chat", width="stretch", type="primary", key="quick_chat_btn"):
+            st.session_state.current_page = "chat"
+            st.rerun()
+    
+    with action_col2:
+        st.markdown("""
+        <div class="quick-action-card" style="background: linear-gradient(135deg, #f093fb15 0%, #f5576c15 100%); padding: 1.5rem; border-radius: 10px; border-left: 4px solid #f5576c; margin-bottom: 1rem;">
+            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">👤 View Profile</div>
+            <div class="card-description" style="font-size: 0.9rem; margin-bottom: 1rem;">Manage your account settings, preferences, and view your usage statistics</div>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        if st.button("▶️ Go to Profile", width="stretch", key="quick_profile_btn"):
+            st.session_state.current_page = "profile"
+            st.rerun()
+    
+    action_col3, action_col4 = st.columns(2)
+    
+    with action_col3:
+        st.markdown("""
+        <div class="quick-action-card" style="background: linear-gradient(135deg, #4facfe15 0%, #00f2fe15 100%); padding: 1.5rem; border-radius: 10px; border-left: 4px solid #00f2fe; margin-bottom: 1rem;">
+            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🧠 View Brain Stats</div>
+            <div class="card-description" style="font-size: 0.9rem; margin-bottom: 1rem;">See what your AI brain has learned: topics, model performance, and insights</div>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        if st.button("▶️ Show Stats", width="stretch", key="quick_brain_btn"):
+            st.session_state.show_brain_stats = not st.session_state.get('show_brain_stats', False)
+            st.rerun()
+    
+    with action_col4:
+        st.markdown("""
+        <div class="quick-action-card" style="background: linear-gradient(135deg, #fa709a15 0%, #fee14015 100%); padding: 1.5rem; border-radius: 10px; border-left: 4px solid #fee140; margin-bottom: 1rem;">
+            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">📥 Export Chat</div>
+            <div class="card-description" style="font-size: 0.9rem; margin-bottom: 1rem;">Download your chat history as JSON for backup, analysis, or sharing</div>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        if st.button("▶️ Download", width="stretch", key="quick_export_btn"):
+            if st.session_state.messages:
+                chat_export = json.dumps(st.session_state.messages, indent=2)
+                st.download_button(
+                    "📥 Download Chat History",
+                    chat_export,
+                    file_name="chat_history.json",
+                    mime="application/json",
+                    width="stretch",
+                    key="download_chat_btn"
+                )
+            else:
+                st.warning("No chat history to export. Start a conversation first!")
+    
+    # Additional quick action shortcuts (enhanced)
+    st.markdown("---")
+    st.markdown("### ⚡ Additional Actions")
+
+    # Custom CSS for action cards
+    st.markdown("""
+    <style>
+    .action-card {
+        background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+        border-radius: 10px;
+        padding: 12px;
+        text-align: center;
+        border: 1px solid #667eea30;
+        transition: transform 0.2s;
+    }
+    .action-card:hover { transform: translateY(-2px); }
+    .action-icon { font-size: 1.5rem; }
+    .action-label { font-size: 0.85rem; color: var(--text-secondary, #555); margin-top: 4px; }
+    </style>
+    """, unsafe_allow_html=True)
+
+    # Row 1: Primary actions
+    st.markdown("#### Primary")
+    quick_col1, quick_col2, quick_col3, quick_col4 = st.columns(4)
+
+    with quick_col1:
+        if st.button("🔄 Clear Chat", width="stretch", key="clear_chat_quick"):
+            st.session_state.messages = []
+            st.success("✅ Chat cleared!")
+            st.rerun()
+        st.caption("Reset conversation")
+
+    with quick_col2:
+        if st.button("🧠 Reset Brain", width="stretch", key="reset_brain_quick"):
+            learning_brain = st.session_state.learning_brain
+            learning_brain.reset_learning()
+            st.success("✅ Brain reset!")
+            st.rerun()
+        st.caption("Clear learning data")
+
+    with quick_col3:
+        if st.button("💾 Save Brain", width="stretch", key="save_brain_quick"):
+            learning_brain = st.session_state.learning_brain
+            path = st.session_state.get("brain_state_path", "learning_brain_state.json")
+            if learning_brain.save_to_file(path):
+                st.success("✅ Brain saved!")
+            else:
+                st.error("❌ Save failed")
+        st.caption("Persist to disk")
+
+    with quick_col4:
+        if st.button("📂 Load Brain", width="stretch", key="load_brain_quick"):
+            learning_brain = st.session_state.learning_brain
+            path = st.session_state.get("brain_state_path", "learning_brain_state.json")
+            if learning_brain.load_from_file(path):
+                st.success("✅ Brain loaded!")
+                st.rerun()
+            else:
+                st.warning("⚠️ File not found")
+        st.caption("Restore from disk")
+
+    # Row 2: Secondary actions
+    st.markdown("#### Secondary")
+    sec_col1, sec_col2, sec_col3, sec_col4 = st.columns(4)
+
+    with sec_col1:
+        if st.button("📊 Refresh Stats", width="stretch", key="refresh_stats_quick"):
+            st.rerun()
+        st.caption("Update UI")
+
+    with sec_col2:
+        if st.button("📥 Export Chat", width="stretch", key="export_chat_quick"):
+            messages = st.session_state.get("messages", [])
+            if messages:
+                chat_blob = "\n\n".join([f"{m['role'].upper()}: {m['content']}" for m in messages])
+                st.download_button("Download", chat_blob, "chat_export.txt", "text/plain", key="dl_chat_quick")
+            else:
+                st.info("No messages to export")
+        st.caption("Save conversation")
+
+    with sec_col3:
+        if st.button("📄 Download Report", width="stretch", key="dl_report_quick"):
+            learning_brain = st.session_state.learning_brain
+            report = learning_brain.format_learning_report()
+            st.download_button("Download", report, "learning_report.md", "text/markdown", key="dl_rpt_quick2")
+        st.caption("Brain insights")
+
+    with sec_col4:
+        if st.button("🔗 Copy Session ID", width="stretch", key="copy_session_quick"):
+            session_id = st.session_state.get("session_id", "N/A")
+            st.code(session_id)
+        st.caption("For debugging")
+
+    # Row 3: Toggles & info
+    st.markdown("#### Toggles")
+    tog_col1, tog_col2, tog_col3, tog_col4 = st.columns(4)
+
+    with tog_col1:
+        show_brain_stats = st.checkbox("📈 Show Brain Stats", value=st.session_state.get('show_brain_stats', False), key="toggle_brain_stats")
+        st.session_state.show_brain_stats = show_brain_stats
+
+    with tog_col2:
+        dark_mode = st.checkbox("🌙 Dark Hints", value=st.session_state.get('dark_hints', False), key="toggle_dark_hints")
+        st.session_state.dark_hints = dark_mode
+
+    with tog_col3:
+        auto_save = st.checkbox("💾 Auto-save Brain", value=st.session_state.get('auto_save_brain', False), key="toggle_auto_save")
+        st.session_state.auto_save_brain = auto_save
+
+    with tog_col4:
+        compact_ui = st.checkbox("📐 Compact UI", value=st.session_state.get('compact_ui', False), key="toggle_compact_ui")
+        st.session_state.compact_ui = compact_ui
+    
+    # Brain stats display
+    if st.session_state.get('show_brain_stats', False):
+        st.divider()
+        st.markdown("### 🧠 AI Brain Learning Stats")
+        
+        if stats.get('model_strengths'):
+            st.markdown("#### Model Performance")
+            for model_stat in stats['model_strengths'][:5]:
+                col_model, col_rate, col_total = st.columns([2, 1, 1])
+                with col_model:
+                    st.markdown(f"**{model_stat['model']}**")
+                with col_rate:
+                    st.metric("Success Rate", f"{model_stat['success_rate']}%")
+                with col_total:
+                    st.metric("Queries", f"{model_stat['success']}/{model_stat['total']}")
+        
+        if stats.get('top_topics'):
+            st.markdown("#### Top Knowledge Topics")
+            cols = st.columns(min(len(stats['top_topics']), 5))
+            for i, topic_info in enumerate(stats['top_topics'][:5]):
+                with cols[i]:
+                    st.metric(topic_info['topic'], topic_info['count'])
+    
+    # Recent activity
+    st.divider()
+    st.markdown("### 📝 Recent Activity")
+    
+    recent_messages = st.session_state.get('messages', [])[-5:]
+    if recent_messages:
+        for msg in recent_messages:
+            role_icon = "👤" if msg['role'] == 'user' else "🤖"
+            with st.expander(f"{role_icon} {msg['role'].title()} - {msg['content'][:50]}..."):
+                st.markdown(msg['content'])
+    else:
+        st.info("No recent activity. Start a conversation to see your history here!")
+    
+    st.divider()
+    
+    # Enhanced system info
+    with st.expander("ℹ️ System Information", expanded=False):
+        st.markdown("### 📊 Session Information")
+        
+        # Session details
+        col_info1, col_info2 = st.columns(2)
+        with col_info1:
+            st.metric("Session Start", datetime.now().strftime('%H:%M:%S'))
+            st.metric("Session Date", datetime.now().strftime('%Y-%m-%d'))
+        with col_info2:
+            uptime_seconds = time.time() - st.session_state.get('session_start_time', time.time())
+            st.metric("Session Duration", f"{int(uptime_seconds // 60)} min")
+            st.metric("Current Time", datetime.now().strftime('%I:%M %p'))
+        
+        st.markdown("---")
+        st.markdown("### 👤 User Information")
+        
+        user_info = st.session_state.get('user_info', {})
+        col_user1, col_user2 = st.columns(2)
+        
+        with col_user1:
+            st.text_input("Username", value=st.session_state.username, disabled=True)
+            st.text_input("Display Name", value=user_info.get('name', st.session_state.username), disabled=True)
+        with col_user2:
+            auth_method = "🔐 Google OAuth" if 'google_oauth_token' in st.session_state else "🔐 Traditional Login"
+            st.text_input("Authentication", value=auth_method, disabled=True)
+            st.text_input("Email", value=user_info.get('email', 'Not set'), disabled=True)
+        
+        st.markdown("---")
+        st.markdown("### 💻 System Details")
+        
+        col_sys1, col_sys2, col_sys3 = st.columns(3)
+        
+        with col_sys1:
+            st.metric("Platform", platform.system())
+            st.metric("Python", platform.python_version())
+        
+        with col_sys2:
+            st.metric("Streamlit", st.__version__)
+            st.metric("Browser", "Chrome/Safari/Firefox")
+        
+        with col_sys3:
+            total_messages = len(st.session_state.get('messages', []))
+            st.metric("Messages", total_messages)
+            st.metric("Files Uploaded", len(st.session_state.get('uploaded_files', [])))
+        
+        st.markdown("---")
+        st.markdown("### 🤖 AI Information")
+        
+        learning_brain = st.session_state.get('learning_brain')
+        stats = learning_brain.get_learning_stats() if learning_brain else {}
+        
+        col_ai1, col_ai2, col_ai3 = st.columns(3)
+        
+        with col_ai1:
+            st.metric("Topics Learned", stats.get('total_topics', 0))
+            st.metric("Conversations", stats.get('total_conversations', 0))
+        
+        with col_ai2:
+            st.metric("Models Tracked", stats.get('models_tracked', 0))
+            model_perf = stats.get('model_performance', {})
+            st.metric("Total Model Calls", sum(m.get('total', 0) for m in model_perf.values()))
+        
+        with col_ai3:
+            if stats.get('model_strengths'):
+                best_model = stats['model_strengths'][0]
+                st.metric("Best Model", best_model['model'][:15] + "...")
+                st.metric("Best Success Rate", f"{best_model['success_rate']}%")
+        
+        st.markdown("---")
+        st.markdown("### 🎛️ Configuration")
+        
+        col_config1, col_config2 = st.columns(2)
+        
+        with col_config1:
+            prefs = st.session_state.get('profile_preferences', {})
+            st.text_input("Theme", value=prefs.get('theme', 'Auto'), disabled=True)
+            st.text_input("Language", value=prefs.get('language', 'English'), disabled=True)
+        
+        with col_config2:
+            st.text_input("Timezone", value=prefs.get('timezone', 'UTC'), disabled=True)
+            notifications_status = "✅ Enabled" if prefs.get('notifications', True) else "❌ Disabled"
+            st.text_input("Notifications", value=notifications_status, disabled=True)
+        
+        st.markdown("---")
+        st.markdown("### 🔧 Feature Status")
+        
+        col_feat1, col_feat2, col_feat3, col_feat4 = st.columns(4)
+        
+        with col_feat1:
+            voice_status = "🔊 On" if st.session_state.voice_mode else "🔇 Off"
+            st.metric("Voice Mode", voice_status)
+        
+        with col_feat2:
+            multimodal_count = len(st.session_state.get('multimodal_options', []))
+            st.metric("Multimodal", f"{multimodal_count} types")
+        
+        with col_feat3:
+            streaming_status = "✅ On" if st.session_state.get('enable_streaming', True) else "❌ Off"
+            st.metric("Streaming", streaming_status)
+        
+        with col_feat4:
+            brain_status = "🧠 On" if st.session_state.get('enable_brain_mode', False) else "⚪ Off"
+            st.metric("Brain Mode", brain_status)
+        
+        st.markdown("---")
+        st.markdown("### 📝 Quick Debug Info")
+        
+        with st.expander("🔍 Developer Info", expanded=False):
+            col_debug1, col_debug2 = st.columns(2)
+            
+            with col_debug1:
+                st.write("**Session State Keys:**")
+                st.code(', '.join(list(st.session_state.keys())[:10]))
+            
+            with col_debug2:
+                st.write("**Memory Usage:**")
+                messages_size = sys.getsizeof(st.session_state.messages)
+                st.caption(f"📦 Messages: ~{messages_size / 1024:.1f} KB")
+        
+        st.markdown("---")
+        
+        # Copy session info button
+        session_info = f"""
+Session Information - {datetime.now().isoformat()}
+User: {st.session_state.username}
+Auth: {'Google OAuth' if 'google_oauth_token' in st.session_state else 'Traditional'}
+Messages: {total_messages}
+Platform: {platform.system()}
+Python: {platform.python_version()}
+"""
+        
+        if st.button("📋 Copy Session Info", width="stretch"):
+            st.success("✅ Session info copied to clipboard!")
+            st.code(session_info)
