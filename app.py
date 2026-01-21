@@ -1,4 +1,5 @@
 import os
+import logging
 import base64
 from io import BytesIO
 import tempfile
@@ -9,6 +10,13 @@ from datetime import datetime
 import time
 import platform
 import sys
+
+# --- LOGGING SETUP ---
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s %(levelname)s %(message)s',
+    handlers=[logging.FileHandler("app.log"), logging.StreamHandler()]
+)
 
 from google import genai
 from brain_learning import LearningBrain
@@ -53,6 +61,7 @@ def load_user_credentials() -> Dict[str, Dict[str, str]]:
     }
 
 def save_user_credentials(users: Dict[str, Dict[str, str]]) -> bool:
+        logging.info("User credentials updated.")
     """Save user credentials to file"""
     try:
         with open("users.json", 'w') as f:
@@ -62,6 +71,7 @@ def save_user_credentials(users: Dict[str, Dict[str, str]]) -> bool:
         return False
 
 def check_login(username_or_email: str, password: str) -> Optional[Dict[str, str]]:
+        logging.info(f"Login attempt for: {username_or_email}")
     """Verify login credentials - accepts username or email"""
     users = load_user_credentials()
     
@@ -601,13 +611,33 @@ def show_profile_page():
     
     with col_header2:
         st.markdown(f"## {user_info.get('name', st.session_state.username)}")
+        avatar_url = user_info.get('avatar_url', None)
+        if avatar_url:
+            st.image(avatar_url, width=64)
         st.markdown(f"**Email:** {user_info.get('email', 'Not set')}")
         st.markdown(f"**Username:** {st.session_state.username}")
         st.markdown(f"**Account Type:** {'🔐 Google OAuth' if is_oauth else '🔐 Traditional Login'}")
-        st.button("Edit Profile", key="edit_profile_btn", help="Edit your profile information and preferences.")
+        if st.button("Edit Profile", key="edit_profile_btn", help="Edit your profile information and preferences."):
+            with st.popover("Edit Profile", use_container_width=True):
+                new_name = st.text_input("Name", value=user_info.get('name', ''), key="edit_name")
+                new_avatar = st.text_input("Avatar URL", value=user_info.get('avatar_url', ''), key="edit_avatar")
+                if st.button("Save Changes", key="save_profile_btn"):
+                    st.session_state.user_info['name'] = new_name
+                    st.session_state.user_info['avatar_url'] = new_avatar
+                    st.success("Profile updated!")
         # Quick stats
         total_messages = len(st.session_state.get('messages', []))
         st.caption(f"💬 {total_messages} messages sent this session")
+        # Download chat/session history
+        if st.session_state.get('messages'):
+            if st.download_button("Download Chat History", data='\n'.join([m['content'] for m in st.session_state['messages']]), file_name="chat_history.txt", mime="text/plain", help="Download your chat history as a text file."):
+                st.info("Chat history downloaded.")
+        # Feedback form
+        with st.expander("💡 Feedback / Suggestion"):
+            feedback = st.text_area("Your feedback or suggestion:", key="feedback_text")
+            if st.button("Submit Feedback", key="submit_feedback_btn"):
+                logging.info(f"User feedback: {feedback}")
+                st.success("Thank you for your feedback!")
     
     st.divider()
     
@@ -1545,6 +1575,10 @@ with st.sidebar:
     
     # Helper function to show key status
     def get_key_status(key_value: str) -> str:
+            # --- SECURITY STUB: Mask sensitive info in logs/UI ---
+            # (In a real app, never display or log full API keys)
+            # --- PERFORMANCE STUB: Add caching for expensive AI calls as needed ---
+            # (Use functools.lru_cache or st.cache_data for real caching)
         if not key_value:
             return "❌ Not set"
         return f"✅ Set ({len(key_value)} chars)"
