@@ -604,7 +604,7 @@ def show_profile_page():
         st.markdown(f"**Email:** {user_info.get('email', 'Not set')}")
         st.markdown(f"**Username:** {st.session_state.username}")
         st.markdown(f"**Account Type:** {'🔐 Google OAuth' if is_oauth else '🔐 Traditional Login'}")
-        
+        st.button("Edit Profile", key="edit_profile_btn", help="Edit your profile information and preferences.")
         # Quick stats
         total_messages = len(st.session_state.get('messages', []))
         st.caption(f"💬 {total_messages} messages sent this session")
@@ -623,13 +623,13 @@ def show_profile_page():
         stats = learning_brain.get_learning_stats() if learning_brain else {}
         
         with col1:
-            st.metric("Total Messages", total_messages)
+            st.metric("Total Messages", total_messages, help="Total number of messages exchanged in this session.")
         with col2:
-            st.metric("Topics Learned", stats.get('total_topics', 0))
+            st.metric("Topics Learned", stats.get('total_topics', 0), help="Unique topics learned by the AI in this session.")
         with col3:
-            st.metric("Models Used", stats.get('models_tracked', 0))
+            st.metric("Models Used", stats.get('models_tracked', 0), help="Number of different AI models used.")
         with col4:
-            st.metric("Conversations", stats.get('total_conversations', 0))
+            st.metric("Conversations", stats.get('total_conversations', 0), help="Total separate conversations in this session.")
         
         st.markdown("### 🏆 Top Models Used")
         if stats.get('model_strengths'):
