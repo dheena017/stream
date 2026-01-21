@@ -237,10 +237,10 @@ def show_login_page():
         
         # Feature highlights
         st.markdown(
-            '<div class="feature-card">✨ <strong>25+ AI Models</strong> from Google, OpenAI, Anthropic, Meta & more</div>'
-            '<div class="feature-card">🧠 <strong>AI Brain Mode</strong> - Combines multiple models for enhanced responses</div>'
-            '<div class="feature-card">🌐 <strong>Internet Search</strong> - Real-time information from the web</div>'
-            '<div class="feature-card">📎 <strong>Multimodal</strong> - Images, PDFs, Audio & Video support</div>',
+            '<div class="feature-card" style="box-shadow:0 2px 12px rgba(0,0,0,0.07); border-radius:12px; padding:1rem 1.2rem; margin-bottom:0.5rem; background: #fff;">✨ <strong>25+ AI Models</strong> from Google, OpenAI, Anthropic, Meta & more</div>'
+            '<div class="feature-card" style="box-shadow:0 2px 12px rgba(0,0,0,0.07); border-radius:12px; padding:1rem 1.2rem; margin-bottom:0.5rem; background: #fff;">🧠 <strong>AI Brain Mode</strong> - Combines multiple models for enhanced responses</div>'
+            '<div class="feature-card" style="box-shadow:0 2px 12px rgba(0,0,0,0.07); border-radius:12px; padding:1rem 1.2rem; margin-bottom:0.5rem; background: #fff;">🌐 <strong>Internet Search</strong> - Real-time information from the web</div>'
+            '<div class="feature-card" style="box-shadow:0 2px 12px rgba(0,0,0,0.07); border-radius:12px; padding:1rem 1.2rem; margin-bottom:0.5rem; background: #fff;">📎 <strong>Multimodal</strong> - Images, PDFs, Audio & Video support</div>',
             unsafe_allow_html=True
         )
         
@@ -317,6 +317,7 @@ def show_login_page():
             
             with col_info:
                 with st.popover("ℹ️ Info"):
+                    st.markdown("<div style='box-shadow:0 2px 12px rgba(0,0,0,0.07); border-radius:12px; padding:1rem 1.2rem; background:#f9fafb;'>", unsafe_allow_html=True)
                     st.markdown("**Default Credentials:**")
                     st.code("Email: admin@example.com\nUsername: admin\nPassword: admin123")
                     st.markdown("---")
@@ -326,6 +327,7 @@ def show_login_page():
                         st.markdown("---")
                         st.markdown("**Google OAuth Setup:**")
                         st.caption("Set GOOGLE_CLIENT_ID and GOOGLE_REDIRECT_URI in environment variables")
+                    st.markdown("</div>", unsafe_allow_html=True)
         
         with tab_register:
             st.markdown("#### Create New Account")
