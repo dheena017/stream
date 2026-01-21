@@ -738,32 +738,118 @@ def show_dashboard():
             else:
                 st.warning("No chat history to export. Start a conversation first!")
     
-    # Additional quick action shortcuts
+    # Additional quick action shortcuts (enhanced)
     st.markdown("---")
     st.markdown("### ⚡ Additional Actions")
-    
+
+    # Custom CSS for action cards
+    st.markdown("""
+    <style>
+    .action-card {
+        background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+        border-radius: 10px;
+        padding: 12px;
+        text-align: center;
+        border: 1px solid #667eea30;
+        transition: transform 0.2s;
+    }
+    .action-card:hover { transform: translateY(-2px); }
+    .action-icon { font-size: 1.5rem; }
+    .action-label { font-size: 0.85rem; color: #555; margin-top: 4px; }
+    </style>
+    """, unsafe_allow_html=True)
+
+    # Row 1: Primary actions
+    st.markdown("#### Primary")
     quick_col1, quick_col2, quick_col3, quick_col4 = st.columns(4)
-    
+
     with quick_col1:
         if st.button("🔄 Clear Chat", use_container_width=True, key="clear_chat_quick"):
             st.session_state.messages = []
             st.success("✅ Chat cleared!")
             st.rerun()
-    
+        st.caption("Reset conversation")
+
     with quick_col2:
         if st.button("🧠 Reset Brain", use_container_width=True, key="reset_brain_quick"):
             learning_brain = st.session_state.learning_brain
             learning_brain.reset_learning()
             st.success("✅ Brain reset!")
             st.rerun()
-    
+        st.caption("Clear learning data")
+
     with quick_col3:
-        if st.button("⚙️ Settings", use_container_width=True, key="settings_quick"):
-            st.info("✅ Settings available in the sidebar Control Panel")
-    
+        if st.button("💾 Save Brain", use_container_width=True, key="save_brain_quick"):
+            learning_brain = st.session_state.learning_brain
+            path = st.session_state.get("brain_state_path", "learning_brain_state.json")
+            if learning_brain.save_to_file(path):
+                st.success("✅ Brain saved!")
+            else:
+                st.error("❌ Save failed")
+        st.caption("Persist to disk")
+
     with quick_col4:
+        if st.button("📂 Load Brain", use_container_width=True, key="load_brain_quick"):
+            learning_brain = st.session_state.learning_brain
+            path = st.session_state.get("brain_state_path", "learning_brain_state.json")
+            if learning_brain.load_from_file(path):
+                st.success("✅ Brain loaded!")
+                st.rerun()
+            else:
+                st.warning("⚠️ File not found")
+        st.caption("Restore from disk")
+
+    # Row 2: Secondary actions
+    st.markdown("#### Secondary")
+    sec_col1, sec_col2, sec_col3, sec_col4 = st.columns(4)
+
+    with sec_col1:
         if st.button("📊 Refresh Stats", use_container_width=True, key="refresh_stats_quick"):
             st.rerun()
+        st.caption("Update UI")
+
+    with sec_col2:
+        if st.button("📥 Export Chat", use_container_width=True, key="export_chat_quick"):
+            messages = st.session_state.get("messages", [])
+            if messages:
+                chat_blob = "\n\n".join([f"{m['role'].upper()}: {m['content']}" for m in messages])
+                st.download_button("Download", chat_blob, "chat_export.txt", "text/plain", key="dl_chat_quick")
+            else:
+                st.info("No messages to export")
+        st.caption("Save conversation")
+
+    with sec_col3:
+        if st.button("📄 Download Report", use_container_width=True, key="dl_report_quick"):
+            learning_brain = st.session_state.learning_brain
+            report = learning_brain.format_learning_report()
+            st.download_button("Download", report, "learning_report.md", "text/markdown", key="dl_rpt_quick2")
+        st.caption("Brain insights")
+
+    with sec_col4:
+        if st.button("🔗 Copy Session ID", use_container_width=True, key="copy_session_quick"):
+            session_id = st.session_state.get("session_id", "N/A")
+            st.code(session_id)
+        st.caption("For debugging")
+
+    # Row 3: Toggles & info
+    st.markdown("#### Toggles")
+    tog_col1, tog_col2, tog_col3, tog_col4 = st.columns(4)
+
+    with tog_col1:
+        show_brain_stats = st.checkbox("📈 Show Brain Stats", value=st.session_state.get('show_brain_stats', False), key="toggle_brain_stats")
+        st.session_state.show_brain_stats = show_brain_stats
+
+    with tog_col2:
+        dark_mode = st.checkbox("🌙 Dark Hints", value=st.session_state.get('dark_hints', False), key="toggle_dark_hints")
+        st.session_state.dark_hints = dark_mode
+
+    with tog_col3:
+        auto_save = st.checkbox("💾 Auto-save Brain", value=st.session_state.get('auto_save_brain', False), key="toggle_auto_save")
+        st.session_state.auto_save_brain = auto_save
+
+    with tog_col4:
+        compact_ui = st.checkbox("📐 Compact UI", value=st.session_state.get('compact_ui', False), key="toggle_compact_ui")
+        st.session_state.compact_ui = compact_ui
     
     # Brain stats display
     if st.session_state.get('show_brain_stats', False):
@@ -1379,16 +1465,50 @@ with st.sidebar:
     
     st.divider()
     
-    # Model selection with search
+    # Model selection with search (enhanced)
     st.markdown("### 🤖 AI Model Selection")
-    
+
+    # Provider icons & colors
+    provider_icons = {
+        "google": "🔵", "openai": "🟢", "anthropic": "🟣",
+        "together": "🔴", "xai": "⚫", "deepseek": "🟠"
+    }
+    provider_labels = {
+        "google": "Google Gemini", "openai": "OpenAI GPT", "anthropic": "Anthropic Claude",
+        "together": "Meta Llama", "xai": "xAI Grok", "deepseek": "DeepSeek"
+    }
+
+    # Model capability tags (static metadata)
+    model_capabilities = {
+        "gemini-3-flash-preview": ["⚡ Fast", "🖼️ Vision", "🆕 Preview"],
+        "gemini-2.0-flash-exp": ["⚡ Fast", "🖼️ Vision", "🧪 Experimental"],
+        "gemini-2.0-flash-latest": ["⚡ Fast", "🖼️ Vision"],
+        "gemini-1.5-flash": ["⚡ Fast", "📄 Long Context"],
+        "gemini-1.5-pro": ["🧠 Smart", "📄 Long Context"],
+        "gemini-1.0-pro-vision-latest": ["🖼️ Vision"],
+        "gpt-4o": ["🧠 Smart", "🖼️ Vision", "⚡ Fast"],
+        "gpt-4o-mini": ["⚡ Fast", "💰 Cheap"],
+        "gpt-4-turbo": ["🧠 Smart", "🖼️ Vision"],
+        "o1-preview": ["🧠 Reasoning", "🆕 Preview"],
+        "o1-mini": ["🧠 Reasoning", "⚡ Fast"],
+        "claude-3-5-sonnet-20241022": ["🧠 Smart", "📝 Writing"],
+        "claude-3-5-haiku-20241022": ["⚡ Fast", "💰 Cheap"],
+        "claude-3-opus-20240229": ["🧠 Flagship", "📝 Writing"],
+        "meta-llama/Llama-3.3-70B-Instruct-Turbo": ["🦙 Open", "⚡ Fast"],
+        "meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo": ["🦙 Open", "🧠 Flagship"],
+        "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo": ["🦙 Open"],
+        "grok-beta": ["🆕 Beta", "💬 Chat"],
+        "deepseek-chat": ["💬 Chat", "💰 Cheap"],
+        "deepseek-coder": ["💻 Code", "💰 Cheap"],
+    }
+
     # Filter by provider
     provider_filter = st.selectbox(
         "Filter by Provider",
         ["All", "Google", "OpenAI", "Anthropic", "Together AI", "xAI", "DeepSeek"],
         index=0
     )
-    
+
     # Filter models
     filtered_models = MODEL_OPTIONS
     if provider_filter != "All":
@@ -1401,27 +1521,52 @@ with st.sidebar:
             "DeepSeek": "deepseek"
         }
         filtered_models = [m for m in MODEL_OPTIONS if m[2] == provider_map.get(provider_filter)]
-    
-    model_choice_label = st.selectbox(
+
+    # Build display labels with provider icon
+    display_labels = [f"{provider_icons.get(m[2], '⚪')} {m[0]}" for m in filtered_models]
+    model_choice_idx = st.selectbox(
         "Select Model",
-        [label for label, _, _ in filtered_models],
+        range(len(filtered_models)),
+        format_func=lambda i: display_labels[i],
         index=0,
     )
-    # Find the selected model's name and provider
-    selected_model = next((m for m in MODEL_OPTIONS if m[0] == model_choice_label), None)
+    selected_model = filtered_models[model_choice_idx]
+    model_choice_label = selected_model[0]
     model_name = selected_model[1]
     provider = selected_model[2]
-    
-    # Show provider badge
-    provider_colors = {
-        "google": "🔵",
-        "openai": "🟢", 
-        "anthropic": "🟣",
-        "together": "🔴",
-        "xai": "⚫",
-        "deepseek": "🟠"
-    }
-    st.caption(f"{provider_colors.get(provider, '⚪')} Provider: **{provider.upper()}**")
+
+    # Model info card
+    caps = model_capabilities.get(model_name, [])
+    caps_str = " ".join(caps) if caps else "—"
+    st.markdown(
+        f'<div style="background:linear-gradient(90deg,#667eea15,#764ba210);'
+        f'border-left:4px solid #667eea;padding:12px;border-radius:8px;margin:8px 0;">'
+        f'<b>{provider_icons.get(provider, "⚪")} {model_choice_label}</b><br/>'
+        f'<span style="font-size:0.85rem;color:#555;">Provider: {provider_labels.get(provider, provider.upper())}</span><br/>'
+        f'<span style="font-size:0.8rem;">{caps_str}</span>'
+        f'</div>',
+        unsafe_allow_html=True
+    )
+
+    # Brain recommendation (if learning data exists)
+    learning_brain = st.session_state.get("learning_brain")
+    if learning_brain and learning_brain.model_performance:
+        available = [m[2] for m in MODEL_OPTIONS]
+        recommended = learning_brain.recommend_models("", available)[:3]
+        if recommended:
+            rec_chips = " ".join([f"`{provider_icons.get(r, '⚪')} {r}`" for r in recommended])
+            st.caption(f"🧠 Brain recommends: {rec_chips}")
+
+    # Quick model comparison (top 3 by success rate from brain)
+    if learning_brain and learning_brain.model_performance:
+        with st.expander("📊 Quick Model Comparison", expanded=False):
+            strengths = learning_brain.summarize_model_strengths()[:5]
+            if strengths:
+                cmp_df = pd.DataFrame(strengths)[['model', 'success_rate', 'total']]
+                cmp_df = cmp_df.rename(columns={'model': 'Model', 'success_rate': 'Success %', 'total': 'Queries'})
+                st.dataframe(cmp_df, use_container_width=True)
+            else:
+                st.info("No performance data yet.")
     
     st.divider()
     
