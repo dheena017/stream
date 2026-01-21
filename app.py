@@ -775,20 +775,41 @@ def show_profile_page():
 
 def show_dashboard():
     """Display user dashboard with stats and activity"""
-    st.markdown('<div class="login-header"><h1>📊 Dashboard</h1></div>', unsafe_allow_html=True)
+    
+    # Modern gradient header for dashboard
+    st.markdown("""
+    <div style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); 
+    padding: 2rem 2.5rem; border-radius: 16px; margin-bottom: 1.5rem; 
+    box-shadow: 0 10px 40px rgba(17, 153, 142, 0.3);">
+        <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+            <div style="font-size: 3rem;">📊</div>
+            <div>
+                <h1 style="color: white; margin: 0; font-size: 2rem; font-weight: 700;">
+                    Dashboard
+                </h1>
+                <p style="color: rgba(255,255,255,0.85); margin: 0.25rem 0 0 0; font-size: 1rem;">
+                    Your AI activity at a glance
+                </p>
+            </div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
     
     # User info
     user_info = st.session_state.get('user_info', {})
     user_name = user_info.get('name', st.session_state.username)
     user_email = user_info.get('email', '')
     
-    st.markdown(f"### Welcome back, {user_name}! 👋")
-    if user_email:
-        st.caption(f"📧 {user_email}")
+    # Welcome card
+    st.markdown(f"""
+    <div style="background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%); 
+    padding: 1.25rem 1.5rem; border-radius: 12px; border-left: 4px solid #667eea; margin-bottom: 1rem;">
+        <h3 style="margin: 0 0 0.25rem 0;">Welcome back, {user_name}! 👋</h3>
+        {"<p style='color: #64748b; margin: 0;'>📧 " + user_email + "</p>" if user_email else ""}
+    </div>
+    """, unsafe_allow_html=True)
     
-    st.divider()
-    
-    # Activity metrics
+    # Activity metrics with modern cards
     col1, col2, col3, col4 = st.columns(4)
     
     total_messages = len(st.session_state.get('messages', []))
@@ -796,18 +817,53 @@ def show_dashboard():
     stats = learning_brain.get_learning_stats() if learning_brain else {}
     
     with col1:
-        st.metric("💬 Total Messages", total_messages, delta=None)
+        st.markdown(f"""
+        <div class="gradient-card-purple" style="background: linear-gradient(135deg, #667eea20 0%, #764ba220 100%); 
+        padding: 1.25rem; border-radius: 12px; border-left: 4px solid #667eea; text-align: center;">
+            <div style="font-size: 2rem; font-weight: 700; background: linear-gradient(135deg, #667eea, #764ba2); 
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;">{total_messages}</div>
+            <div style="color: #64748b; font-size: 0.85rem; font-weight: 600;">💬 Messages</div>
+        </div>
+        """, unsafe_allow_html=True)
     with col2:
-        st.metric("🧠 Topics Learned", stats.get('total_topics', 0))
+        topics = stats.get('total_topics', 0)
+        st.markdown(f"""
+        <div class="gradient-card-green" style="background: linear-gradient(135deg, #10b98120 0%, #06b6d420 100%); 
+        padding: 1.25rem; border-radius: 12px; border-left: 4px solid #10b981; text-align: center;">
+            <div style="font-size: 2rem; font-weight: 700; background: linear-gradient(135deg, #10b981, #06b6d4); 
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;">{topics}</div>
+            <div style="color: #64748b; font-size: 0.85rem; font-weight: 600;">🧠 Topics</div>
+        </div>
+        """, unsafe_allow_html=True)
     with col3:
-        st.metric("🤖 Models Used", stats.get('models_tracked', 0))
+        models = stats.get('models_tracked', 0)
+        st.markdown(f"""
+        <div class="gradient-card-blue" style="background: linear-gradient(135deg, #3b82f620 0%, #8b5cf620 100%); 
+        padding: 1.25rem; border-radius: 12px; border-left: 4px solid #3b82f6; text-align: center;">
+            <div style="font-size: 2rem; font-weight: 700; background: linear-gradient(135deg, #3b82f6, #8b5cf6); 
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;">{models}</div>
+            <div style="color: #64748b; font-size: 0.85rem; font-weight: 600;">🤖 Models</div>
+        </div>
+        """, unsafe_allow_html=True)
     with col4:
-        st.metric("📚 Conversations", stats.get('total_conversations', 0))
+        convos = stats.get('total_conversations', 0)
+        st.markdown(f"""
+        <div class="gradient-card-orange" style="background: linear-gradient(135deg, #f59e0b20 0%, #ef444420 100%); 
+        padding: 1.25rem; border-radius: 12px; border-left: 4px solid #f59e0b; text-align: center;">
+            <div style="font-size: 2rem; font-weight: 700; background: linear-gradient(135deg, #f59e0b, #ef4444); 
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;">{convos}</div>
+            <div style="color: #64748b; font-size: 0.85rem; font-weight: 600;">📚 Convos</div>
+        </div>
+        """, unsafe_allow_html=True)
     
-    st.divider()
+    st.markdown("<div style='height: 1.5rem;'></div>", unsafe_allow_html=True)
     
     # Enhanced Quick actions with descriptions
-    st.markdown("### 🚀 Quick Actions")
+    st.markdown("""
+    <h3 style="display: flex; align-items: center; gap: 0.5rem;">
+        <span>🚀</span> Quick Actions
+    </h3>
+    """, unsafe_allow_html=True)
     
     # Create action cards with descriptions
     action_col1, action_col2 = st.columns(2)
@@ -1442,36 +1498,51 @@ MODEL_OPTIONS = [
 ]
 
 with st.sidebar:
-    # Enhanced header with gradient
+    # Modern sidebar header
     st.markdown("""
-        <style>
-        .sidebar-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 1rem;
-            border-radius: 10px;
-            text-align: center;
-            margin-bottom: 1rem;
-            color: white;
-        }
-        .sidebar-header h1 {
-            margin: 0;
-            font-size: 1.5rem;
-            font-weight: 700;
-        }
-        .nav-button {
-            margin: 0.25rem 0;
-        }
-        .stat-card {
-            background: linear-gradient(135deg, #667eea10 0%, #764ba210 100%);
-            padding: 0.75rem;
-            border-radius: 8px;
-            border-left: 3px solid #667eea;
-            margin: 0.5rem 0;
-        }
-        </style>
-        <div class="sidebar-header">
-            <h1>⚙️ Control Panel</h1>
-        </div>
+    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 1.25rem 1rem; border-radius: 14px; text-align: center; margin-bottom: 1.2rem; box-shadow: 0 4px 24px rgba(102,126,234,0.10);">
+        <h1 style="color: white; margin: 0; font-size: 1.4rem; font-weight: 800; letter-spacing: 0.5px;">⚙️ Control Panel</h1>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Theme toggle (Dark/Light mode) in a card
+    st.markdown("""
+    <div style="background: linear-gradient(135deg, #f59e0b15 0%, #fbbf2415 100%); padding: 0.8rem 1rem; border-radius: 10px; margin-bottom: 1rem; border-left: 4px solid #f59e0b; display: flex; align-items: center; gap: 1rem;">
+        <span style="font-weight: 600; color: #f59e0b;">🎨 Theme</span>
+    </div>
+    """, unsafe_allow_html=True)
+    theme_col1, theme_col2 = st.columns([1, 1])
+    with theme_col1:
+        st.markdown(":art: <span style='color:#f59e0b;font-weight:600;'>Theme</span>", unsafe_allow_html=True)
+    with theme_col2:
+        dark_mode = st.toggle("🌙", value=st.session_state.dark_mode, key="dark_mode_toggle", help="Toggle dark mode")
+        if dark_mode != st.session_state.dark_mode:
+            st.session_state.dark_mode = dark_mode
+            st.rerun()
+    st.markdown("<div style='height:0.5rem;'></div>", unsafe_allow_html=True)
+    
+    # Navigation in a modern card
+    st.markdown("""
+    <div style="background: linear-gradient(135deg, #06b6d415 0%, #3b82f615 100%); padding: 1rem; border-radius: 10px; margin-bottom: 1rem; border-left: 4px solid #06b6d4;">
+        <span style="font-weight: 600; color: #06b6d4;">📍 Navigation</span>
+    </div>
+    """, unsafe_allow_html=True)
+    col_nav1, col_nav2 = st.columns(2)
+    with col_nav1:
+        if st.button("📊 Dashboard", width="stretch", type="primary" if st.session_state.current_page == "dashboard" else "secondary"):
+            st.session_state.current_page = "dashboard"
+            st.rerun()
+    with col_nav2:
+        if st.button("💬 Chat", width="stretch", type="primary" if st.session_state.current_page == "chat" else "secondary"):
+            st.session_state.current_page = "chat"
+            st.rerun()
+    st.markdown("<div style='height:0.5rem;'></div>", unsafe_allow_html=True)
+    
+    # Profile section in a modern card
+    st.markdown("""
+    <div style="background: linear-gradient(135deg, #10b98115 0%, #06b6d415 100%); padding: 1rem; border-radius: 10px; margin-bottom: 1rem; border-left: 4px solid #10b981;">
+        <span style="font-weight: 600; color: #10b981;">👤 User Profile</span>
+    </div>
     """, unsafe_allow_html=True)
     
     # Theme toggle (Dark/Light mode)
@@ -1496,7 +1567,7 @@ with st.sidebar:
             st.session_state.current_page = "chat"
             st.rerun()
     
-    st.divider()
+    st.markdown("<div style='height:0.5rem;'></div>", unsafe_allow_html=True)
     
     # Enhanced user profile section with expandable details
     st.markdown("### 👤 User Profile")
@@ -1682,17 +1753,21 @@ with st.sidebar:
     
     st.divider()
     
-    # Session stats
+    # Session stats in a modern card
     total_messages = len(st.session_state.get('messages', []))
     if total_messages > 0:
-        st.markdown("### 📊 Session Stats")
+        st.markdown("""
+        <div style="background: linear-gradient(135deg, #8b5cf615 0%, #f59e0b15 100%); padding: 1rem; border-radius: 10px; margin-bottom: 1rem; border-left: 4px solid #8b5cf6;">
+            <span style="font-weight: 600; color: #8b5cf6;">📊 Session Stats</span>
+        </div>
+        """, unsafe_allow_html=True)
         col_msg, col_chars = st.columns(2)
         with col_msg:
             st.metric("Messages", total_messages)
         with col_chars:
             total_chars = sum(len(msg.get('content', '')) for msg in st.session_state.messages)
             st.metric("Characters", f"{total_chars:,}")
-        st.divider()
+        st.markdown("<div style='height:0.5rem;'></div>", unsafe_allow_html=True)
     
     # Initialize API keys in session state from environment on first run
     if "api_keys_initialized" not in st.session_state:
@@ -1720,7 +1795,12 @@ with st.sidebar:
         bool(st.session_state.deepseek_api_key)
     ])
     
-    # API Keys dropdown section
+    # API Keys dropdown section in a modern card
+    st.markdown("""
+    <div style="background: linear-gradient(135deg, #f093fb15 0%, #f5576c15 100%); padding: 1rem; border-radius: 10px; margin-bottom: 1rem; border-left: 4px solid #f5576c;">
+        <span style="font-weight: 600; color: #f5576c;">🔑 API Keys</span>
+    </div>
+    """, unsafe_allow_html=True)
     with st.expander(f"🔑 API Keys ({configured_keys}/6 configured)", expanded=False):
         # Toggle for showing/hiding keys with warning
         show_keys = st.checkbox(
@@ -2527,11 +2607,67 @@ with st.sidebar:
     st.caption(f"Messages: {len(st.session_state.get('messages', []))}")
 
 # --- 3. MAIN CHAT INTERFACE ---
-st.title("🤖 Multi-Provider AI Chat")
-if st.session_state.voice_mode:
-    st.caption("GPT-4, Claude, Gemini, Llama, Grok, DeepSeek | 🎤 Voice Mode Active")
-else:
-    st.caption("GPT-4, Claude, Gemini, Llama, Grok, DeepSeek")
+
+# Modern gradient header
+st.markdown("""
+<div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+padding: 2rem 2.5rem; border-radius: 16px; margin-bottom: 1.5rem; 
+box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);">
+    <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+        <div style="font-size: 3rem;">🤖</div>
+        <div>
+            <h1 style="color: white; margin: 0; font-size: 2rem; font-weight: 700;">
+                Multi-Provider AI Chat
+            </h1>
+            <p style="color: rgba(255,255,255,0.85); margin: 0.25rem 0 0 0; font-size: 1rem;">
+                GPT-4 • Claude • Gemini • Llama • Grok • DeepSeek
+            </p>
+        </div>
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+# Status indicators
+status_col1, status_col2, status_col3, status_col4 = st.columns(4)
+with status_col1:
+    brain_status = "🧠 Brain ON" if st.session_state.get('enable_brain_mode', False) else "🤖 Standard"
+    brain_color = "#10b981" if st.session_state.get('enable_brain_mode', False) else "#64748b"
+    st.markdown(f"""
+    <div style="background: {brain_color}15; padding: 8px 12px; border-radius: 10px; 
+    border-left: 3px solid {brain_color}; text-align: center;">
+        <span style="font-weight: 600; color: {brain_color};">{brain_status}</span>
+    </div>
+    """, unsafe_allow_html=True)
+
+with status_col2:
+    voice_status = "🎤 Voice ON" if st.session_state.voice_mode else "⌨️ Text Mode"
+    voice_color = "#f59e0b" if st.session_state.voice_mode else "#3b82f6"
+    st.markdown(f"""
+    <div style="background: {voice_color}15; padding: 8px 12px; border-radius: 10px; 
+    border-left: 3px solid {voice_color}; text-align: center;">
+        <span style="font-weight: 600; color: {voice_color};">{voice_status}</span>
+    </div>
+    """, unsafe_allow_html=True)
+
+with status_col3:
+    msg_count = len(st.session_state.get('messages', []))
+    st.markdown(f"""
+    <div style="background: #8b5cf615; padding: 8px 12px; border-radius: 10px; 
+    border-left: 3px solid #8b5cf6; text-align: center;">
+        <span style="font-weight: 600; color: #8b5cf6;">💬 {msg_count} Messages</span>
+    </div>
+    """, unsafe_allow_html=True)
+
+with status_col4:
+    provider_name = st.session_state.get('selected_provider', 'google').upper()
+    st.markdown(f"""
+    <div style="background: #06b6d415; padding: 8px 12px; border-radius: 10px; 
+    border-left: 3px solid #06b6d4; text-align: center;">
+        <span style="font-weight: 600; color: #06b6d4;">🔌 {provider_name}</span>
+    </div>
+    """, unsafe_allow_html=True)
+
+st.markdown("<div style='height: 1rem;'></div>", unsafe_allow_html=True)
 
 # Keyboard shortcuts
 st.markdown("""
@@ -2579,44 +2715,390 @@ with st.expander("⌨️ Keyboard Shortcuts", expanded=False):
     | `Enter` | Send message (in chat input) |
     """)
 
-# Chat interface styling
+# Chat interface styling - Enhanced Modern UI
 st.markdown("""
 <style>
+/* ===== MODERN AI CHAT STYLING ===== */
+
+/* Enhanced Chat Bubbles */
 .chat-bubble-user {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
-    padding: 12px 16px;
-    border-radius: 18px 18px 4px 18px;
-    margin: 8px 0;
+    padding: 16px 20px;
+    border-radius: 20px 20px 4px 20px;
+    margin: 12px 0;
     max-width: 85%;
     margin-left: auto;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    animation: slideInRight 0.3s ease-out;
 }
+
 .chat-bubble-assistant {
-    background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
-    color: #333;
-    padding: 12px 16px;
-    border-radius: 18px 18px 18px 4px;
-    margin: 8px 0;
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    color: #1a1a2e;
+    padding: 16px 20px;
+    border-radius: 20px 20px 20px 4px;
+    margin: 12px 0;
     max-width: 85%;
-    border: 1px solid #e0e0e0;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    animation: slideInLeft 0.3s ease-out;
 }
+
+@keyframes slideInRight {
+    from { opacity: 0; transform: translateX(20px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideInLeft {
+    from { opacity: 0; transform: translateX(-20px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+/* Chat Message Container */
+[data-testid="stChatMessage"] {
+    padding: 16px 20px !important;
+    border-radius: 16px !important;
+    margin: 10px 0 !important;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+[data-testid="stChatMessage"]:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* User message styling */
+[data-testid="stChatMessage"][data-testid*="user"] {
+    background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%) !important;
+    border-left: 4px solid #667eea !important;
+}
+
+/* Assistant message styling */
+[data-testid="stChatMessage"][data-testid*="assistant"] {
+    background: linear-gradient(135deg, #f8fafc 0%, #eef2f7 100%) !important;
+    border-left: 4px solid #10b981 !important;
+}
+
+/* Chat metadata */
 .chat-meta {
     font-size: 0.75rem;
-    color: #888;
-    margin-top: 4px;
+    color: #64748b;
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
-.copy-btn {
-    background: transparent;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    padding: 2px 8px;
-    font-size: 0.75rem;
+
+/* Action buttons */
+.copy-btn, .action-btn {
+    background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-size: 0.8rem;
     cursor: pointer;
-    margin-left: 8px;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
 }
-.copy-btn:hover { background: #f0f0f0; }
-.favorite-star { cursor: pointer; font-size: 1rem; }
-.response-time { font-size: 0.7rem; color: #888; margin-left: 8px; }
+
+.copy-btn:hover, .action-btn:hover {
+    background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.favorite-star {
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: transform 0.2s ease;
+}
+
+.favorite-star:hover {
+    transform: scale(1.2);
+}
+
+.response-time {
+    font-size: 0.75rem;
+    color: #64748b;
+    background: #f1f5f9;
+    padding: 4px 8px;
+    border-radius: 12px;
+}
+
+/* ===== MODERN CARD STYLING ===== */
+.modern-card {
+    background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e2e8f0;
+    transition: all 0.3s ease;
+    margin: 12px 0;
+}
+
+.modern-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+}
+
+.modern-card-header {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.modern-card-body {
+    color: #475569;
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+/* Gradient Cards */
+.gradient-card-purple {
+    background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+    border-left: 4px solid #667eea;
+}
+
+.gradient-card-green {
+    background: linear-gradient(135deg, #10b98115 0%, #059b6915 100%);
+    border-left: 4px solid #10b981;
+}
+
+.gradient-card-blue {
+    background: linear-gradient(135deg, #3b82f615 0%, #1d4ed815 100%);
+    border-left: 4px solid #3b82f6;
+}
+
+.gradient-card-orange {
+    background: linear-gradient(135deg, #f5930015 0%, #ea580c15 100%);
+    border-left: 4px solid #f59300;
+}
+
+/* ===== ENHANCED INPUT STYLING ===== */
+[data-testid="stChatInput"] {
+    border-radius: 24px !important;
+    border: 2px solid #e2e8f0 !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05) !important;
+}
+
+[data-testid="stChatInput"]:focus-within {
+    border-color: #667eea !important;
+    box-shadow: 0 4px 25px rgba(102, 126, 234, 0.2) !important;
+}
+
+[data-testid="stChatInput"] textarea {
+    font-size: 1rem !important;
+    padding: 12px 20px !important;
+}
+
+/* ===== BUTTON ENHANCEMENTS ===== */
+.stButton > button {
+    border-radius: 12px !important;
+    font-weight: 600 !important;
+    padding: 10px 20px !important;
+    transition: all 0.3s ease !important;
+    border: none !important;
+}
+
+.stButton > button:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
+}
+
+.stButton > button[kind="primary"] {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+}
+
+.stButton > button[kind="secondary"] {
+    background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%) !important;
+    color: #475569 !important;
+}
+
+/* ===== METRIC CARDS ===== */
+[data-testid="stMetric"] {
+    background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%) !important;
+    border-radius: 16px !important;
+    padding: 20px !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05) !important;
+    border: 1px solid #e2e8f0 !important;
+    transition: all 0.3s ease !important;
+}
+
+[data-testid="stMetric"]:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1) !important;
+}
+
+[data-testid="stMetricValue"] {
+    font-size: 2rem !important;
+    font-weight: 800 !important;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    background-clip: text !important;
+}
+
+/* ===== EXPANDER STYLING ===== */
+[data-testid="stExpander"] {
+    border-radius: 12px !important;
+    border: 1px solid #e2e8f0 !important;
+    overflow: hidden !important;
+    margin: 8px 0 !important;
+}
+
+[data-testid="stExpander"] summary {
+    padding: 16px 20px !important;
+    font-weight: 600 !important;
+}
+
+/* ===== SIDEBAR ENHANCEMENTS ===== */
+[data-testid="stSidebar"] {
+    background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%) !important;
+}
+
+[data-testid="stSidebar"] .stButton > button {
+    background: linear-gradient(135deg, #3d4f6f 0%, #2d3a4f 100%) !important;
+    border: 1px solid #4a5f8f !important;
+}
+
+[data-testid="stSidebar"] .stButton > button:hover {
+    background: linear-gradient(135deg, #4a5f8f 0%, #3d4f6f 100%) !important;
+}
+
+/* ===== LOADING ANIMATION ===== */
+.loading-dots {
+    display: inline-flex;
+    gap: 4px;
+}
+
+.loading-dots span {
+    width: 8px;
+    height: 8px;
+    background: #667eea;
+    border-radius: 50%;
+    animation: bounce 1.4s ease-in-out infinite;
+}
+
+.loading-dots span:nth-child(1) { animation-delay: 0s; }
+.loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+.loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes bounce {
+    0%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-10px); }
+}
+
+/* ===== GLASSMORPHISM EFFECTS ===== */
+.glass-card {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(20px);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+/* ===== SCROLLBAR STYLING ===== */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #5a6fd6 0%, #6a4190 100%);
+}
+
+/* ===== RESPONSIVE TYPOGRAPHY ===== */
+.heading-xl {
+    font-size: 2.5rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 1rem;
+}
+
+.heading-lg {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 0.75rem;
+}
+
+.text-muted {
+    color: #64748b;
+    font-size: 0.9rem;
+}
+
+/* ===== STATUS BADGES ===== */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.status-online {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.status-processing {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.status-error {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+/* ===== TOOLTIP STYLING ===== */
+.custom-tooltip {
+    position: relative;
+}
+
+.custom-tooltip::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 8px 12px;
+    background: #1e293b;
+    color: white;
+    font-size: 0.75rem;
+    border-radius: 8px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+}
+
+.custom-tooltip:hover::after {
+    opacity: 1;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -2640,13 +3122,25 @@ with search_col2:
 messages_to_display = st.session_state.messages
 if st.session_state.chat_search_value:
     messages_to_display = [m for m in st.session_state.messages if st.session_state.chat_search_value.lower() in m.get("content", "").lower()]
-    st.caption(f"Found {len(messages_to_display)} message(s) matching '{st.session_state.chat_search_value}'")
+    st.markdown(f"""
+    <div style="background: linear-gradient(135deg, #3b82f615 0%, #1d4ed815 100%); 
+    padding: 12px 16px; border-radius: 12px; border-left: 4px solid #3b82f6; margin: 10px 0;">
+        <span style="font-weight: 600;">🔍 Search Results:</span> Found <strong>{len(messages_to_display)}</strong> message(s) matching '<em>{st.session_state.chat_search_value}</em>'
+    </div>
+    """, unsafe_allow_html=True)
+
+# Model icons for display
+model_icons = {
+    "google": "🔷", "openai": "🟢", "anthropic": "🟠", 
+    "together": "🔵", "xai": "⚡", "deepseek": "🌊", "brain-mode": "🧠"
+}
 
 # Display previous messages with enhanced UI
 for idx, message in enumerate(messages_to_display):
     with st.chat_message(message["role"]):
         # Display images if present
         if "images" in message and message["images"]:
+            st.markdown("**📷 Attached Images:**")
             cols = st.columns(min(len(message["images"]), 3))
             for img_idx, img_data in enumerate(message["images"]):
                 with cols[img_idx % 3]:
@@ -2655,33 +3149,66 @@ for idx, message in enumerate(messages_to_display):
         # Display file info if present
         if "files" in message and message["files"]:
             for file_info in message["files"]:
-                st.caption(f"📎 {file_info['name']} ({file_info['type']})")
+                st.markdown(f"""
+                <div style="display: inline-flex; align-items: center; gap: 8px; 
+                background: #f1f5f9; padding: 6px 12px; border-radius: 8px; margin: 4px 0;">
+                    <span>📎</span> <strong>{file_info['name']}</strong> 
+                    <span style="color: #64748b; font-size: 0.8rem;">({file_info['type']})</span>
+                </div>
+                """, unsafe_allow_html=True)
         
-        # Message content
-        st.markdown(message["content"])
+        # Message content with enhanced formatting
+        content = message["content"]
+        st.markdown(content)
         
-        # Message metadata row
-        meta_col1, meta_col2, meta_col3 = st.columns([2, 1, 1])
+        # Enhanced metadata row
+        st.markdown("---")
+        meta_col1, meta_col2, meta_col3, meta_col4 = st.columns([2, 1, 1, 1])
+        
         with meta_col1:
-            # Timestamp
+            # Model badge and timestamp
+            model_name = message.get("model", "")
+            provider = message.get("provider", "")
             timestamp = message.get("timestamp", "")
-            if timestamp:
+            
+            if message["role"] == "assistant" and (model_name or provider):
+                icon = model_icons.get(provider, "🤖")
+                st.markdown(f"""
+                <div style="display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                    <span style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                    color: white; padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 600;">
+                        {icon} {model_name[:20] if model_name else provider}
+                    </span>
+                    <span style="color: #64748b; font-size: 0.75rem;">🕒 {timestamp}</span>
+                </div>
+                """, unsafe_allow_html=True)
+            elif timestamp:
                 st.caption(f"🕒 {timestamp}")
-            # Response time for assistant messages
-            if message["role"] == "assistant" and message.get("response_time"):
-                st.caption(f"⚡ {message['response_time']:.2f}s")
         
         with meta_col2:
+            # Response time for assistant messages
+            if message["role"] == "assistant" and message.get("response_time"):
+                response_time = message['response_time']
+                time_color = "#10b981" if response_time < 2 else "#f59e0b" if response_time < 5 else "#ef4444"
+                st.markdown(f"""
+                <div style="background: {time_color}15; color: {time_color}; padding: 4px 10px; 
+                border-radius: 12px; font-size: 0.75rem; font-weight: 600; text-align: center;">
+                    ⚡ {response_time:.2f}s
+                </div>
+                """, unsafe_allow_html=True)
+        
+        with meta_col3:
             # Copy button
             if st.button("📋 Copy", key=f"copy_{idx}", width="stretch"):
                 st.code(message["content"], language=None)
-                st.success("Copied to clipboard area above!")
+                st.toast("📋 Content copied to clipboard area!", icon="✅")
         
-        with meta_col3:
+        with meta_col4:
             # Favorite/bookmark toggle
             fav_key = f"fav_{idx}"
             is_fav = st.session_state.get(fav_key, message.get("favorite", False))
-            if st.button("⭐" if is_fav else "☆", key=f"fav_btn_{idx}", width="stretch"):
+            btn_label = "⭐ Saved" if is_fav else "☆ Save"
+            if st.button(btn_label, key=f"fav_btn_{idx}", width="stretch"):
                 st.session_state[fav_key] = not is_fav
                 if idx < len(st.session_state.messages):
                     st.session_state.messages[idx]["favorite"] = not is_fav
