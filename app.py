@@ -2136,14 +2136,71 @@ if st.session_state.voice_mode:
 else:
     st.caption("GPT-4, Claude, Gemini, Llama, Grok, DeepSeek")
 
-# Display previous messages
-for message in st.session_state.messages:
+# Chat interface styling
+st.markdown("""
+<style>
+.chat-bubble-user {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 12px 16px;
+    border-radius: 18px 18px 4px 18px;
+    margin: 8px 0;
+    max-width: 85%;
+    margin-left: auto;
+}
+.chat-bubble-assistant {
+    background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+    color: #333;
+    padding: 12px 16px;
+    border-radius: 18px 18px 18px 4px;
+    margin: 8px 0;
+    max-width: 85%;
+    border: 1px solid #e0e0e0;
+}
+.chat-meta {
+    font-size: 0.75rem;
+    color: #888;
+    margin-top: 4px;
+}
+.copy-btn {
+    background: transparent;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 2px 8px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    margin-left: 8px;
+}
+.copy-btn:hover { background: #f0f0f0; }
+.favorite-star { cursor: pointer; font-size: 1rem; }
+.response-time { font-size: 0.7rem; color: #888; margin-left: 8px; }
+</style>
+""", unsafe_allow_html=True)
+
+# Conversation search
+search_col1, search_col2 = st.columns([4, 1])
+with search_col1:
+    chat_search = st.text_input("🔍 Search conversation", "", key="chat_search", label_visibility="collapsed", placeholder="Search messages...")
+with search_col2:
+    clear_search = st.button("Clear", key="clear_search", use_container_width=True)
+    if clear_search:
+        st.session_state.chat_search = ""
+        st.rerun()
+
+# Filter messages based on search
+messages_to_display = st.session_state.messages
+if chat_search:
+    messages_to_display = [m for m in st.session_state.messages if chat_search.lower() in m.get("content", "").lower()]
+    st.caption(f"Found {len(messages_to_display)} message(s) matching '{chat_search}'")
+
+# Display previous messages with enhanced UI
+for idx, message in enumerate(messages_to_display):
     with st.chat_message(message["role"]):
         # Display images if present
         if "images" in message and message["images"]:
             cols = st.columns(min(len(message["images"]), 3))
-            for idx, img_data in enumerate(message["images"]):
-                with cols[idx % 3]:
+            for img_idx, img_data in enumerate(message["images"]):
+                with cols[img_idx % 3]:
                     st.image(img_data, use_container_width=True)
         
         # Display file info if present
@@ -2151,7 +2208,35 @@ for message in st.session_state.messages:
             for file_info in message["files"]:
                 st.caption(f"📎 {file_info['name']} ({file_info['type']})")
         
+        # Message content
         st.markdown(message["content"])
+        
+        # Message metadata row
+        meta_col1, meta_col2, meta_col3 = st.columns([2, 1, 1])
+        with meta_col1:
+            # Timestamp
+            timestamp = message.get("timestamp", "")
+            if timestamp:
+                st.caption(f"🕒 {timestamp}")
+            # Response time for assistant messages
+            if message["role"] == "assistant" and message.get("response_time"):
+                st.caption(f"⚡ {message['response_time']:.2f}s")
+        
+        with meta_col2:
+            # Copy button
+            if st.button("📋 Copy", key=f"copy_{idx}", use_container_width=True):
+                st.code(message["content"], language=None)
+                st.success("Copied to clipboard area above!")
+        
+        with meta_col3:
+            # Favorite/bookmark toggle
+            fav_key = f"fav_{idx}"
+            is_fav = st.session_state.get(fav_key, message.get("favorite", False))
+            if st.button("⭐" if is_fav else "☆", key=f"fav_btn_{idx}", use_container_width=True):
+                st.session_state[fav_key] = not is_fav
+                if idx < len(st.session_state.messages):
+                    st.session_state.messages[idx]["favorite"] = not is_fav
+                st.rerun()
 
 # --- 4. HANDLE USER INPUT ---
 prompt = None
@@ -2491,7 +2576,11 @@ if prompt:
         if extra_context:
             final_prompt = f"{prompt}\n\nAdditional context from uploaded files:{extra_context}"
         
-        user_message = {"role": "user", "content": final_prompt}
+        user_message = {
+            "role": "user",
+            "content": final_prompt,
+            "timestamp": datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        }
         if uploaded_images:
             user_message["images"] = uploaded_images
         if uploaded_file_info:
@@ -2512,6 +2601,7 @@ if prompt:
 
         # Generate and display assistant response
         response_text = None
+        response_start_time = time.time()  # Track response time
         with st.chat_message("assistant"):
             try:
                 # Route to the appropriate provider
@@ -2637,7 +2727,15 @@ if prompt:
         
         # Save assistant response to history
         if response_text:
-            st.session_state.messages.append({"role": "assistant", "content": response_text})
+            response_time = time.time() - response_start_time
+            st.session_state.messages.append({
+                "role": "assistant",
+                "content": response_text,
+                "timestamp": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                "response_time": response_time,
+                "model": model_name,
+                "provider": provider
+            })
             
             # Text-to-speech in voice mode
             if st.session_state.voice_mode and st.session_state.get("auto_speak", False) and response_text:
