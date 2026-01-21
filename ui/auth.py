@@ -144,79 +144,69 @@ def create_google_oauth_url() -> str:
 
 def show_login_page():
     """Display enhanced login page with animations"""
-    st.markdown(
-        """
-        <style>
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateX(-30px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-        .login-header {
-            text-align: center;
-            animation: fadeIn 0.8s ease-out;
-            margin-bottom: 2rem;
-        }
-        .login-header h1 {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-size: 3rem;
-            font-weight: 800;
-            margin-bottom: 0.5rem;
-        }
-        .login-subtitle {
-            color: var(--text-secondary, #666);
-            font-size: 1.2rem;
-            margin-bottom: 1rem;
-        }
-        .feature-card {
-            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
-            border-radius: 10px;
-            padding: 1rem;
-            margin: 0.5rem 0;
-            border-left: 4px solid #667eea;
-            animation: slideIn 0.6s ease-out;
-        }
-        .google-btn {
-            background: linear-gradient(135deg, #4285f4 0%, #357ae8 100%);
-            color: white;
-            padding: 12px 20px;
-            border-radius: 8px;
-            text-decoration: none;
-            display: inline-block;
-            width: 100%;
-            text-align: center;
-            font-weight: 600;
-            margin-top: 10px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(66, 133, 244, 0.3);
-        }
-        .google-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(66, 133, 244, 0.4);
-        }
-        .stats-badge {
-            display: inline-block;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            margin: 0 4px;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True
-    )
+    # Dark mode preference
+    dark_mode = st.session_state.get('dark_mode', False)
+
+    # CSS for light and dark modes
+    if dark_mode:
+        st.markdown(
+            """
+            <style>
+            :root {
+                --bg: #0b1220;
+                --card: #0f1724;
+                --muted: #9ca3af;
+                --text: #e6eef8;
+                --accent-1: #7c3aed;
+                --accent-2: #2563eb;
+            }
+            @keyframes fadeIn { from { opacity: 0; transform: translateY(-20px);} to { opacity: 1; transform: translateY(0);} }
+            @keyframes slideIn { from { opacity: 0; transform: translateX(-30px);} to { opacity: 1; transform: translateX(0);} }
+            .stApp { background: var(--bg) !important; color: var(--text) !important; }
+            .login-header { text-align: center; animation: fadeIn 0.8s ease-out; margin-bottom: 2rem; }
+            .login-header h1 { background: linear-gradient(135deg, var(--accent-2), var(--accent-1)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 3rem; font-weight: 800; margin-bottom: 0.5rem; }
+            .login-subtitle { color: var(--muted); font-size: 1.2rem; margin-bottom: 1rem; }
+            .feature-card { background: linear-gradient(135deg, rgba(124,58,237,0.06), rgba(37,99,235,0.03)); border-radius: 10px; padding: 1rem; margin: 0.5rem 0; border-left: 4px solid var(--accent-1); animation: slideIn 0.6s ease-out; color: var(--text); }
+            .google-btn { background: linear-gradient(135deg, #1f6feb, #1646b2); color: white; padding: 12px 20px; border-radius: 8px; text-decoration: none; display: inline-block; width: 100%; text-align: center; font-weight: 600; margin-top: 10px; transition: all 0.3s ease; box-shadow: 0 6px 20px rgba(0,0,0,0.6); }
+            .google-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 26px rgba(0,0,0,0.7); }
+            .info-card { background: var(--card); padding: 10px; border-radius: 10px; box-shadow: 0 2px 12px rgba(0,0,0,0.6); }
+            </style>
+            """,
+            unsafe_allow_html=True,
+        )
+    else:
+        st.markdown(
+            """
+            <style>
+            :root {
+                --bg: #f8fafc;
+                --card: #ffffff;
+                --muted: #666666;
+                --text: #0f1724;
+                --accent-1: #667eea;
+                --accent-2: #357ae8;
+            }
+            @keyframes fadeIn { from { opacity: 0; transform: translateY(-20px);} to { opacity: 1; transform: translateY(0);} }
+            @keyframes slideIn { from { opacity: 0; transform: translateX(-30px);} to { opacity: 1; transform: translateX(0);} }
+            .login-header { text-align: center; animation: fadeIn 0.8s ease-out; margin-bottom: 2rem; }
+            .login-header h1 { background: linear-gradient(135deg, var(--accent-1), #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 3rem; font-weight: 800; margin-bottom: 0.5rem; }
+            .login-subtitle { color: var(--muted); font-size: 1.2rem; margin-bottom: 1rem; }
+            .feature-card { background: linear-gradient(135deg, rgba(102,126,234,0.09), rgba(118,75,162,0.06)); border-radius: 10px; padding: 1rem; margin: 0.5rem 0; border-left: 4px solid var(--accent-1); animation: slideIn 0.6s ease-out; }
+            .google-btn { background: linear-gradient(135deg, #4285f4 0%, #357ae8 100%); color: white; padding: 12px 20px; border-radius: 8px; text-decoration: none; display: inline-block; width: 100%; text-align: center; font-weight: 600; margin-top: 10px; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(66, 133, 244, 0.3); }
+            .google-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(66, 133, 244, 0.4); }
+            .info-card { background: var(--card); padding: 10px; border-radius: 10px; box-shadow: 0 2px 12px rgba(0,0,0,0.07); }
+            </style>
+            """,
+            unsafe_allow_html=True,
+        )
     
-    # Hero section
+    # Hero section with dark-mode toggle
     col1, col2, col3 = st.columns([1, 3, 1])
-    
+
+    # Right column: dark mode toggle and small status
+    with col3:
+        dm = st.checkbox("🌙 Dark Mode", value=dark_mode, key="dark_mode")
+
     with col2:
         st.markdown('<div class="login-header"><h1>🚀 Antigravity AI</h1><div class="login-subtitle">Your intelligent multi-model AI companion</div></div>', unsafe_allow_html=True)
         
