@@ -251,15 +251,28 @@ def show_chat_page():
         st.session_state.hosted_caption_url = hosted_url
         st.session_state.hosted_caption_api_key = hosted_key
 
-        # Preload BLIP model in background with spinner when enabled
+        # Preload BLIP model in background with progress when enabled
         if adv_caption and not st.session_state.get('blip_loaded', False):
+            from ui.chat_utils import preload_blip_model_with_progress
+            progress_bar = st.progress(0)
+            status_text = st.empty()
+
+            def _progress_callback(percent: int, message: str):
+                try:
+                    progress_bar.progress(min(max(int(percent), 0), 100))
+                    status_text.text(message)
+                except Exception:
+                    pass
+
             with st.spinner('Downloading/preloading advanced caption model (BLIP)...'):
-                from ui.chat_utils import preload_blip_model
-                ok = preload_blip_model()
+                ok = preload_blip_model_with_progress(progress_callback=_progress_callback)
                 st.session_state['blip_loaded'] = bool(ok)
                 if ok:
+                    progress_bar.progress(100)
+                    status_text.text('BLIP model ready')
                     st.success('BLIP model ready')
                 else:
+                    status_text.text('BLIP not available; falling back to simple captions or hosted API')
                     st.info('BLIP not available; falling back to simple captions or hosted API')
 
     if st.session_state.get('voice_mode'):
