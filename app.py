@@ -1028,6 +1028,43 @@ Python: {platform.python_version()}
 # --- 1. SETUP PAGE CONFIGURATION (Open Source UI) ---
 st.set_page_config(page_title="My Gemini App", page_icon="🤖", layout="wide")
 
+# Initialize theme state early
+if "dark_mode" not in st.session_state:
+    st.session_state.dark_mode = False
+
+# Apply theme CSS
+if st.session_state.dark_mode:
+    st.markdown("""
+    <style>
+    /* Dark mode theme */
+    .stApp { background-color: #1a1a2e; color: #eaeaea; }
+    .stSidebar { background-color: #16213e !important; }
+    .stSidebar [data-testid="stSidebarContent"] { background-color: #16213e; }
+    .stChatMessage { background-color: #1f2940 !important; border-color: #2d3a4f !important; }
+    .stTextInput > div > div > input { background-color: #1f2940; color: #eaeaea; border-color: #3d4f6f; }
+    .stSelectbox > div > div { background-color: #1f2940; color: #eaeaea; }
+    .stExpander { background-color: #1f2940; border-color: #3d4f6f; }
+    .stMarkdown, .stText, p, span, label { color: #eaeaea !important; }
+    .stButton > button { background-color: #3d4f6f; color: white; border: none; }
+    .stButton > button:hover { background-color: #4a5f8f; }
+    .stMetric { background-color: #1f2940; border-radius: 8px; padding: 10px; }
+    .stDataFrame { background-color: #1f2940; }
+    .stProgress > div > div { background-color: #667eea; }
+    .chat-bubble-assistant { background: linear-gradient(135deg, #1f2940 0%, #2d3a4f 100%) !important; color: #eaeaea !important; border-color: #3d4f6f !important; }
+    div[data-testid="stExpander"] { background-color: #1f2940; }
+    .stTabs [data-baseweb="tab-list"] { background-color: #1f2940; }
+    .stTabs [data-baseweb="tab"] { color: #eaeaea; }
+    </style>
+    """, unsafe_allow_html=True)
+else:
+    st.markdown("""
+    <style>
+    /* Light mode theme (default enhancements) */
+    .stApp { background-color: #f8f9fa; }
+    .stChatMessage { border-radius: 12px; }
+    </style>
+    """, unsafe_allow_html=True)
+
 # Initialize authentication state
 if "authenticated" not in st.session_state:
     st.session_state.authenticated = False
@@ -1140,6 +1177,16 @@ with st.sidebar:
             <h1>⚙️ Control Panel</h1>
         </div>
     """, unsafe_allow_html=True)
+    
+    # Theme toggle (Dark/Light mode)
+    theme_col1, theme_col2 = st.columns([1, 1])
+    with theme_col1:
+        st.markdown("**🎨 Theme**")
+    with theme_col2:
+        dark_mode = st.toggle("🌙", value=st.session_state.dark_mode, key="dark_mode_toggle", help="Toggle dark mode")
+        if dark_mode != st.session_state.dark_mode:
+            st.session_state.dark_mode = dark_mode
+            st.rerun()
     
     # Page navigation with icons
     st.markdown("### 📍 Navigation")
