@@ -15,6 +15,7 @@ from brain_learning import LearningBrain
 import streamlit as st
 from PIL import Image
 from multimodal_voice_integration import MultimodalVoiceIntegrator
+import pandas as pd
 
 # Force native DNS to avoid SRV lookups that can time out in some networks
 os.environ.setdefault("GRPC_DNS_RESOLVER", "native")
@@ -970,16 +971,20 @@ if st.session_state.current_page == "profile":
     show_profile_page()
     st.stop()
 
-# Show dashboard if on dashboard page
-if st.session_state.current_page == "dashboard":
-    show_dashboard()
-    st.stop()
-
-# Initialize chat history in session state early
+# Initialize chat history and session state early (BEFORE dashboard)
 if "messages" not in st.session_state:
     st.session_state.messages = []
 if "voice_mode" not in st.session_state:
     st.session_state.voice_mode = False
+if "multimodal_options" not in st.session_state:
+    st.session_state.multimodal_options = []
+if "auto_speak" not in st.session_state:
+    st.session_state.auto_speak = True
+
+# Show dashboard if on dashboard page
+if st.session_state.current_page == "dashboard":
+    show_dashboard()
+    st.stop()
 if "uploaded_images" not in st.session_state:
     st.session_state.uploaded_images = []
 if "uploaded_files" not in st.session_state:
@@ -1656,30 +1661,160 @@ with st.sidebar:
                 use_container_width=True,
                 key="download_brain"
             )
+        # --- Added: Visualizations, model table, feedback, topic viewer, report download
+        st.markdown("#### Visualizations & Insights")
+        vis_col1, vis_col2 = st.columns([2, 3])
+        with vis_col1:
+            # Overall success metric (average of model strengths)
+            model_strengths = stats.get('model_strengths', [])
+            overall_success = 0.0
+            if model_strengths:
+                overall_success = sum([m.get('success_rate', 0.0) for m in model_strengths]) / len(model_strengths)
+            st.metric("Overall Success", f"{overall_success:.1f}%")
+
+            # Conversation trend
+            if learning_brain.conversation_history:
+                dates = [r.timestamp.split('T')[0] for r in learning_brain.conversation_history]
+                counts = pd.Series(dates).value_counts().sort_index()
+                counts.index = pd.to_datetime(counts.index)
+                st.line_chart(counts)
+            else:
+                st.caption("No conversation history to chart yet.")
+
+        with vis_col2:
+            top_topics = stats.get('top_topics', [])
+            if top_topics:
+                df_topics = pd.DataFrame(top_topics).set_index('topic')
+                st.bar_chart(df_topics['count'])
+                st.table(df_topics.reset_index().rename(columns={'topic': 'Topic', 'count': 'Count'}))
+            else:
+                st.info("No top topics yet")
+
+        # Model performance table + quick feedback
+        st.markdown("#### Model Performance Table & Feedback")
+        if stats.get('model_performance'):
+            df_perf = pd.DataFrame.from_dict(stats['model_performance'], orient='index')
+            df_perf = df_perf.rename_axis('model').reset_index()
+            st.dataframe(df_perf)
+            model_list = df_perf['model'].tolist()
+            sel_model = st.selectbox("Select model to give feedback", model_list, key="select_feedback_model")
+            fb_col1, fb_col2 = st.columns(2)
+            with fb_col1:
+                if st.button("👍 Mark Success", key="fb_success"):
+                    learning_brain.register_feedback(sel_model, True)
+                    st.success("Feedback recorded — marked success")
+            with fb_col2:
+                if st.button("👎 Mark Failure", key="fb_fail"):
+                    learning_brain.register_feedback(sel_model, False)
+                    st.warning("Feedback recorded — marked failure")
+        else:
+            st.info("No model performance data yet. Use Brain Mode to start learning!")
+
+        # Topic viewer and export
+        st.markdown("#### Topic Browser")
+        topics = list(learning_brain.knowledge_base.keys())
+        if topics:
+            sel_topic = st.selectbox("Browse topic", topics, key="select_topic")
+            entries = learning_brain.knowledge_base.get(sel_topic, [])
+            if entries:
+                for e in entries[-5:][::-1]:
+                    st.caption(f"{e.timestamp} • {e.query}")
+                    for ans in e.answers:
+                        st.write(ans)
+                    st.caption(f"Models: {', '.join(e.models_used)}")
+                    st.divider()
+                # Export selected topic
+                topic_blob = json.dumps([{ 'query': e.query, 'answers': e.answers, 'timestamp': e.timestamp, 'models_used': e.models_used } for e in entries], indent=2)
+                st.download_button("Export topic JSON", topic_blob, f"{sel_topic}_kb.json", "application/json", key="download_topic")
+            else:
+                st.info("No entries for this topic yet.")
+        else:
+            st.info("No topics learned yet.")
+
+        # Download formatted learning report
+        report_md = learning_brain.format_learning_report()
+        st.download_button("📄 Download Learning Report", report_md, "learning_report.md", "text/markdown", key="download_report")
     
-    # Model Performance Dashboard
+    # Model Performance Dashboard (enhanced)
     with st.expander("📊 Model Performance", expanded=True):
         strengths = stats.get("model_strengths", [])
+        model_perf = stats.get("model_performance", {})
+        provider_icons = {
+            "google": "🔵", "openai": "🟢", "anthropic": "🟣",
+            "together": "🔴", "xai": "⚫", "deepseek": "🟠"
+        }
         if strengths:
-            # Create visual performance bars
-            for model_data in strengths:
+            # Summary metrics row
+            total_queries = sum(m.get("total", 0) for m in strengths)
+            total_success = sum(m.get("success", 0) for m in strengths)
+            avg_success = (total_success / total_queries * 100) if total_queries else 0
+            sum_col1, sum_col2, sum_col3 = st.columns(3)
+            with sum_col1:
+                st.metric("Total Queries", total_queries)
+            with sum_col2:
+                st.metric("Total Successes", total_success)
+            with sum_col3:
+                st.metric("Avg Success Rate", f"{avg_success:.1f}%")
+            st.markdown("---")
+
+            # Detailed cards per model
+            for rank, model_data in enumerate(strengths, start=1):
                 model_name_display = model_data['model']
                 success_rate = model_data['success_rate']
                 total = model_data['total']
                 success = model_data['success']
-                
-                col_name, col_bar, col_stats = st.columns([2, 3, 2])
-                with col_name:
-                    st.write(f"**{model_name_display}**")
+                perf_info = model_perf.get(model_name_display, {})
+                avg_len = perf_info.get('avg_response_length', 0)
+
+                # Rank badge & color tier
+                if rank == 1:
+                    badge = "🥇"
+                elif rank == 2:
+                    badge = "🥈"
+                elif rank == 3:
+                    badge = "🥉"
+                else:
+                    badge = f"#{rank}"
+
+                if success_rate >= 80:
+                    tier_color = "#28a745"
+                elif success_rate >= 50:
+                    tier_color = "#ffc107"
+                else:
+                    tier_color = "#dc3545"
+
+                icon = provider_icons.get(model_name_display.lower(), "🤖")
+
+                st.markdown(
+                    f'<div style="background:linear-gradient(90deg,{tier_color}22,{tier_color}08);'
+                    f'border-left:4px solid {tier_color};padding:10px;border-radius:6px;margin-bottom:8px;">'
+                    f'<span style="font-size:1.3rem;">{badge} {icon} <b>{model_name_display}</b></span>'
+                    f'</div>',
+                    unsafe_allow_html=True
+                )
+                col_bar, col_stats, col_len = st.columns([4, 2, 2])
                 with col_bar:
                     st.progress(success_rate / 100.0, text=f"{success_rate}% success")
                 with col_stats:
-                    st.caption(f"{success}/{total} queries")
-                
-                # Show top topics for this model
+                    st.caption(f"✔ {success}/{total} queries")
+                with col_len:
+                    st.caption(f"📏 ~{int(avg_len)} chars")
+
+                # Top topics
                 if model_data.get('top_topics'):
-                    st.caption(f"🏆 Top topics: {', '.join(model_data['top_topics'][:3])}")
-                st.write("")
+                    st.caption(f"🏆 Top topics: {', '.join(model_data['top_topics'][:5])}")
+
+            # Comparison table
+            st.markdown("#### Comparison Table")
+            df_cmp = pd.DataFrame(strengths)
+            df_cmp = df_cmp[['model', 'success_rate', 'success', 'total']]
+            df_cmp = df_cmp.rename(columns={'model': 'Model', 'success_rate': 'Success %', 'success': 'Successes', 'total': 'Queries'})
+            st.dataframe(df_cmp, use_container_width=True)
+
+            # Success rate bar chart
+            st.markdown("#### Success Rate by Model")
+            chart_df = pd.DataFrame(strengths).set_index('model')[['success_rate']]
+            st.bar_chart(chart_df)
         else:
             st.info("No model performance data yet. Use Brain Mode to start learning!")
     
@@ -1762,6 +1897,7 @@ uploaded_file_info = []
 extra_context = ""
 
 # Multimodal file upload
+multimodal_options = st.session_state.get('multimodal_options', [])
 if multimodal_options:
     with st.container():
         st.markdown(
