@@ -454,6 +454,26 @@ def get_anthropic_client(api_key: str):
     from anthropic import Anthropic
     return Anthropic(api_key=api_key)
 
+@st.cache_resource
+def get_google_client(api_key: str):
+    """Cached Google Gemini client initialization"""
+    return genai.Client(api_key=api_key)
+
+@st.cache_data(ttl=3600)
+def get_model_pricing():
+    """Cached model pricing data"""
+    return MODEL_PRICING.copy()
+
+@st.cache_data(ttl=60)
+def get_cached_learning_stats(_learning_brain):
+    """Cached learning stats - refreshes every minute"""
+    return _learning_brain.get_learning_stats()
+
+@st.cache_data(ttl=300)
+def get_cached_model_strengths(_learning_brain):
+    """Cached model strengths summary"""
+    return _learning_brain.summarize_model_strengths()
+
 def build_conversation_history(messages: List[Dict], exclude_last: bool = True, max_messages: int = 20, max_chars: int = 50000) -> List[Dict]:
     """Build conversation history from messages with smart summarization for long chats.
     
@@ -3075,14 +3095,44 @@ if prompt:
                         
             except Exception as exc:
                 error_msg = str(exc)
-                if "404" in error_msg:
-                    st.error(f"❌ Model not available: {model_name}. Try a different model from the sidebar.")
-                elif "DNS" in error_msg or "timeout" in error_msg.lower():
-                    st.error("❌ Network error. Check your internet connection or VPN settings.")
-                elif "API key" in error_msg or "authentication" in error_msg.lower():
-                    st.error(f"❌ Invalid API key for {provider}. Please check your API key in the sidebar.")
-                else:
-                    st.error(f"❌ Request failed: {error_msg}")
+                
+                # Store error info for retry
+                st.session_state.last_error = {
+                    "message": error_msg,
+                    "provider": provider,
+                    "model": model_name,
+                    "prompt": final_prompt,
+                    "timestamp": datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                }
+                
+                # Categorized error messages with retry option
+                error_container = st.container()
+                with error_container:
+                    if "404" in error_msg:
+                        st.error(f"❌ Model not available: {model_name}. Try a different model from the sidebar.")
+                        st.caption("💡 Tip: Some models may be deprecated or region-restricted.")
+                    elif "DNS" in error_msg or "timeout" in error_msg.lower():
+                        st.error("❌ Network error. Check your internet connection or VPN settings.")
+                        st.caption("💡 Tip: Try again in a few seconds. Network issues are usually temporary.")
+                    elif "API key" in error_msg or "authentication" in error_msg.lower():
+                        st.error(f"❌ Invalid API key for {provider}. Please check your API key in the sidebar.")
+                        st.caption("💡 Tip: Regenerate your API key from the provider's console.")
+                    elif "rate" in error_msg.lower() or "quota" in error_msg.lower():
+                        st.error("❌ Rate limit exceeded. Please wait a moment before trying again.")
+                        st.caption("💡 Tip: Consider upgrading your API plan or using a different model.")
+                    elif "context" in error_msg.lower() or "token" in error_msg.lower():
+                        st.error("❌ Message too long. Try shortening your prompt or clearing chat history.")
+                        st.caption("💡 Tip: Use the Clear Chat button to reset context.")
+                    else:
+                        st.error(f"❌ Request failed: {error_msg}")
+                    
+                    # Retry button
+                    retry_col1, retry_col2 = st.columns([1, 3])
+                    with retry_col1:
+                        if st.button("🔄 Retry", key="retry_request", use_container_width=True):
+                            st.rerun()
+                    with retry_col2:
+                        st.caption("Click to try again with the same prompt")
         
         # Save assistant response to history
         if response_text:
