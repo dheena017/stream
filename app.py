@@ -1419,23 +1419,101 @@ with st.sidebar:
     
     st.divider()
     
-    # Collapsible AI settings
+    # Enhanced AI Behavior & Settings with better organization
     with st.expander("🎛️ AI Behavior & Settings", expanded=True):
+        st.markdown("""
+        <div style="background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%); padding: 1.5rem; border-radius: 10px; border-left: 4px solid #667eea; margin-bottom: 1.5rem;">
+            <div style="font-size: 0.95rem; color: #555;">
+                <strong>💡 Tip:</strong> Fine-tune how the AI behaves and generates responses. Adjust parameters to match your needs.
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+        
         # System instructions
-        st.markdown("#### System Instructions")
+        st.markdown("#### 📋 System Instructions")
+        st.caption("Define the AI's personality and behavior pattern")
         system_instruction = st.text_area(
-            "Define AI behavior",
-            placeholder="e.g., You are a helpful coding assistant...",
-            help="Define how the AI should behave",
+            "AI Behavior Definition",
+            placeholder="e.g., You are a helpful coding assistant. Be concise and provide practical examples...",
+            help="Define how the AI should behave and respond",
             height=100,
-            key="system_instruction"
+            key="system_instruction",
+            label_visibility="collapsed"
         )
         
-        st.markdown("#### Generation Parameters")
-        temperature = st.slider("Temperature", 0.0, 2.0, 1.0, 0.1, help="Higher = more creative, Lower = more focused")
-        max_output_tokens = st.slider("Max Output Tokens", 100, 8192, 2048, 100)
-        top_p = st.slider("Top P", 0.0, 1.0, 0.95, 0.05, help="Nucleus sampling threshold")
-        enable_streaming = st.checkbox("Enable Streaming", value=True, help="Stream responses as they're generated")
+        st.markdown("---")
+        
+        # Generation Parameters with better organization
+        st.markdown("#### ⚙️ Generation Parameters")
+        
+        param_col1, param_col2 = st.columns(2)
+        
+        with param_col1:
+            st.markdown("**Creativity & Randomness**")
+            temperature = st.slider(
+                "🎨 Temperature",
+                0.0, 2.0, 1.0, 0.1,
+                help="0.0 = Deterministic/Focused | 1.0 = Balanced | 2.0 = Creative/Random",
+                label_visibility="collapsed"
+            )
+            
+            st.markdown("Temperature: `" + f"{temperature:.1f}" + "`", help="Current temperature setting")
+        
+        with param_col2:
+            st.markdown("**Diversity Control**")
+            top_p = st.slider(
+                "🎯 Top P (Nucleus Sampling)",
+                0.0, 1.0, 0.95, 0.05,
+                help="0.9 = Less diverse | 0.95 = Balanced | 1.0 = Most diverse",
+                label_visibility="collapsed"
+            )
+            st.markdown("Top P: `" + f"{top_p:.2f}" + "`", help="Current top P setting")
+        
+        st.markdown("---")
+        
+        # Output constraints
+        st.markdown("**Output Constraints**")
+        token_col1, token_col2 = st.columns(2)
+        
+        with token_col1:
+            max_output_tokens = st.slider(
+                "📝 Max Output Tokens",
+                100, 8192, 2048, 100,
+                help="Maximum length of AI responses (tokens ≈ words/4)",
+                label_visibility="collapsed"
+            )
+        
+        with token_col2:
+            st.metric("Max Response Length", f"{max_output_tokens:,} tokens")
+        
+        st.markdown("---")
+        
+        # Response streaming
+        st.markdown("**Response Delivery**")
+        streaming_col1, streaming_col2 = st.columns([3, 1])
+        with streaming_col1:
+            enable_streaming = st.checkbox(
+                "⚡ Enable Streaming",
+                value=True,
+                help="Stream responses word-by-word as they're generated (faster perceived speed)"
+            )
+        with streaming_col2:
+            status_text = "🟢 Active" if enable_streaming else "🔴 Disabled"
+            st.markdown(f"**{status_text}**")
+        
+        # Settings summary
+        st.markdown("---")
+        st.markdown("#### 📊 Active Configuration")
+        config_col1, config_col2, config_col3, config_col4 = st.columns(4)
+        with config_col1:
+            st.metric("Temperature", f"{temperature:.1f}", delta="Creativity")
+        with config_col2:
+            st.metric("Top P", f"{top_p:.2f}", delta="Diversity")
+        with config_col3:
+            st.metric("Max Tokens", f"{max_output_tokens // 1000:.1f}k", delta="Length")
+        with config_col4:
+            stream_status = "Stream" if enable_streaming else "Batch"
+            st.metric("Mode", stream_status, delta="Delivery")
     
     st.divider()
     
