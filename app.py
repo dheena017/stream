@@ -229,125 +229,116 @@ def show_login_page():
         unsafe_allow_html=True
     )
     
-    # Hero section
-    col1, col2, col3 = st.columns([1, 3, 1])
-    
-    with col2:
-        st.markdown('<div class="login-header"><h1>🤖 AI Assistant</h1><div class="login-subtitle">Your intelligent multi-model AI companion</div></div>', unsafe_allow_html=True)
+    # Modern glassmorphism login card
+    st.markdown("""
+    <div style="background: rgba(255,255,255,0.85); backdrop-filter: blur(8px); border-radius: 22px; box-shadow: 0 8px 40px rgba(102,126,234,0.10); padding: 2.5rem 2.5rem 2rem 2.5rem; margin: 2.5rem auto 2rem auto; max-width: 480px; border: 1.5px solid #e0e7ef;">
+        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 16px; padding: 1.5rem 1rem 1rem 1rem; text-align: center; margin-bottom: 1.5rem; box-shadow: 0 2px 16px rgba(102,126,234,0.10);">
+            <h1 style="color: white; margin: 0; font-size: 2.2rem; font-weight: 800; letter-spacing: 0.5px;">🤖 AI Assistant</h1>
+            <div style="color: rgba(255,255,255,0.92); font-size: 1.1rem; margin-top: 0.5rem;">Your intelligent multi-model AI companion</div>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 0.7rem; margin-bottom: 1.2rem;">
+            <div class="feature-card" style="background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%); border-radius: 10px; padding: 0.8rem 1rem; border-left: 4px solid #667eea; font-size: 1rem;">✨ <strong>25+ AI Models</strong> from Google, OpenAI, Anthropic, Meta & more</div>
+            <div class="feature-card" style="background: linear-gradient(135deg, #10b98115 0%, #06b6d415 100%); border-radius: 10px; padding: 0.8rem 1rem; border-left: 4px solid #10b981; font-size: 1rem;">🧠 <strong>AI Brain Mode</strong> - Combines multiple models for enhanced responses</div>
+            <div class="feature-card" style="background: linear-gradient(135deg, #f59e0b15 0%, #fbbf2415 100%); border-radius: 10px; padding: 0.8rem 1rem; border-left: 4px solid #f59e0b; font-size: 1rem;">🌐 <strong>Internet Search</strong> - Real-time information from the web</div>
+            <div class="feature-card" style="background: linear-gradient(135deg, #f093fb15 0%, #f5576c15 100%); border-radius: 10px; padding: 0.8rem 1rem; border-left: 4px solid #f5576c; font-size: 1rem;">📎 <strong>Multimodal</strong> - Images, PDFs, Audio & Video support</div>
+        </div>
+    """, unsafe_allow_html=True)
+    # Check for Google OAuth
+    google_client_id = os.getenv("GOOGLE_CLIENT_ID", "")
         
-        # Feature highlights
-        st.markdown(
-            '<div class="feature-card">✨ <strong>25+ AI Models</strong> from Google, OpenAI, Anthropic, Meta & more</div>'
-            '<div class="feature-card">🧠 <strong>AI Brain Mode</strong> - Combines multiple models for enhanced responses</div>'
-            '<div class="feature-card">🌐 <strong>Internet Search</strong> - Real-time information from the web</div>'
-            '<div class="feature-card">📎 <strong>Multimodal</strong> - Images, PDFs, Audio & Video support</div>',
-            unsafe_allow_html=True
+    if google_client_id:
+        st.markdown("""
+        <div style="background: linear-gradient(135deg, #4285f4 0%, #357ae8 100%); padding: 1rem 1.2rem; border-radius: 10px; margin-bottom: 1.2rem; border-left: 4px solid #4285f4; color: white; font-weight: 600; font-size: 1.1rem; text-align: center;">
+            🔐 Sign in with Google
+        </div>
+        """, unsafe_allow_html=True)
+        oauth_code = st.text_input(
+            "Google OAuth Token (auto-filled from redirect)",
+            type="password",
+            key="oauth_token_input",
+            help="This will be auto-filled after Google authentication"
         )
-        
-        st.markdown("---")
-        
-        # Check for Google OAuth
-        google_client_id = os.getenv("GOOGLE_CLIENT_ID", "")
-        
-        if google_client_id:
-            st.markdown("#### 🔐 Sign in with Google")
-            
-            # JavaScript to handle OAuth redirect and extract token from URL
-            oauth_code = st.text_input(
-                "Google OAuth Token (auto-filled from redirect)",
-                type="password",
-                key="oauth_token_input",
-                help="This will be auto-filled after Google authentication"
-            )
-            
-            if oauth_code:
-                st.session_state.google_oauth_token = oauth_code
-                user_info = verify_google_oauth()
-                if user_info:
-                    st.session_state.authenticated = True
-                    st.session_state.username = user_info['email']
-                    st.session_state.user_info = user_info
-                    st.success("✅ Google login successful!")
-                    st.rerun()
-                else:
-                    st.error("❌ Invalid Google OAuth token")
-            
-            oauth_url = create_google_oauth_url()
-            st.markdown(f'<a href="{oauth_url}" target="_blank" class="google-btn">🔐 Sign in with Google</a>', unsafe_allow_html=True)
-            
-            st.markdown("---")
-            st.markdown("#### Or use Email/Username Login")
-        
-        # Tabs for Login and Register
-        tab_login, tab_register = st.tabs(["🔐 Login", "📝 Register"])
-        
-        with tab_login:
-            username_or_email = st.text_input(
-                "Email or Username", 
-                key="login_username", 
-                placeholder="Enter email or username"
-            )
-            password = st.text_input(
-                "Password", 
-                type="password", 
-                key="login_password", 
-                placeholder="Enter password"
-            )
-            
-            st.markdown("")
-            
-            col_login, col_info = st.columns([1, 1])
-            
-            with col_login:
-                if st.button("🔐 Login", width="stretch", type="primary"):
-                    if username_or_email and password:
-                        user_data = check_login(username_or_email, password)
-                        if user_data:
-                            st.session_state.authenticated = True
-                            st.session_state.username = user_data['username']
-                            st.session_state.user_info = user_data
-                            st.success("✅ Login successful!")
-                            st.rerun()
-                        else:
-                            st.error("❌ Invalid email/username or password")
+        if oauth_code:
+            st.session_state.google_oauth_token = oauth_code
+            user_info = verify_google_oauth()
+            if user_info:
+                st.session_state.authenticated = True
+                st.session_state.username = user_info['email']
+                st.session_state.user_info = user_info
+                st.success("✅ Google login successful!")
+                st.rerun()
+            else:
+                st.error("❌ Invalid Google OAuth token")
+        oauth_url = create_google_oauth_url()
+        st.markdown(f'<a href="{oauth_url}" target="_blank" class="google-btn">🔐 Sign in with Google</a>', unsafe_allow_html=True)
+        st.markdown("<div style='height:0.5rem;'></div>", unsafe_allow_html=True)
+        st.markdown("<div style='text-align:center; color:#64748b; font-weight:600; margin:0.5rem 0 0.5rem 0;'>or</div>", unsafe_allow_html=True)
+    # Tabs for Login and Register in a modern card
+    st.markdown("""
+    <div style="background: linear-gradient(135deg, #667eea10 0%, #764ba210 100%); padding: 1.5rem 1.2rem 1.2rem 1.2rem; border-radius: 14px; margin-bottom: 0.5rem; border-left: 4px solid #667eea;">
+    """, unsafe_allow_html=True)
+    tab_login, tab_register = st.tabs(["🔐 Login", "📝 Register"])
+    with tab_login:
+        username_or_email = st.text_input(
+            "Email or Username", 
+            key="login_username", 
+            placeholder="Enter email or username"
+        )
+        password = st.text_input(
+            "Password", 
+            type="password", 
+            key="login_password", 
+            placeholder="Enter password"
+        )
+        st.markdown("")
+        col_login, col_info = st.columns([1, 1])
+        with col_login:
+            if st.button("🔐 Login", width="stretch", type="primary"):
+                if username_or_email and password:
+                    user_data = check_login(username_or_email, password)
+                    if user_data:
+                        st.session_state.authenticated = True
+                        st.session_state.username = user_data['username']
+                        st.session_state.user_info = user_data
+                        st.success("✅ Login successful!")
+                        st.rerun()
                     else:
-                        st.warning("⚠️ Please enter both email/username and password")
-            
-            with col_info:
-                with st.popover("ℹ️ Info"):
-                    st.markdown("**Default Credentials:**")
-                    st.code("Email: admin@example.com\nUsername: admin\nPassword: admin123")
-                    st.markdown("---")
-                    st.markdown("**Login with email or username**")
-                    st.caption("You can use either your email address or username to login")
-                    if google_client_id:
-                        st.markdown("---")
-                        st.markdown("**Google OAuth Setup:**")
-                        st.caption("Set GOOGLE_CLIENT_ID and GOOGLE_REDIRECT_URI in environment variables")
-        
-        with tab_register:
-            st.markdown("#### Create New Account")
-            reg_name = st.text_input("Full Name", key="reg_name", placeholder="Enter your full name")
-            reg_email = st.text_input("Email Address", key="reg_email", placeholder="Enter your email")
-            reg_username = st.text_input("Username", key="reg_username", placeholder="Choose a username")
-            reg_password = st.text_input("Password", type="password", key="reg_password", placeholder="Choose a password")
-            reg_password_confirm = st.text_input("Confirm Password", type="password", key="reg_password_confirm", placeholder="Confirm password")
-            
-            st.markdown("")
-            
-            if st.button("📝 Register", width="stretch", type="primary"):
-                if not all([reg_name, reg_email, reg_username, reg_password, reg_password_confirm]):
-                    st.warning("⚠️ Please fill in all fields")
-                elif reg_password != reg_password_confirm:
-                    st.error("❌ Passwords do not match")
-                elif len(reg_password) < 6:
-                    st.error("❌ Password must be at least 6 characters")
-                elif "@" not in reg_email or "." not in reg_email:
-                    st.error("❌ Please enter a valid email address")
+                        st.error("❌ Invalid email/username or password")
                 else:
-                    if register_user(reg_username, reg_email, reg_password, reg_name):
-                        st.success("✅ Registration successful! You can now login.")
-                        st.balloons()
+                    st.warning("⚠️ Please enter both email/username and password")
+        with col_info:
+            with st.popover("ℹ️ Info"):
+                st.markdown("**Default Credentials:**")
+                st.code("Email: admin@example.com\nUsername: admin\nPassword: admin123")
+                st.markdown("---")
+                st.markdown("**Login with email or username**")
+                st.caption("You can use either your email address or username to login")
+                if google_client_id:
+                    st.markdown("---")
+                    st.markdown("**Google OAuth Setup:**")
+                    st.caption("Set GOOGLE_CLIENT_ID and GOOGLE_REDIRECT_URI in environment variables")
+    with tab_register:
+        st.markdown("#### Create New Account")
+        reg_name = st.text_input("Full Name", key="reg_name", placeholder="Enter your full name")
+        reg_email = st.text_input("Email Address", key="reg_email", placeholder="Enter your email")
+        reg_username = st.text_input("Username", key="reg_username", placeholder="Choose a username")
+        reg_password = st.text_input("Password", type="password", key="reg_password", placeholder="Choose a password")
+        reg_password_confirm = st.text_input("Confirm Password", type="password", key="reg_password_confirm", placeholder="Confirm password")
+        st.markdown("")
+        if st.button("📝 Register", width="stretch", type="primary"):
+            if not all([reg_name, reg_email, reg_username, reg_password, reg_password_confirm]):
+                st.warning("⚠️ Please fill in all fields")
+            elif reg_password != reg_password_confirm:
+                st.error("❌ Passwords do not match")
+            elif len(reg_password) < 6:
+                st.error("❌ Password must be at least 6 characters")
+            elif "@" not in reg_email or "." not in reg_email:
+                st.error("❌ Please enter a valid email address")
+            else:
+                if register_user(reg_username, reg_email, reg_password, reg_name):
+                    st.success("✅ Registration successful! You can now login.")
+                    st.balloons()
+    st.markdown("</div>", unsafe_allow_html=True)
                     else:
                         st.error("❌ Username or email already exists")
         
