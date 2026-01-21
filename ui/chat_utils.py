@@ -232,6 +232,7 @@ def extract_video_frame_thumbnails(file_like, max_frames: int = 3) -> List[str]:
     """
     thumbnails = []
     try:
+        # moviepy is optional; if unavailable, this will be handled
         from moviepy.editor import VideoFileClip
         import tempfile
         from io import BytesIO
@@ -265,15 +266,10 @@ def generate_blip_caption(image) -> Optional[str]:
     Returns caption string on success or None if BLIP is unavailable.
     """
     try:
-        from transformers import BlipProcessor, BlipForConditionalGeneration
-        import torch
-        processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-base")
-        model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-base")
-        device = "cuda" if torch.cuda.is_available() else "cpu"
-        model.to(device)
-
-        # Prepare inputs
+        # Prefer using cached model if available
+        processor, model, device = get_blip_model()
         inputs = processor(images=image, return_tensors="pt").to(device)
+        import torch
         with torch.no_grad():
             output_ids = model.generate(**inputs, max_new_tokens=50)
         caption = processor.decode(output_ids[0], skip_special_tokens=True)
@@ -297,10 +293,57 @@ def generate_image_captions(images: List, use_blip: bool = False) -> List[Dict]:
         for i, img in enumerate(images, 1):
             cap = generate_blip_caption(img)
             if not cap:
-                # fallback
+                # fallback to hosted captioner if provided via env or UI later
                 fallback = process_images_for_context([img])[0]
                 cap = fallback.get('caption')
             results.append({"name": f"image_{i}", "caption": cap})
     else:
         results = process_images_for_context(images)
     return results
+
+
+@st.cache_resource
+def get_blip_model():
+    """Load and cache BLIP processor and model. Returns (processor, model, device).
+
+    This uses `transformers` and `torch` if available. If not available, raises.
+    """
+    from transformers import BlipProcessor, BlipForConditionalGeneration
+    import torch
+    processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-base")
+    model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-base")
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    model.to(device)
+    return processor, model, device
+
+
+def preload_blip_model(timeout: int = 120) -> bool:
+    """Attempt to preload BLIP model; return True if successful, False otherwise."""
+    try:
+        # Calling the cached resource will download and cache the model
+        get_blip_model()
+        return True
+    except Exception as e:
+        logger.info(f"Preload BLIP model failed: {e}")
+        return False
+
+
+def call_hosted_caption_api(image, api_url: str, api_key: Optional[str] = None) -> Optional[str]:
+    """Call a hosted captioning API with the image. Expects JSON response with 'caption' or 'text'."""
+    try:
+        import requests
+        from io import BytesIO
+        buf = BytesIO()
+        image.save(buf, format='PNG')
+        buf.seek(0)
+        files = {'image': ('image.png', buf, 'image/png')}
+        headers = {}
+        if api_key:
+            headers['Authorization'] = f"Bearer {api_key}"
+        resp = requests.post(api_url, files=files, headers=headers, timeout=30)
+        resp.raise_for_status()
+        data = resp.json()
+        return data.get('caption') or data.get('text')
+    except Exception as e:
+        logger.info(f"Hosted caption API call failed: {e}")
+        return None

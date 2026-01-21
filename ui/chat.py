@@ -236,6 +236,32 @@ def show_chat_page():
     )
     st.session_state.enable_advanced_captioning = adv_caption
 
+    # Hosted caption API settings (optional)
+    if adv_caption:
+        hosted_url = st.text_input(
+            "Hosted Caption API URL (optional)",
+            value=st.session_state.get('hosted_caption_url', ''),
+            help="Optional external captioning service URL that accepts multipart form-image uploads and returns JSON {caption: ...}"
+        )
+        hosted_key = st.text_input(
+            "Hosted Caption API Key (optional)",
+            value=st.session_state.get('hosted_caption_api_key', ''),
+            help="Optional API key for hosted caption service"
+        )
+        st.session_state.hosted_caption_url = hosted_url
+        st.session_state.hosted_caption_api_key = hosted_key
+
+        # Preload BLIP model in background with spinner when enabled
+        if adv_caption and not st.session_state.get('blip_loaded', False):
+            with st.spinner('Downloading/preloading advanced caption model (BLIP)...'):
+                from ui.chat_utils import preload_blip_model
+                ok = preload_blip_model()
+                st.session_state['blip_loaded'] = bool(ok)
+                if ok:
+                    st.success('BLIP model ready')
+                else:
+                    st.info('BLIP not available; falling back to simple captions or hosted API')
+
     if st.session_state.get('voice_mode'):
         st.info("🎤 Voice Mode Active - Use audio input")
         audio = st.audio_input("Record")
