@@ -365,6 +365,81 @@ def logout():
         del st.session_state.user_info
     st.rerun()
 
+# --- COST TRACKING ---
+
+# Pricing per 1M tokens (input, output) - Updated Jan 2026 estimates
+MODEL_PRICING = {
+    # Google Gemini
+    "gemini-3-flash-preview": (0.075, 0.30),
+    "gemini-2.0-flash-exp": (0.075, 0.30),
+    "gemini-2.0-flash-latest": (0.075, 0.30),
+    "gemini-1.5-flash": (0.075, 0.30),
+    "gemini-1.5-pro": (1.25, 5.00),
+    "gemini-1.0-pro-vision-latest": (0.50, 1.50),
+    # OpenAI
+    "gpt-4o": (2.50, 10.00),
+    "gpt-4o-mini": (0.15, 0.60),
+    "gpt-4-turbo": (10.00, 30.00),
+    "o1-preview": (15.00, 60.00),
+    "o1-mini": (3.00, 12.00),
+    # Anthropic Claude
+    "claude-3-5-sonnet-20241022": (3.00, 15.00),
+    "claude-3-5-haiku-20241022": (0.25, 1.25),
+    "claude-3-opus-20240229": (15.00, 75.00),
+    # Together AI (Llama)
+    "meta-llama/Llama-3.3-70B-Instruct-Turbo": (0.88, 0.88),
+    "meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo": (3.50, 3.50),
+    "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo": (0.88, 0.88),
+    # xAI Grok
+    "grok-beta": (5.00, 15.00),
+    # DeepSeek
+    "deepseek-chat": (0.14, 0.28),
+    "deepseek-coder": (0.14, 0.28),
+}
+
+def estimate_tokens(text: str) -> int:
+    """Rough token estimate: ~4 chars per token for English"""
+    return len(text) // 4
+
+def calculate_cost(model: str, input_text: str, output_text: str) -> float:
+    """Calculate estimated cost for a request"""
+    pricing = MODEL_PRICING.get(model, (1.0, 1.0))  # Default fallback
+    input_tokens = estimate_tokens(input_text)
+    output_tokens = estimate_tokens(output_text)
+    
+    input_cost = (input_tokens / 1_000_000) * pricing[0]
+    output_cost = (output_tokens / 1_000_000) * pricing[1]
+    
+    return input_cost + output_cost
+
+def get_session_cost() -> Dict[str, Any]:
+    """Calculate total session cost from messages"""
+    total_cost = 0.0
+    cost_by_provider = {}
+    
+    messages = st.session_state.get("messages", [])
+    for i, msg in enumerate(messages):
+        if msg["role"] == "assistant":
+            model = msg.get("model", "unknown")
+            provider = msg.get("provider", "unknown")
+            
+            # Get previous user message for input estimation
+            input_text = messages[i-1]["content"] if i > 0 else ""
+            output_text = msg["content"]
+            
+            cost = calculate_cost(model, input_text, output_text)
+            total_cost += cost
+            
+            if provider not in cost_by_provider:
+                cost_by_provider[provider] = 0.0
+            cost_by_provider[provider] += cost
+    
+    return {
+        "total": total_cost,
+        "by_provider": cost_by_provider,
+        "message_count": len([m for m in messages if m["role"] == "assistant"])
+    }
+
 # --- HELPER FUNCTIONS ---
 
 @st.cache_resource
@@ -2218,6 +2293,31 @@ with st.sidebar:
 
     st.divider()
     
+    # Cost tracking display
+    with st.expander("💰 Cost Tracking", expanded=False):
+        session_cost = get_session_cost()
+        
+        cost_col1, cost_col2 = st.columns(2)
+        with cost_col1:
+            st.metric("Session Cost", f"${session_cost['total']:.6f}")
+        with cost_col2:
+            st.metric("API Calls", session_cost['message_count'])
+        
+        if session_cost['by_provider']:
+            st.markdown("**Cost by Provider:**")
+            for provider_name, cost in session_cost['by_provider'].items():
+                st.caption(f"• {provider_name}: ${cost:.6f}")
+        
+        st.markdown("---")
+        st.markdown("**Pricing Reference (per 1M tokens):**")
+        pricing_df = pd.DataFrame([
+            {"Model": k, "Input": f"${v[0]:.2f}", "Output": f"${v[1]:.2f}"}
+            for k, v in list(MODEL_PRICING.items())[:8]
+        ])
+        st.dataframe(pricing_df, use_container_width=True, hide_index=True)
+    
+    st.divider()
+    
     # Chat controls
     col1, col2 = st.columns(2)
     with col1:
@@ -2634,6 +2734,29 @@ if prompt:
             "top_p": top_p
         }
         
+        # Auto-select logic: detect query type and recommend models
+        auto_select = st.session_state.get("brain_auto_select", False)
+        detected_type = "general"
+        
+        if auto_select:
+            query_lower = prompt.lower()
+            # Detect query type
+            code_keywords = ["code", "function", "debug", "error", "programming", "python", "javascript", "api", "script", "class", "method"]
+            writing_keywords = ["write", "essay", "article", "email", "summarize", "translate", "draft", "blog"]
+            analysis_keywords = ["analyze", "compare", "explain", "why", "how does", "difference", "pros and cons"]
+            creative_keywords = ["brainstorm", "ideas", "creative", "story", "imagine", "generate", "invent"]
+            
+            if any(kw in query_lower for kw in code_keywords):
+                detected_type = "code"
+            elif any(kw in query_lower for kw in writing_keywords):
+                detected_type = "writing"
+            elif any(kw in query_lower for kw in analysis_keywords):
+                detected_type = "analysis"
+            elif any(kw in query_lower for kw in creative_keywords):
+                detected_type = "creative"
+            
+            st.caption(f"🎯 Detected query type: **{detected_type.title()}**")
+        
         if brain_use_google and google_api_key:
             models_to_query.append({
                 "provider": "google",
@@ -2666,15 +2789,29 @@ if prompt:
             st.error("⚠️ Please select at least one AI model and provide its API key in Brain Mode.")
             st.stop()
 
-        # Reorder models based on learned recommendations
+        # Reorder models based on learned recommendations + query type
         recommended_order = learning_brain.recommend_models(
             prompt,
             [m["provider"] for m in models_to_query]
         )
-        if recommended_order:
-            models_to_query.sort(
-                key=lambda m: recommended_order.index(m["provider"]) if m["provider"] in recommended_order else len(recommended_order)
-            )
+        
+        # Boost certain providers based on detected type
+        type_provider_boost = {
+            "code": ["openai", "anthropic"],  # GPT and Claude excel at code
+            "writing": ["anthropic", "openai"],  # Claude excels at writing
+            "analysis": ["google", "openai"],  # Gemini good at analysis
+            "creative": ["anthropic", "google"],
+            "general": []
+        }
+        boosted = type_provider_boost.get(detected_type, [])
+        
+        if recommended_order or boosted:
+            def sort_key(m):
+                provider = m["provider"]
+                base_score = recommended_order.index(provider) if provider in recommended_order else 10
+                boost = -5 if provider in boosted else 0
+                return base_score + boost
+            models_to_query.sort(key=sort_key)
         
         # Add prompt with internet context
         enhanced_prompt = prompt
