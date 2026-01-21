@@ -299,7 +299,7 @@ def show_login_page():
             col_login, col_info = st.columns([1, 1])
             
             with col_login:
-                if st.button("🔐 Login", use_container_width=True, type="primary"):
+                if st.button("🔐 Login", width="stretch", type="primary"):
                     if username_or_email and password:
                         user_data = check_login(username_or_email, password)
                         if user_data:
@@ -335,7 +335,7 @@ def show_login_page():
             
             st.markdown("")
             
-            if st.button("📝 Register", use_container_width=True, type="primary"):
+            if st.button("📝 Register", width="stretch", type="primary"):
                 if not all([reg_name, reg_email, reg_username, reg_password, reg_password_confirm]):
                     st.warning("⚠️ Please fill in all fields")
                 elif reg_password != reg_password_confirm:
@@ -554,7 +554,8 @@ def handle_openai_compatible_provider(
                 collected_chunks.append(piece)
                 yield piece
         st.write_stream(_iter_chunks())
-        return "".join(collected_chunks)
+        response_text = "".join(collected_chunks)
+        return response_text if response_text else "I apologize, but I couldn't generate a response. Please try again."
     else:
         response = client.chat.completions.create(
             model=model_name,
@@ -564,6 +565,8 @@ def handle_openai_compatible_provider(
             top_p=top_p,
         )
         response_text = response.choices[0].message.content
+        if not response_text:
+            response_text = "I apologize, but I couldn't generate a response. Please try again."
         st.markdown(response_text)
         return response_text
 
@@ -766,7 +769,7 @@ def show_profile_page():
     st.divider()
     
     # Back button
-    if st.button("← Back to Dashboard", use_container_width=True):
+    if st.button("← Back to Dashboard", width="stretch"):
         st.session_state.current_page = "dashboard"
         st.rerun()
 
@@ -817,7 +820,7 @@ def show_dashboard():
         </div>
         """, unsafe_allow_html=True)
         
-        if st.button("▶️ Open Chat", use_container_width=True, type="primary", key="quick_chat_btn"):
+        if st.button("▶️ Open Chat", width="stretch", type="primary", key="quick_chat_btn"):
             st.session_state.current_page = "chat"
             st.rerun()
     
@@ -829,7 +832,7 @@ def show_dashboard():
         </div>
         """, unsafe_allow_html=True)
         
-        if st.button("▶️ Go to Profile", use_container_width=True, key="quick_profile_btn"):
+        if st.button("▶️ Go to Profile", width="stretch", key="quick_profile_btn"):
             st.session_state.current_page = "profile"
             st.rerun()
     
@@ -843,7 +846,7 @@ def show_dashboard():
         </div>
         """, unsafe_allow_html=True)
         
-        if st.button("▶️ Show Stats", use_container_width=True, key="quick_brain_btn"):
+        if st.button("▶️ Show Stats", width="stretch", key="quick_brain_btn"):
             st.session_state.show_brain_stats = not st.session_state.get('show_brain_stats', False)
             st.rerun()
     
@@ -855,7 +858,7 @@ def show_dashboard():
         </div>
         """, unsafe_allow_html=True)
         
-        if st.button("▶️ Download", use_container_width=True, key="quick_export_btn"):
+        if st.button("▶️ Download", width="stretch", key="quick_export_btn"):
             if st.session_state.messages:
                 chat_export = json.dumps(st.session_state.messages, indent=2)
                 st.download_button(
@@ -863,7 +866,7 @@ def show_dashboard():
                     chat_export,
                     file_name="chat_history.json",
                     mime="application/json",
-                    use_container_width=True,
+                    width="stretch",
                     key="download_chat_btn"
                 )
             else:
@@ -895,14 +898,14 @@ def show_dashboard():
     quick_col1, quick_col2, quick_col3, quick_col4 = st.columns(4)
 
     with quick_col1:
-        if st.button("🔄 Clear Chat", use_container_width=True, key="clear_chat_quick"):
+        if st.button("🔄 Clear Chat", width="stretch", key="clear_chat_quick"):
             st.session_state.messages = []
             st.success("✅ Chat cleared!")
             st.rerun()
         st.caption("Reset conversation")
 
     with quick_col2:
-        if st.button("🧠 Reset Brain", use_container_width=True, key="reset_brain_quick"):
+        if st.button("🧠 Reset Brain", width="stretch", key="reset_brain_quick"):
             learning_brain = st.session_state.learning_brain
             learning_brain.reset_learning()
             st.success("✅ Brain reset!")
@@ -910,7 +913,7 @@ def show_dashboard():
         st.caption("Clear learning data")
 
     with quick_col3:
-        if st.button("💾 Save Brain", use_container_width=True, key="save_brain_quick"):
+        if st.button("💾 Save Brain", width="stretch", key="save_brain_quick"):
             learning_brain = st.session_state.learning_brain
             path = st.session_state.get("brain_state_path", "learning_brain_state.json")
             if learning_brain.save_to_file(path):
@@ -920,7 +923,7 @@ def show_dashboard():
         st.caption("Persist to disk")
 
     with quick_col4:
-        if st.button("📂 Load Brain", use_container_width=True, key="load_brain_quick"):
+        if st.button("📂 Load Brain", width="stretch", key="load_brain_quick"):
             learning_brain = st.session_state.learning_brain
             path = st.session_state.get("brain_state_path", "learning_brain_state.json")
             if learning_brain.load_from_file(path):
@@ -935,12 +938,12 @@ def show_dashboard():
     sec_col1, sec_col2, sec_col3, sec_col4 = st.columns(4)
 
     with sec_col1:
-        if st.button("📊 Refresh Stats", use_container_width=True, key="refresh_stats_quick"):
+        if st.button("📊 Refresh Stats", width="stretch", key="refresh_stats_quick"):
             st.rerun()
         st.caption("Update UI")
 
     with sec_col2:
-        if st.button("📥 Export Chat", use_container_width=True, key="export_chat_quick"):
+        if st.button("📥 Export Chat", width="stretch", key="export_chat_quick"):
             messages = st.session_state.get("messages", [])
             if messages:
                 chat_blob = "\n\n".join([f"{m['role'].upper()}: {m['content']}" for m in messages])
@@ -950,14 +953,14 @@ def show_dashboard():
         st.caption("Save conversation")
 
     with sec_col3:
-        if st.button("📄 Download Report", use_container_width=True, key="dl_report_quick"):
+        if st.button("📄 Download Report", width="stretch", key="dl_report_quick"):
             learning_brain = st.session_state.learning_brain
             report = learning_brain.format_learning_report()
             st.download_button("Download", report, "learning_report.md", "text/markdown", key="dl_rpt_quick2")
         st.caption("Brain insights")
 
     with sec_col4:
-        if st.button("🔗 Copy Session ID", use_container_width=True, key="copy_session_quick"):
+        if st.button("🔗 Copy Session ID", width="stretch", key="copy_session_quick"):
             session_id = st.session_state.get("session_id", "N/A")
             st.code(session_id)
         st.caption("For debugging")
@@ -1152,7 +1155,7 @@ Platform: {platform.system()}
 Python: {platform.python_version()}
 """
         
-        if st.button("📋 Copy Session Info", use_container_width=True):
+        if st.button("📋 Copy Session Info", width="stretch"):
             st.success("✅ Session info copied to clipboard!")
             st.code(session_info)
 
@@ -1485,11 +1488,11 @@ with st.sidebar:
     st.markdown("### 📍 Navigation")
     col_nav1, col_nav2 = st.columns(2)
     with col_nav1:
-        if st.button("📊 Dashboard", use_container_width=True, type="primary" if st.session_state.current_page == "dashboard" else "secondary"):
+        if st.button("📊 Dashboard", width="stretch", type="primary" if st.session_state.current_page == "dashboard" else "secondary"):
             st.session_state.current_page = "dashboard"
             st.rerun()
     with col_nav2:
-        if st.button("💬 Chat", use_container_width=True, type="primary" if st.session_state.current_page == "chat" else "secondary"):
+        if st.button("💬 Chat", width="stretch", type="primary" if st.session_state.current_page == "chat" else "secondary"):
             st.session_state.current_page = "chat"
             st.rerun()
     
@@ -1516,7 +1519,7 @@ with st.sidebar:
         col_pic, col_info = st.columns([1, 3])
         with col_pic:
             if user_info.get('picture'):
-                st.image(user_info['picture'], width=60, use_container_width=False)
+                st.image(user_info['picture'], width=60)
             else:
                 st.markdown('<div style="font-size: 3rem; text-align: center;">👤</div>', unsafe_allow_html=True)
         with col_info:
@@ -1557,7 +1560,7 @@ with st.sidebar:
                 <div class="card-description" style="font-size: 0.8rem;">View & manage account</div>
             </div>
             """, unsafe_allow_html=True)
-            if st.button("▶️ Open", use_container_width=True, key="view_profile_btn"):
+            if st.button("▶️ Open", width="stretch", key="view_profile_btn"):
                 st.session_state.show_profile_modal = True
         
         with col_action2:
@@ -1567,7 +1570,7 @@ with st.sidebar:
                 <div class="card-description" style="font-size: 0.8rem;">End session</div>
             </div>
             """, unsafe_allow_html=True)
-            if st.button("▶️ Sign Out", use_container_width=True, type="secondary", key="logout_oauth_btn"):
+            if st.button("▶️ Sign Out", width="stretch", type="secondary", key="logout_oauth_btn"):
                 logout()
                 
     else:
@@ -1597,7 +1600,7 @@ with st.sidebar:
             new_name = st.text_input("Display Name", value=user_data.get('name', st.session_state.username), key="edit_name")
             new_email = st.text_input("Email", value=user_data.get('email', ''), key="edit_email")
             
-            if st.button("💾 Save Profile Changes", use_container_width=True, key="save_profile_btn"):
+            if st.button("💾 Save Profile Changes", width="stretch", key="save_profile_btn"):
                 users = load_user_credentials()
                 if st.session_state.username in users:
                     users[st.session_state.username]['name'] = new_name
@@ -1619,7 +1622,7 @@ with st.sidebar:
             new_password = st.text_input("New Password", type="password", key="new_pwd")
             confirm_password = st.text_input("Confirm New Password", type="password", key="confirm_pwd")
             
-            if st.button("🔒 Update Password", use_container_width=True, key="update_pwd_btn"):
+            if st.button("🔒 Update Password", width="stretch", key="update_pwd_btn"):
                 if not all([current_password, new_password, confirm_password]):
                     st.warning("⚠️ Please fill all password fields")
                 elif new_password != confirm_password:
@@ -1664,7 +1667,7 @@ with st.sidebar:
                 <div class="card-description" style="font-size: 0.8rem;">View & manage account</div>
             </div>
             """, unsafe_allow_html=True)
-            if st.button("▶️ Open", use_container_width=True, key="view_profile_trad_btn"):
+            if st.button("▶️ Open", width="stretch", key="view_profile_trad_btn"):
                 st.session_state.show_profile_modal = True
         
         with col_action2:
@@ -1674,7 +1677,7 @@ with st.sidebar:
                 <div class="card-description" style="font-size: 0.8rem;">End session</div>
             </div>
             """, unsafe_allow_html=True)
-            if st.button("▶️ Sign Out", use_container_width=True, type="secondary", key="logout_trad_btn"):
+            if st.button("▶️ Sign Out", width="stretch", type="secondary", key="logout_trad_btn"):
                 logout()
     
     st.divider()
@@ -1904,7 +1907,7 @@ with st.sidebar:
             if strengths:
                 cmp_df = pd.DataFrame(strengths)[['model', 'success_rate', 'total']]
                 cmp_df = cmp_df.rename(columns={'model': 'Model', 'success_rate': 'Success %', 'total': 'Queries'})
-                st.dataframe(cmp_df, use_container_width=True)
+                st.dataframe(cmp_df, width="stretch")
             else:
                 st.info("No performance data yet.")
     
@@ -2133,20 +2136,20 @@ with st.sidebar:
 
         bcol1, bcol2, bcol3 = st.columns(3)
         with bcol1:
-            if st.button("💾 Save", use_container_width=True, key="save_brain"):
+            if st.button("💾 Save", width="stretch", key="save_brain"):
                 if learning_brain.save_to_file(state_path):
                     st.success(f"✓ Saved")
                 else:
                     st.error("❌ Failed")
         with bcol2:
-            if st.button("📂 Load", use_container_width=True, key="load_brain"):
+            if st.button("📂 Load", width="stretch", key="load_brain"):
                 if learning_brain.load_from_file(state_path):
                     st.success(f"✓ Loaded")
                     st.rerun()
                 else:
                     st.warning("⚠️ Not found")
         with bcol3:
-            if st.button("♻️ Reset", use_container_width=True, key="reset_brain"):
+            if st.button("♻️ Reset", width="stretch", key="reset_brain"):
                 learning_brain.reset_learning()
                 st.success("✓ Cleared")
                 st.rerun()
@@ -2172,7 +2175,7 @@ with st.sidebar:
                 export_blob,
                 "brain_state.json",
                 "application/json",
-                use_container_width=True,
+                width="stretch",
                 key="download_brain"
             )
         # --- Added: Visualizations, model table, feedback, topic viewer, report download
@@ -2323,7 +2326,7 @@ with st.sidebar:
             df_cmp = pd.DataFrame(strengths)
             df_cmp = df_cmp[['model', 'success_rate', 'success', 'total']]
             df_cmp = df_cmp.rename(columns={'model': 'Model', 'success_rate': 'Success %', 'success': 'Successes', 'total': 'Queries'})
-            st.dataframe(df_cmp, use_container_width=True)
+            st.dataframe(df_cmp, width="stretch")
 
             # Success rate bar chart
             st.markdown("#### Success Rate by Model")
@@ -2496,18 +2499,18 @@ with st.sidebar:
             {"Model": k, "Input": f"${v[0]:.2f}", "Output": f"${v[1]:.2f}"}
             for k, v in list(MODEL_PRICING.items())[:8]
         ])
-        st.dataframe(pricing_df, use_container_width=True, hide_index=True)
+        st.dataframe(pricing_df, width="stretch", hide_index=True)
     
     st.divider()
     
     # Chat controls
     col1, col2 = st.columns(2)
     with col1:
-        if st.button("🗑️ Clear", use_container_width=True):
+        if st.button("🗑️ Clear", width="stretch"):
             st.session_state.messages = []
             st.rerun()
     with col2:
-        if st.button("💾 Export", use_container_width=True):
+        if st.button("💾 Export", width="stretch"):
             if st.session_state.get("messages"):
                 chat_export = "\n\n".join(
                     [f"{msg['role'].upper()}: {msg['content']}" for msg in st.session_state.messages]
@@ -2517,7 +2520,7 @@ with st.sidebar:
                     chat_export,
                     "chat_history.txt",
                     "text/plain",
-                    use_container_width=True
+                    width="stretch"
                 )
     
     st.caption(f"Provider: {provider.upper()} | Model: {model_name}")
@@ -2618,20 +2621,26 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Conversation search
+def clear_chat_search():
+    st.session_state.chat_search_value = ""
+
+if "chat_search_value" not in st.session_state:
+    st.session_state.chat_search_value = ""
+
 search_col1, search_col2 = st.columns([4, 1])
 with search_col1:
-    chat_search = st.text_input("🔍 Search conversation", "", key="chat_search", label_visibility="collapsed", placeholder="Search messages...")
+    chat_search = st.text_input("🔍 Search conversation", st.session_state.chat_search_value, key="chat_search", label_visibility="collapsed", placeholder="Search messages...")
+    st.session_state.chat_search_value = chat_search
 with search_col2:
-    clear_search = st.button("Clear", key="clear_search", use_container_width=True)
-    if clear_search:
-        st.session_state.chat_search = ""
+    if st.button("Clear", key="clear_search", width="stretch"):
+        st.session_state.chat_search_value = ""
         st.rerun()
 
 # Filter messages based on search
 messages_to_display = st.session_state.messages
-if chat_search:
-    messages_to_display = [m for m in st.session_state.messages if chat_search.lower() in m.get("content", "").lower()]
-    st.caption(f"Found {len(messages_to_display)} message(s) matching '{chat_search}'")
+if st.session_state.chat_search_value:
+    messages_to_display = [m for m in st.session_state.messages if st.session_state.chat_search_value.lower() in m.get("content", "").lower()]
+    st.caption(f"Found {len(messages_to_display)} message(s) matching '{st.session_state.chat_search_value}'")
 
 # Display previous messages with enhanced UI
 for idx, message in enumerate(messages_to_display):
@@ -2641,7 +2650,7 @@ for idx, message in enumerate(messages_to_display):
             cols = st.columns(min(len(message["images"]), 3))
             for img_idx, img_data in enumerate(message["images"]):
                 with cols[img_idx % 3]:
-                    st.image(img_data, use_container_width=True)
+                    st.image(img_data, width="stretch")
         
         # Display file info if present
         if "files" in message and message["files"]:
@@ -2664,7 +2673,7 @@ for idx, message in enumerate(messages_to_display):
         
         with meta_col2:
             # Copy button
-            if st.button("📋 Copy", key=f"copy_{idx}", use_container_width=True):
+            if st.button("📋 Copy", key=f"copy_{idx}", width="stretch"):
                 st.code(message["content"], language=None)
                 st.success("Copied to clipboard area above!")
         
@@ -2672,7 +2681,7 @@ for idx, message in enumerate(messages_to_display):
             # Favorite/bookmark toggle
             fav_key = f"fav_{idx}"
             is_fav = st.session_state.get(fav_key, message.get("favorite", False))
-            if st.button("⭐" if is_fav else "☆", key=f"fav_btn_{idx}", use_container_width=True):
+            if st.button("⭐" if is_fav else "☆", key=f"fav_btn_{idx}", width="stretch"):
                 st.session_state[fav_key] = not is_fav
                 if idx < len(st.session_state.messages):
                     st.session_state.messages[idx]["favorite"] = not is_fav
@@ -2831,7 +2840,7 @@ if multimodal_options:
                             uploaded_images.append(img)
                             
                             with frame_cols[i % 5]:
-                                st.image(img, caption=f"@{t:.1f}s", use_container_width=True)
+                                st.image(img, caption=f"@{t:.1f}s", width="stretch")
                         
                         clip.close()
                         st.success(f"✅ Extracted {num_frames} frame{'s' if num_frames != 1 else ''} from {file.name}")
@@ -3097,7 +3106,7 @@ if prompt:
                         "Status": "✅ Success" if r.get('success') else "❌ Failed",
                         "Length": len(r.get('response', '')),
                     })
-                st.dataframe(pd.DataFrame(summary_data), use_container_width=True, hide_index=True)
+                st.dataframe(pd.DataFrame(summary_data), width="stretch", hide_index=True)
         
         # Synthesize responses
         synthesized_response = brain.synthesize_responses(
@@ -3176,7 +3185,7 @@ if prompt:
                 cols = st.columns(min(len(uploaded_images), 3))
                 for idx, img in enumerate(uploaded_images):
                     with cols[idx % 3]:
-                        st.image(img, use_container_width=True)
+                        st.image(img, width="stretch")
             if uploaded_file_info:
                 for file_info in uploaded_file_info:
                     st.caption(f"📎 {file_info['name']} ({file_info['type']})")
@@ -3243,6 +3252,8 @@ if prompt:
                         config=config,
                     )
                     response_text = response.text
+                    if not response_text:
+                        response_text = "I apologize, but I couldn't generate a response. Please try again."
                     loading_placeholder.empty()  # Clear loading skeleton
                     st.markdown(response_text)
                         
@@ -3258,6 +3269,7 @@ if prompt:
                         
                 elif provider == "anthropic":
                     # Anthropic Claude
+                    loading_placeholder.empty()  # Clear loading skeleton
                     from anthropic import Anthropic
                     client = Anthropic(api_key=resolved_api_key)
                     
@@ -3270,6 +3282,7 @@ if prompt:
                     messages.append({"role": "user", "content": final_prompt})
                     
                     if enable_streaming:
+                        collected_text = []
                         with client.messages.stream(
                             model=model_name,
                             messages=messages,
@@ -3278,7 +3291,12 @@ if prompt:
                             top_p=top_p,
                             system=system_instruction if system_instruction else None,
                         ) as stream:
-                            response_text = st.write_stream(stream.text_stream)
+                            for text in stream.text_stream:
+                                collected_text.append(text)
+                                st.write(text)
+                        response_text = "".join(collected_text)
+                        if not response_text:
+                            response_text = "I apologize, but I couldn't generate a response. Please try again."
                     else:
                         response = client.messages.create(
                             model=model_name,
@@ -3289,10 +3307,13 @@ if prompt:
                             system=system_instruction if system_instruction else None,
                         )
                         response_text = response.content[0].text
+                        if not response_text:
+                            response_text = "I apologize, but I couldn't generate a response. Please try again."
                         st.markdown(response_text)
                         
                 elif provider == "together":
                     # Together AI (for Llama)
+                    loading_placeholder.empty()  # Clear loading skeleton
                     client = get_openai_client(resolved_api_key, base_url="https://api.together.xyz/v1")
                     conversation_history = build_conversation_history(st.session_state.messages)
                     messages = create_openai_messages(conversation_history, final_prompt, system_instruction)
@@ -3302,6 +3323,7 @@ if prompt:
                         
                 elif provider == "xai":
                     # xAI Grok (uses OpenAI-compatible API)
+                    loading_placeholder.empty()  # Clear loading skeleton
                     client = get_openai_client(resolved_api_key, base_url="https://api.x.ai/v1")
                     conversation_history = build_conversation_history(st.session_state.messages)
                     messages = create_openai_messages(conversation_history, final_prompt, system_instruction)
@@ -3311,6 +3333,7 @@ if prompt:
                         
                 elif provider == "deepseek":
                     # DeepSeek (uses OpenAI-compatible API)
+                    loading_placeholder.empty()  # Clear loading skeleton
                     client = get_openai_client(resolved_api_key, base_url="https://api.deepseek.com")
                     conversation_history = build_conversation_history(st.session_state.messages)
                     messages = create_openai_messages(conversation_history, final_prompt, system_instruction)
@@ -3354,7 +3377,7 @@ if prompt:
                     # Retry button
                     retry_col1, retry_col2 = st.columns([1, 3])
                     with retry_col1:
-                        if st.button("🔄 Retry", key="retry_request", use_container_width=True):
+                        if st.button("🔄 Retry", key="retry_request", width="stretch"):
                             st.rerun()
                     with retry_col2:
                         st.caption("Click to try again with the same prompt")
