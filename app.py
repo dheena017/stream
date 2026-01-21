@@ -1551,23 +1551,64 @@ with st.sidebar:
     
     # Enhanced Multimodal & Voice sections
     with st.expander("📎 Multimodal & Voice Features", expanded=False):
-        st.markdown("#### Multimodal Input")
+        st.markdown("#### 📎 Multimodal Input")
+        
+        # Quick presets
+        preset_col1, preset_col2, preset_col3 = st.columns(3)
+        with preset_col1:
+            if st.button("📸 Images Only", use_container_width=True):
+                st.session_state.multimodal_preset = ["Images"]
+        with preset_col2:
+            if st.button("📄 Documents", use_container_width=True):
+                st.session_state.multimodal_preset = ["Documents (PDF/TXT)"]
+        with preset_col3:
+            if st.button("🎬 All Media", use_container_width=True):
+                st.session_state.multimodal_preset = ["Images", "Documents (PDF/TXT)", "Audio Files", "Video Frames"]
+        
         multimodal_options = st.multiselect(
             "Enable file types:",
             ["Images", "Documents (PDF/TXT)", "Audio Files", "Video Frames"],
-            default=[],
-            help="Select file types you want to upload and analyze"
+            default=st.session_state.get('multimodal_preset', []),
+            help="Drag & drop supported • Multiple files allowed"
         )
         
         if multimodal_options:
             st.success(f"✅ {len(multimodal_options)} file type(s) enabled")
+            
+            # Advanced multimodal settings
+            with st.expander("⚙️ Advanced Settings", expanded=False):
+                if "Images" in multimodal_options:
+                    image_resize = st.checkbox("Auto-resize large images", value=True, help="Resize images > 2MB for faster processing")
+                    st.session_state.image_resize = image_resize
+                
+                if "Documents (PDF/TXT)" in multimodal_options:
+                    pdf_page_limit = st.slider("PDF page limit", 1, 50, 10, help="Max pages to extract from PDFs")
+                    st.session_state.pdf_page_limit = pdf_page_limit
+                
+                if "Video Frames" in multimodal_options:
+                    frame_count = st.slider("Video frames to extract", 1, 10, 5, help="Number of frames to sample from videos")
+                    st.session_state.frame_count = frame_count
         
-        st.markdown("#### Voice Mode")
+        st.markdown("#### 🎤 Voice Mode")
         voice_mode = st.toggle("🎤 Enable Voice Input/Output", value=st.session_state.voice_mode, help="Use voice input and hear responses")
         st.session_state.voice_mode = voice_mode
         
         if voice_mode:
-            auto_speak = st.checkbox("🔊 Auto-speak responses", value=True, help="Automatically read AI responses aloud")
+            voice_col1, voice_col2 = st.columns(2)
+            with voice_col1:
+                auto_speak = st.checkbox("🔊 Auto-speak responses", value=True, help="Automatically read AI responses aloud")
+            with voice_col2:
+                voice_lang = st.selectbox(
+                    "Voice language",
+                    ["en", "es", "fr", "de", "it", "pt", "ru", "ja", "ko", "zh-CN"],
+                    index=0,
+                    help="Language for text-to-speech"
+                )
+                st.session_state.voice_lang = voice_lang
+            
+            voice_speed = st.slider("Speech speed", 0.5, 2.0, 1.0, 0.1, help="Text-to-speech playback speed")
+            st.session_state.voice_speed = voice_speed
+            
             st.info("🎤 Voice mode active - Use audio recorder in chat")
         else:
             auto_speak = False
@@ -1754,24 +1795,30 @@ extra_context = ""
 
 # Multimodal file upload
 if multimodal_options:
-    st.info(f"📎 Multimodal Mode: {', '.join(multimodal_options)} enabled")
+    with st.container():
+        st.markdown(
+            f'<div style="padding: 10px; background: linear-gradient(90deg, #667eea 0%, #764ba2 100%); '
+            f'border-radius: 10px; color: white; text-align: center; margin-bottom: 10px;">'
+            f'📎 <strong>Multimodal Mode Active</strong> • {', '.join(multimodal_options)}</div>',
+            unsafe_allow_html=True
+        )
     
     # Determine allowed file types
     allowed_types = []
     if "Images" in multimodal_options:
-        allowed_types.extend(["jpg", "jpeg", "png", "gif", "webp"])
+        allowed_types.extend(["jpg", "jpeg", "png", "gif", "webp", "bmp"])
     if "Documents (PDF/TXT)" in multimodal_options:
-        allowed_types.extend(["pdf", "txt", "md"])
+        allowed_types.extend(["pdf", "txt", "md", "docx"])
     if "Audio Files" in multimodal_options:
-        allowed_types.extend(["mp3", "wav", "m4a", "ogg"])
+        allowed_types.extend(["mp3", "wav", "m4a", "ogg", "flac"])
     if "Video Frames" in multimodal_options:
-        allowed_types.extend(["mp4", "avi", "mov", "mkv"])
+        allowed_types.extend(["mp4", "avi", "mov", "mkv", "webm"])
     
     uploaded_files = st.file_uploader(
-        "Upload files for analysis",
+        "🎯 Drag & drop files here or click to browse",
         type=allowed_types,
         accept_multiple_files=True,
-        help="Upload one or more files to analyze"
+        help=f"Supported: {', '.join(allowed_types[:10])}{'...' if len(allowed_types) > 10 else ''}"
     )
     
     if uploaded_files:
@@ -1779,10 +1826,24 @@ if multimodal_options:
             file_ext = file.name.split('.')[-1].lower()
             
             # Handle images
-            if file_ext in ["jpg", "jpeg", "png", "gif", "webp"]:
+            if file_ext in ["jpg", "jpeg", "png", "gif", "webp", "bmp"]:
                 img = Image.open(file)
+                
+                # Auto-resize if enabled
+                if st.session_state.get('image_resize', True):
+                    max_size = (1024, 1024)
+                    img.thumbnail(max_size, Image.Resampling.LANCZOS)
+                
                 uploaded_images.append(img)
-                st.image(img, caption=file.name, width=200)
+                
+                # Enhanced preview with metadata
+                img_col1, img_col2 = st.columns([1, 3])
+                with img_col1:
+                    st.image(img, caption=file.name, width=150)
+                with img_col2:
+                    st.success(f"✅ **{file.name}**")
+                    st.caption(f"📐 Size: {img.size[0]}×{img.size[1]}px • Format: {img.format}")
+                
                 uploaded_file_info.append({"name": file.name, "type": "Image"})
             
             # Handle PDFs
