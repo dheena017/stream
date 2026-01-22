@@ -585,6 +585,3 @@ def preload_blip_model_with_progress(progress_callback: Optional[Callable[[int, 
              progress_callback(0, f"Failed: {str(e)}")
         return False
 
-    except Exception as e:
-        logger.info(f"extract_video_frame_thumbnails error: {e}")
-        return thumbnails
