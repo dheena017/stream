@@ -460,22 +460,10 @@ def extract_video_frame_thumbnails(file_like, max_frames: int = 3) -> List[str]:
     return thumbnails
 
 
-@st.cache_resource(show_spinner=False)
-def _load_blip_resources():
-    from transformers import BlipProcessor, BlipForConditionalGeneration
-    import torch
-    
-    # Use the smaller base model
-    model_id = "Salesforce/blip-image-captioning-base"
-    processor = BlipProcessor.from_pretrained(model_id)
-    model = BlipForConditionalGeneration.from_pretrained(model_id)
-    
-    device = "cuda" if torch.cuda.is_available() else "cpu"
-    model.to(device)
-    return processor, model, device
 
-def get_blip_model() -> Tuple[Any, Any, Any]:
-    return _load_blip_resources()
+# Consolidated BLIP Logic is now at the bottom of the file
+# Removed duplicate definition to fix linter error
+
 
 
 def generate_blip_caption(image) -> Optional[str]:
@@ -544,35 +532,57 @@ def preload_blip_model(timeout: int = 120) -> bool:
         return False
 
 
+@st.cache_resource(show_spinner=False)
+def _load_blip_resources():
+    from transformers import BlipProcessor, BlipForConditionalGeneration
+    import torch
+    
+    model_id = "Salesforce/blip-image-captioning-base"
+    
+    # helper to load with retry strategy
+    def load_with_fallback(cls, model_id):
+        # 1. Try local cache first
+        try:
+            return cls.from_pretrained(model_id, local_files_only=True)
+        except Exception:
+            # 2. Try download
+            return cls.from_pretrained(model_id, local_files_only=False)
+
+    processor = load_with_fallback(BlipProcessor, model_id)
+    model = load_with_fallback(BlipForConditionalGeneration, model_id)
+    
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    model.to(device)
+    return processor, model, device
+
+def get_blip_model():
+    return _load_blip_resources()
+
 def preload_blip_model_with_progress(progress_callback: Optional[Callable[[int, str], None]] = None) -> bool:
-    global BLIP_CACHE
+    """
+    Simulated progress loader that actually just triggers the cached resource load.
+    Since st.cache_resource handles the singleton, we just call it.
+    """
     try:
         if progress_callback:
-            progress_callback(0, "Initializing BLIP preload...")
+            progress_callback(10, "Checking local cache...")
+        
+        # We'll use a thread/process safe check by just calling the cached function
+        # Streamlit's cache will handle the heavy lifting.
+        
         if progress_callback:
-            progress_callback(10, "Loading BLIP processor...")
-        from transformers import BlipProcessor
-        processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-base")
-        if progress_callback:
-            progress_callback(40, "Processor loaded; loading BLIP model...")
-        from transformers import BlipForConditionalGeneration
-        import torch
-        model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-base")
-        if progress_callback:
-            progress_callback(80, "Model downloaded; moving to device...")
-        device = "cuda" if torch.cuda.is_available() else "cpu"
-        model.to(device)
-        BLIP_CACHE = (processor, model, device)
+             progress_callback(30, "Loading BLIP model items...")
+        
+        # This will block until loaded
+        _load_blip_resources()
+        
         if progress_callback:
             progress_callback(100, "BLIP model ready")
         return True
     except Exception as e:
-        logger.info(f"Preload BLIP model failed with progress: {e}")
+        logger.error(f"BLIP load failed: {e}")
         if progress_callback:
-            try:
-                progress_callback(100, f"Failed: {e}")
-            except Exception:
-                pass
+             progress_callback(0, f"Failed: {str(e)}")
         return False
 
     except Exception as e:
