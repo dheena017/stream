@@ -235,42 +235,50 @@ def show_chat_page():
 
     # Hosted caption API settings (optional)
     if adv_caption:
-        hosted_url = st.text_input(
-            "Hosted Caption API URL (optional)",
-            value=st.session_state.get('hosted_caption_url', ''),
-            help="Optional external captioning service URL that accepts multipart form-image uploads and returns JSON {caption: ...}"
-        )
-        hosted_key = st.text_input(
-            "Hosted Caption API Key (optional)",
-            value=st.session_state.get('hosted_caption_api_key', ''),
-            help="Optional API key for hosted caption service"
-        )
-        st.session_state.hosted_caption_url = hosted_url
-        st.session_state.hosted_caption_api_key = hosted_key
+        # Check readiness without triggering download/load
+        from ui.chat_utils import get_blip_model
+        
+        # Check if the resource is already cached in Streamlit
+        # We can try to peek or just rely on a session state flag that indicates explicit load success 
+        model_ready = st.session_state.get('blip_loaded', False)
+        
+        if not model_ready:
+            st.warning("⚠️ High Performance Model Required")
+            st.caption("Advanced captioning requires downloading the BLIP model (~1GB). This happens only once.")
+            
+            if st.button("⬇️ Download & Load BLIP Model"):
+                from ui.chat_utils import preload_blip_model_with_progress
+                progress_bar = st.progress(0)
+                status_text = st.empty()
 
-        # Preload BLIP model in background with progress when enabled
-        if adv_caption and not st.session_state.get('blip_loaded', False):
-            from ui.chat_utils import preload_blip_model_with_progress
-            progress_bar = st.progress(0)
-            status_text = st.empty()
+                def _progress_callback(percent: int, message: str):
+                    try:
+                        progress_bar.progress(min(max(int(percent), 0), 100))
+                        status_text.text(message)
+                    except Exception:
+                        pass
 
-            def _progress_callback(percent: int, message: str):
-                try:
-                    progress_bar.progress(min(max(int(percent), 0), 100))
-                    status_text.text(message)
-                except Exception:
-                    pass
-
-            with st.spinner('Downloading/preloading advanced caption model (BLIP)...'):
-                ok = preload_blip_model_with_progress(progress_callback=_progress_callback)
-                st.session_state['blip_loaded'] = bool(ok)
-                if ok:
-                    progress_bar.progress(100)
-                    status_text.text('BLIP model ready')
-                    st.success('BLIP model ready')
-                else:
-                    status_text.text('BLIP not available; falling back to simple captions or hosted API')
-                    st.info('BLIP not available; falling back to simple captions or hosted API')
+                with st.spinner('Downloading BLIP model...'):
+                    ok = preload_blip_model_with_progress(progress_callback=_progress_callback)
+                    if ok:
+                        st.session_state['blip_loaded'] = True
+                        progress_bar.progress(100)
+                        status_text.text('Model loaded successfully!')
+                        st.success('BLIP model ready')
+                        st.rerun()
+                    else:
+                         st.error("Failed to load BLIP model.")
+        else:
+             st.success("✅ BLIP Model Ready")
+             
+        # Hosted URL options
+        with st.expander("Hosted Caption API (Alternative)", expanded=False):
+             hosted_url = st.text_input(
+                "Hosted Caption API URL",
+                value=st.session_state.get('hosted_caption_url', ''),
+                help="External captioning service URL"
+            )
+             st.session_state.hosted_caption_url = hosted_url
 
     if st.session_state.get('voice_mode'):
         st.info("🎤 Voice Mode Active - Use audio input")

@@ -450,18 +450,22 @@ def extract_video_frame_thumbnails(file_like, max_frames: int = 3) -> List[str]:
     return thumbnails
 
 
-def get_blip_model() -> Tuple[Any, Any, Any]:
-    global BLIP_CACHE
-    if BLIP_CACHE is not None:
-        return BLIP_CACHE
+@st.cache_resource(show_spinner=False)
+def _load_blip_resources():
     from transformers import BlipProcessor, BlipForConditionalGeneration
     import torch
-    processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-base")
-    model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-base")
+    
+    # Use the smaller base model
+    model_id = "Salesforce/blip-image-captioning-base"
+    processor = BlipProcessor.from_pretrained(model_id)
+    model = BlipForConditionalGeneration.from_pretrained(model_id)
+    
     device = "cuda" if torch.cuda.is_available() else "cpu"
     model.to(device)
-    BLIP_CACHE = (processor, model, device)
-    return BLIP_CACHE
+    return processor, model, device
+
+def get_blip_model() -> Tuple[Any, Any, Any]:
+    return _load_blip_resources()
 
 
 def generate_blip_caption(image) -> Optional[str]:
