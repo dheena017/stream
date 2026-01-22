@@ -67,6 +67,27 @@ def create_openai_messages(conversation_history: List[Dict], current_prompt: str
     return messages
 
 
+# --- Resilience Helpers ---
+import time
+import functools
+
+def retry_with_backoff(retries=3, backoff_in_seconds=1):
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            x = 0
+            while True:
+                try:
+                    return func(*args, **kwargs)
+                except Exception as e:
+                    if x == retries:
+                        raise e
+                    sleep = (backoff_in_seconds * 2 ** x)
+                    time.sleep(sleep)
+                    x += 1
+        return wrapper
+    return decorator
+
 # --- Provider Handlers ---
 def handle_google_provider(
     api_key: str, 
@@ -76,7 +97,8 @@ def handle_google_provider(
     temperature: float = 0.7,
     max_tokens: int = 2048,
     top_p: float = 0.95,
-    images: List = None
+    images: List = None,
+    enable_streaming: bool = False
 ) -> str:
     try:
         if not api_key: return "Please provide a Google API Key."
@@ -99,9 +121,33 @@ def handle_google_provider(
         
         contents.append(prompt)
         
-        # Note: Streaming is conditionally supported; using non-stream for stability in this refactor
-        resp = client.models.generate_content(model=model_name, contents=contents, config=cfg)
-        return resp.text
+        @retry_with_backoff(retries=2)
+        def _generate():
+            if enable_streaming:
+                return client.models.generate_content_stream(model=model_name, contents=contents, config=cfg)
+            else:
+                return client.models.generate_content(model=model_name, contents=contents, config=cfg)
+
+        response = _generate()
+        
+        if enable_streaming:
+            collected_text = []
+            def _stream_gen():
+                for chunk in response:
+                    if chunk.text:
+                        collected_text.append(chunk.text)
+                        yield chunk.text
+            
+            try:
+                st.write_stream(_stream_gen())
+            except Exception as e:
+                logger.warning(f"Google streaming visualization failed: {e}")
+                # Fallback to text if stream UI fails logic
+            
+            return "".join(collected_text)
+        else:
+             return response.text
+
     except Exception as e:
         logger.error(f"Google provider error: {e}")
         return f"Error connecting to Google Gemini: {str(e)}"
@@ -112,7 +158,8 @@ def handle_anthropic_provider(
     messages: List[Dict],
     system_instruction: Optional[str] = None,
     temperature: float = 0.7,
-    max_tokens: int = 2048
+    max_tokens: int = 2048,
+    enable_streaming: bool = False
 ) -> str:
     try:
         if not api_key: return "Please provide an Anthropic API Key."
@@ -123,13 +170,37 @@ def handle_anthropic_provider(
              "model": model_name,
              "messages": messages,
              "max_tokens": max_tokens,
-             "temperature": temperature
+             "temperature": temperature,
         }
         if system_instruction:
              kwargs["system"] = system_instruction
              
-        resp = client.messages.create(**kwargs)
-        return resp.content[0].text
+        @retry_with_backoff(retries=2)
+        def _create_message():
+            if enable_streaming:
+                return client.messages.create(stream=True, **kwargs)
+            else:
+                return client.messages.create(stream=False, **kwargs)
+
+        response = _create_message()
+        
+        if enable_streaming:
+            collected_text = []
+            def _stream_gen():
+                for event in response:
+                    if event.type == 'content_block_delta':
+                        text = event.delta.text
+                        collected_text.append(text)
+                        yield text
+            
+            try:
+                st.write_stream(_stream_gen())
+            except Exception:
+                pass
+            return "".join(collected_text)
+        else:
+            return response.content[0].text
+
     except Exception as e:
          logger.error(f"Anthropic provider error: {e}")
          return f"Error connecting to Anthropic Claude: {str(e)}"
@@ -156,7 +227,10 @@ def generate_standard_response(
         stream = config.get('enable_streaming', False)
 
         if provider == "google":
-            return handle_google_provider(api_key, model_name, prompt, system_instruction, temp, max_tok, top_p, images)
+            return handle_google_provider(
+                api_key, model_name, prompt, system_instruction, 
+                temp, max_tok, top_p, images, enable_streaming=stream
+            )
             
         elif provider in ["openai", "together", "xai", "deepseek"]:
             base_urls = {
@@ -171,7 +245,10 @@ def generate_standard_response(
         elif provider == "anthropic":
             # Anthropic expects just user/assistant messages
             msgs = [{"role": "user", "content": prompt}] # Simplified for this call; ideally use full history if supported
-            return handle_anthropic_provider(api_key, model_name, msgs, system_instruction, temp, max_tok)
+            return handle_anthropic_provider(
+                api_key, model_name, msgs, system_instruction, 
+                temp, max_tok, enable_streaming=stream
+            )
             
         return "Provider not supported."
         
@@ -205,15 +282,23 @@ def handle_openai_compatible_provider(
     top_p: float,
     enable_streaming: bool
 ) -> str:
-    if enable_streaming:
-        stream = client.chat.completions.create(
+    @retry_with_backoff(retries=2)
+    def _create_completion(stream_mode):
+        return client.chat.completions.create(
             model=model_name,
             messages=messages,
             temperature=temperature,
             max_tokens=max_tokens,
             top_p=top_p,
-            stream=True
+            stream=stream_mode
         )
+
+    if enable_streaming:
+        try:
+            stream = _create_completion(True)
+        except Exception as e:
+            return f"Error: {str(e)}"
+
         collected_chunks = []
         def _iter_chunks():
             for chunk in stream:
@@ -228,13 +313,11 @@ def handle_openai_compatible_provider(
         response_text = "".join(collected_chunks)
         return response_text if response_text else "I apologize, but I couldn't generate a response."
     else:
-        response = client.chat.completions.create(
-            model=model_name,
-            messages=messages,
-            temperature=temperature,
-            max_tokens=max_tokens,
-            top_p=top_p,
-        )
+        try:
+            response = _create_completion(False)
+        except Exception as e:
+            return f"Error: {str(e)}"
+
         response_text = getattr(response.choices[0].message, 'content', None) or response.choices[0].message['content']
         if not response_text:
             response_text = "I apologize, but I couldn't generate a response."
