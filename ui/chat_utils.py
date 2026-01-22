@@ -32,8 +32,8 @@ def get_anthropic_client(api_key: str):
 def get_google_client(api_key: str):
     # Import dynamically to avoid hard dependency if not used
     import google.generativeai as genai
-    return genai.Client(api_key=api_key)
-
+    genai.configure(api_key=api_key)
+    return genai
 
 # --- Conversation helpers ---
 def build_conversation_history(messages: List[Dict], exclude_last: bool = True, max_messages: int = 20, max_chars: int = 50000) -> List[Dict]:
@@ -103,30 +103,46 @@ def handle_google_provider(
     try:
         if not api_key: return "Please provide a Google API Key."
         import google.generativeai as genai
-        client = genai.Client(api_key=api_key)
+        # Configure the global instance
+        genai.configure(api_key=api_key)
         
-        cfg = {"temperature": temperature, "max_output_tokens": max_tokens, "top_p": top_p}
-        if system_instruction:
-            cfg["system_instruction"] = system_instruction
+        # Mapping config specifically for GenerativeModel
+        generation_config = genai.types.GenerationConfig(
+            temperature=temperature,
+            max_output_tokens=max_tokens,
+            top_p=top_p
+        )
+        
+        # Initialize model
+        # system_instruction is supported in newer versions as init argument or via specific methods
+        # For broader compatibility, passing via constructor if supported, else prepending to prompt might be needed
+        # But latest SDK supports 'system_instruction' in GenerativeModel constructor
+        try:
+            model = genai.GenerativeModel(model_name=model_name, system_instruction=system_instruction)
+        except TypeError:
+            # Fallback for older SDK versions that don't support system_instruction in init
+            model = genai.GenerativeModel(model_name=model_name)
+            if system_instruction:
+                prompt = f"{system_instruction}\n\n{prompt}"
             
         contents = []
         if images:
             from io import BytesIO
             import base64
             for img in images:
-                img_byte_arr = BytesIO()
-                img.save(img_byte_arr, format='PNG')
-                b64_data = base64.b64encode(img_byte_arr.getvalue()).decode()
-                contents.append({"inline_data": {"mime_type": "image/png", "data": b64_data}})
+                # Gemai SDK can take PIL images directly in 'contents'
+                contents.append(img)
         
         contents.append(prompt)
         
         @retry_with_backoff(retries=2)
         def _generate():
-            if enable_streaming:
-                return client.models.generate_content_stream(model=model_name, contents=contents, config=cfg)
-            else:
-                return client.models.generate_content(model=model_name, contents=contents, config=cfg)
+            # For gemini, we can pass stream=True/False to generate_content
+            return model.generate_content(
+                contents, 
+                generation_config=generation_config,
+                stream=enable_streaming
+            )
 
         response = _generate()
         
@@ -142,7 +158,6 @@ def handle_google_provider(
                 st.write_stream(_stream_gen())
             except Exception as e:
                 logger.warning(f"Google streaming visualization failed: {e}")
-                # Fallback to text if stream UI fails logic
             
             return "".join(collected_text)
         else:
