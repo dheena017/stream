@@ -133,18 +133,26 @@ def show_chat_page():
             # Metadata footer
             if msg["role"] == "assistant":
                 st.markdown("---")
-                mc1, mc2, mc3 = st.columns([2, 1, 1])
+                mc1, mc2, mc3 = st.columns([0.6, 0.2, 0.2])
                 with mc1:
                     prov = msg.get('provider', '')
                     mod = msg.get('model', '')
                     icon = model_icons.get(prov, "🤖")
                     st.caption(f"{icon} {mod} • {msg.get('timestamp','')}")
+                
                 with mc2:
                      if "response_time" in msg:
                          st.caption(f"⚡ {msg['response_time']:.2f}s")
+                
                 with mc3:
-                    if st.button("📋", key=f"copy_{idx}", help="Copy"):
-                        st.code(msg["content"])
+                    # Action buttons
+                    c_copy, c_regen = st.columns(2)
+                    with c_copy:
+                        if st.button("📋", key=f"copy_{idx}", help="View raw text to copy"):
+                            st.code(msg["content"], language=None)
+                    with c_regen:
+                        if st.button("🔄", key=f"regen_{idx}", help="Regenerate (Not implemented yet)"):
+                             st.toast("Regeneration coming soon!")
     
     # 4. Internet Search Configuration
     with st.expander("🌐 Internet Search Settings", expanded=st.session_state.get('enable_internet_search', False)):
