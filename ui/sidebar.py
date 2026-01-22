@@ -59,6 +59,47 @@ def render_sidebar():
             
         st.divider()
 
+        # --- CHAT HISTORY ---
+        try:
+            from ui.database import get_user_conversations, create_new_conversation, get_conversation_messages
+            
+            c_hist1, c_hist2 = st.columns([0.2, 0.8])
+            with c_hist1:
+                 st.markdown("### 🕒")
+            with c_hist2:
+                if st.button("➕ New Chat", use_container_width=True, type="primary"):
+                     st.session_state.messages = []
+                     # Create immediately or wait for first message? 
+                     # Better to wait for first message to avoid empty entries, 
+                     # BUT to support "switching", we just clear the ID so a new one is made on first send.
+                     if 'conversation_id' in st.session_state:
+                        del st.session_state['conversation_id']
+                     st.rerun()
+
+            conversations = get_user_conversations(username)
+            if conversations:
+                # Show most recent first
+                for c_id, c_title, c_date in conversations[:5]:
+                    # Highlight active
+                    type_ = "primary" if st.session_state.get("conversation_id") == c_id else "secondary"
+                    if st.button(f"{c_title}", key=f"hist_{c_id}", use_container_width=True, type=type_):
+                        st.session_state.conversation_id = c_id
+                        st.session_state.messages = get_conversation_messages(c_id)
+                        st.rerun()
+                
+                if len(conversations) > 5:
+                    with st.expander("Older Chats"):
+                         for c_id, c_title, c_date in conversations[5:15]:
+                            if st.button(f"{c_title}", key=f"hist_old_{c_id}", use_container_width=True):
+                                st.session_state.conversation_id = c_id
+                                st.session_state.messages = get_conversation_messages(c_id)
+                                st.rerun()
+                                
+        except Exception as e:
+            st.error(f"History error: {e}")
+
+        st.divider()
+
         # 3. Model Selection
         st.markdown("### 🤖 Model Selection")
         

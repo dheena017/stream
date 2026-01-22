@@ -17,6 +17,10 @@ from ui.profile import show_profile_page
 from ui.dashboard import show_dashboard
 from ui.sidebar import render_sidebar
 from ui.chat import show_chat_page
+from ui.database import init_db
+
+# Initialize DB on startup
+init_db()
 
 # Import Brain
 from brain_learning import LearningBrain

@@ -349,9 +349,38 @@ def show_chat_page():
          # (In a real app, this would be an audio buffer handling block)
          pass
 
-    # 5. Processing (renumbered)
+    # 5. Processing
     if prompt:
-        st.session_state.messages.append({"role": "user", "content": prompt, "timestamp": datetime.now().strftime('%H:%M:%S'), "images": uploaded_images, "files": uploaded_file_info})
+        # User Message Object
+        user_msg = {
+            "role": "user", 
+            "content": prompt, 
+            "timestamp": datetime.now().strftime('%H:%M:%S'), 
+            "images": uploaded_images, 
+            "files": uploaded_file_info
+        }
+        st.session_state.messages.append(user_msg)
+        
+        # --- DB SAVE: USER ---
+        from ui.database import create_new_conversation, save_message
+        try:
+            if 'conversation_id' not in st.session_state:
+                user_id = st.session_state.get('username', 'guest')
+                # Smart title generation
+                title = (prompt[:30] + '..') if len(prompt) > 30 else prompt
+                st.session_state.conversation_id = create_new_conversation(user_id, title)
+            
+            # Save to DB
+            save_message(
+                st.session_state.conversation_id, 
+                "user", 
+                prompt, 
+                {"images": bool(uploaded_images), "files": [f['name'] for f in uploaded_file_info]}
+            )
+        except Exception as e:
+            # Don't block chat if DB fails
+            print(f"DB Save Error: {e}")
+
         with st.chat_message("user"):
             if uploaded_images:
                 cols = st.columns(min(len(uploaded_images), 3))
@@ -495,6 +524,15 @@ def show_chat_page():
                 "provider": provider,
                 "model": model_name
             })
+            
+            # --- DB SAVE: ASSISTANT ---
+            try:
+                if 'conversation_id' in st.session_state:
+                     save_message(st.session_state.conversation_id, "assistant", response_text, {
+                        "provider": provider, "model": model_name, "response_time": end_time - start_time
+                     })
+            except Exception as e:
+                 print(f"DB Save Assistant Error: {e}")
             
             if st.session_state.get('voice_mode') and st.session_state.get('auto_speak'):
                 pass
