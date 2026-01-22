@@ -22,24 +22,40 @@ class InternetSearchEngine:
         self.timeout = timeout
         self.ddgs = DDGS(timeout=timeout)
     
-    def search(self, query: str, max_results: int = 5, detailed: bool = False) -> List[Dict]:
+    def search(self, query: str, max_results: int = 5, detailed: bool = False, time_range: str = "Anytime", domain: str = None) -> List[Dict]:
         """
         Perform a web search using DuckDuckGo
         
         Args:
             query: Search query string
-            max_results: Maximum number of results to return (default: 5)
-            detailed: Whether to fetch full text from results (default: False)
-        
-        Returns:
-            List of search result dictionaries with title, body, and href
+            max_results: Maximum number of results to return
+            detailed: Whether to fetch full text (unused in basic text search)
+            time_range: Time filter (Anytime, Past Day, Past Week, Past Month)
+            domain: Optional domain to restrict search to
         """
         try:
-            logger.info(f"Searching for: {query}")
-            results = self.ddgs.text(query, max_results=max_results)
+            # Domain filtering
+            final_query = query
+            if domain and domain.strip():
+                final_query += f" site:{domain.strip()}"
+                
+            # Time filtering mapping
+            time_map = {
+                "Past Day": "d",
+                "Past Week": "w",
+                "Past Month": "m",
+                "Anytime": None
+            }
+            time_param = time_map.get(time_range)
+
+            logger.info(f"Searching for: {final_query} (Time: {time_param})")
+            
+            # Using backend='api' or 'html' is standard, typically 'api' is default.
+            # timelimit argument expects 'd', 'w', 'm', 'y'
+            results = self.ddgs.text(final_query, max_results=max_results, timelimit=time_param)
             
             if not results:
-                logger.warning(f"No results found for: {query}")
+                logger.warning(f"No results found for: {final_query}")
                 return []
             
             processed_results = []

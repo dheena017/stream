@@ -26,51 +26,86 @@ from ui.config import MODEL_PRICING, MODEL_CAPABILITIES, PROVIDER_ICONS
 
 def show_chat_page():
     """Display the main chat interface"""
-    # 1. Header
-    st.markdown("""
-    <div class="main-header">
-        <div style="font-size: 3rem;">🤖</div>
-        <div>
-            <h1 style="color: white; margin: 0; font-size: 2rem; font-weight: 700;">
-                Multi-Provider AI Chat
-            </h1>
-            <p style="color: rgba(255,255,255,0.8); margin: 0.25rem 0 0 0; font-size: 1rem;">
-                GPT-4 • Claude • Gemini • Llama • Grok • DeepSeek
-            </p>
+    
+    # --- 1. Header & Status Bar ---
+    # Compact Header
+    c_head1, c_head2 = st.columns([3, 1])
+    with c_head1:
+        st.markdown("""
+        <div style="display: flex; align-items: center; gap: 1rem;">
+            <div style="font-size: 2rem;">🤖</div>
+            <div>
+                <h2 style="margin: 0; font-weight: 700; color: white;">Multi-Provider Chat</h2>
+                <div style="display: flex; gap: 0.8rem; flex-wrap: wrap; margin-top: 0.25rem;">
+                    <span class="subtle-text">GPT-4</span>
+                    <span class="subtle-text">•</span>
+                    <span class="subtle-text">Claude</span>
+                    <span class="subtle-text">•</span>
+                    <span class="subtle-text">Gemini</span>
+                </div>
+            </div>
         </div>
-    </div>
-    """, unsafe_allow_html=True)
+        """, unsafe_allow_html=True)
     
-    # 2. Status Indicators
-    c1, c2, c3, c4, c5 = st.columns(5)
-    with c1:
-        brain_mode = st.session_state.get('enable_brain_mode', False)
-        status = "🧠 Brain ON" if brain_mode else "🤖 Standard"
-        cls = "status-badge active" if brain_mode else "status-badge"
-        st.markdown(f'<div class="{cls}">{status}</div>', unsafe_allow_html=True)
-    with c2:
-        voice_mode = st.session_state.get('voice_mode', False)
-        status = "🎤 Voice ON" if voice_mode else "⌨️ Text Mode"
-        cls = "status-badge active" if voice_mode else "status-badge"
-        st.markdown(f'<div class="{cls}">{status}</div>', unsafe_allow_html=True)
-    with c3:
-        count = len(st.session_state.get('messages', []))
-        st.markdown(f'<div class="status-badge">💬 {count} Messages</div>', unsafe_allow_html=True)
-    with c4:
+    with c_head2:
+        # Mini Status Details
         provider = st.session_state.get('selected_provider', 'google').upper()
-        st.markdown(f'<div class="status-badge active">🔌 {provider}</div>', unsafe_allow_html=True)
-    with c5:
-        internet_mode = st.session_state.get('enable_internet_search', False)
-        status = "🌐 Web ON" if internet_mode else "📱 Local"
-        cls = "status-badge active" if internet_mode else "status-badge"
-        st.markdown(f'<div class="{cls}">{status}</div>', unsafe_allow_html=True)
+        brain_on = st.session_state.get('enable_brain_mode', False)
+        inet_on = st.session_state.get('enable_internet_search', False)
+        
+        status_html = f"""
+        <div style="text-align: right;">
+            <div class="status-badge {'active' if brain_on else ''}" style="display:inline-flex; width:auto; font-size:0.8rem; padding: 2px 8px;">
+                {'🧠 Brain' if brain_on else '🤖 Std'}
+            </div>
+             <div class="status-badge {'active' if inet_on else ''}" style="display:inline-flex; width:auto; font-size:0.8rem; padding: 2px 8px; margin-left:4px;">
+                {'🌐 Web' if inet_on else '📱 Off'}
+            </div>
+            <div style="margin-top: 4px; font-weight: 600; font-size: 0.9rem; color: var(--accent-primary);">
+                 🔌 {provider}
+            </div>
+        </div>
+        """
+        st.markdown(status_html, unsafe_allow_html=True)
 
-    st.markdown("<div style='height:1rem;'></div>", unsafe_allow_html=True)
+    st.markdown("---")
 
-    # 3. Chat History
+    # --- 2. Input Logic Implementation Prep ---
+    # We must define prompt here to capture button clicks from Empty State
+    prompt = None
+
+    # --- 3. Chat History or Welcome Screen ---
     messages = st.session_state.get('messages', [])
-    chat_search = st.session_state.get('chat_search_value', '')
     
+    if not messages:
+        # ZERO STATE: Welcome Screen
+        user_name = st.session_state.get('username', 'Traveler')
+        
+        st.markdown(f"""
+        <div class="welcome-container">
+            <div class="welcome-title">Welcome back, {user_name}! 👋</div>
+            <div class="welcome-subtitle">
+                I'm your intelligent assistant. Select a starter or type below to begin.
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        wc1, wc2 = st.columns(2)
+        with wc1:
+            if st.button("🚀 Explain Quantum Computing", use_container_width=True):
+                prompt = "Explain quantum computing in simple terms."
+            if st.button("📝 Write a Python Script", use_container_width=True):
+                 prompt = "Write a python script to parse a CSV file and plot it."
+        with wc2:
+             if st.button("📰 Search Latest News", use_container_width=True):
+                 prompt = "What are the latest tech news headlines today?"
+             if st.button("🎨 Analyze an Image", use_container_width=True):
+                 prompt = "Help me analyze an image I'm about to upload."
+                 
+        st.markdown("<div style='height: 2rem'></div>", unsafe_allow_html=True)
+    
+    # 4. Filter logic (kept from original)
+    chat_search = st.session_state.get('chat_search_value', '')
     messages_to_display = messages
     if chat_search:
         messages_to_display = [m for m in messages if chat_search.lower() in m.get('content', '').lower()]
@@ -112,34 +147,49 @@ def show_chat_page():
                         st.code(msg["content"])
     
     # 4. Internet Search Configuration
-    search_col1, search_col2, search_col3 = st.columns([2, 1, 1])
-    with search_col1:
-        enable_internet = st.checkbox(
-            "🌐 Enable Internet Search",
-            value=st.session_state.get('enable_internet_search', False),
-            help="Search the internet for real-time information to augment responses"
-        )
-        st.session_state.enable_internet_search = enable_internet
-    
-    search_results = []
-    if enable_internet:
-        with search_col2:
-            search_result_count = st.number_input(
-                "Results",
-                min_value=1,
-                max_value=10,
-                value=st.session_state.get('search_result_count', 5),
-                help="Number of search results to fetch"
-            )
-            st.session_state.search_result_count = search_result_count
+    with st.expander("🌐 Internet Search Settings", expanded=st.session_state.get('enable_internet_search', False)):
         
-        with search_col3:
-            search_type = st.selectbox(
-                "Type",
-                ["Web", "News"],
-                key="search_type",
-                help="Type of search to perform"
+        c_search1, c_search2 = st.columns([1, 1])
+        with c_search1:
+            enable_internet = st.toggle(
+                "Enable Real-time Search",
+                value=st.session_state.get('enable_internet_search', False),
+                help="Augment answers with live web data"
             )
+            st.session_state.enable_internet_search = enable_internet
+            
+            search_type = st.radio(
+                "Search Mode", 
+                ["Web", "News"], 
+                horizontal=True,
+                index=0 if st.session_state.get('search_type') != "News" else 1,
+                key="search_type_selector"
+            )
+            st.session_state.search_type = search_type
+
+        with c_search2:
+            result_count = st.slider(
+                "Result Count", 
+                1, 10, 
+                st.session_state.get('search_result_count', 5)
+            )
+            st.session_state.search_result_count = result_count
+            
+            # Future-proofing for time filtering
+            time_range = st.selectbox(
+                "Time Range", 
+                ["Anytime", "Past Day", "Past Week", "Past Month"], 
+                index=0
+            )
+            st.session_state.search_time_range = time_range
+
+        # Optional Domain Filter
+        domain_filter = st.text_input(
+            "Limit to Site (optional)", 
+            placeholder="e.g. reddit.com, stackoverflow.com",
+            help="Restrict search results to a specific domain"
+        )
+        st.session_state.search_domain_filter = domain_filter
     
     # 5. Multimodal Uploads Area
     multimodal_options = ["Images", "Documents (PDF/TXT)", "Audio Files", "Video Frames"]
@@ -327,10 +377,18 @@ def show_chat_page():
             # Internet Search Integration
             if st.session_state.get('enable_internet_search', False):
                 with st.spinner("🔍 Searching the internet..."):
+                    # Pass new filters to helper
+                    search_type_val = st.session_state.get('search_type', 'Web')
+                    time_range_val = st.session_state.get('search_time_range', 'Anytime')
+                    domain_val = st.session_state.get('search_domain_filter', None)
+                    
                     search_results, search_context = perform_internet_search(
                         prompt,
                         enable_search=True,
-                        max_results=st.session_state.get('search_result_count', 5)
+                        max_results=st.session_state.get('search_result_count', 5),
+                        search_type=search_type_val,
+                        time_range=time_range_val,
+                        domain=domain_val
                     )
                     
                     if search_results:

@@ -344,12 +344,22 @@ def handle_openai_compatible_provider(
 
 
 # --- Internet search integration ---
-def perform_internet_search(query: str, enable_search: bool = True, max_results: int = 5) -> tuple[List[Dict], str]:
+def perform_internet_search(query: str, enable_search: bool = True, max_results: int = 5, search_type: str = "Web", time_range: str = "Anytime", domain: str = None) -> tuple[List[Dict], str]:
     if not enable_search:
         return [], ""
     try:
         search_engine = get_internet_search_engine()
-        results = search_engine.search(query, max_results=max_results)
+        
+        if search_type == "News":
+             # News search generally supports time range implicitly by recency, 
+             # but standard DDG news api might handle max_results.
+             # If we want detailed time filtering for news, we'd need to extend it, 
+             # but for now we route to search_news.
+             results = search_engine.search_news(query, max_results=max_results)
+        else:
+             # Standard Web Search with filters
+             results = search_engine.search(query, max_results=max_results, time_range=time_range, domain=domain)
+             
         if results:
             from ui.internet_search import create_search_context
             context = create_search_context(results, query)
