@@ -194,8 +194,6 @@ def show_chat_page():
     # 5. Multimodal Uploads Area
     multimodal_options = ["Images", "Documents (PDF/TXT)", "Audio Files", "Video Frames"]
     
-    # 6. Input Handling
-    prompt = None
     uploaded_images = []
     uploaded_file_info = []
     extra_context = ""
@@ -329,20 +327,21 @@ def show_chat_page():
                 help="External captioning service URL"
             )
              st.session_state.hosted_caption_url = hosted_url
+    # 'prompt' might already be set by Welcome Screen buttons or Voice mode simulation
+    
+    # We still need to render the chat input widget to allow typing
+    input_prompt = st.chat_input("Ask anything...")
+    
+    if input_prompt:
+        prompt = input_prompt
+    
+    # Check voice mode override if not already set
+    if not prompt and st.session_state.get('voice_mode'):
+         # Simple simulation specific logic check
+         # (In a real app, this would be an audio buffer handling block)
+         pass
 
-    if st.session_state.get('voice_mode'):
-        st.info("🎤 Voice Mode Active - Use audio input")
-        audio = st.audio_input("Record")
-        if audio:
-            st.spinner("Transcribing...")
-            # Simple simulation for voice mode since dependencies might be complex
-            # In a real scenario, use speech_recognition as per original app
-            prompt = "Simulated voice input (Voice mode enabled)"
-            st.success("Voice received.")
-    else:
-        prompt = st.chat_input("Ask anything...")
-
-    # 5. Processing
+    # 5. Processing (renumbered)
     if prompt:
         st.session_state.messages.append({"role": "user", "content": prompt, "timestamp": datetime.now().strftime('%H:%M:%S'), "images": uploaded_images, "files": uploaded_file_info})
         with st.chat_message("user"):
