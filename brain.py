@@ -97,6 +97,14 @@ class AIBrain:
     ) -> Dict[str, str]:
         """Query a single AI model"""
         try:
+                        # Validate prompt is not empty
+            if not prompt or not prompt.strip():
+                return {
+                    "provider": provider,
+                    "model": model_name,
+                    "response": "Error: Prompt cannot be empty",
+                    "success": False
+                }
             if provider == "google":
                 from google import genai
                 client = genai.Client(api_key=api_key)
@@ -104,7 +112,7 @@ class AIBrain:
                 # New SDK doesn't accept config dict directly
                 response = client.models.generate_content(
                     model=model_name,
-                    contents=prompt
+                    contents=[{"role": "user", "parts": [{"text": prompt}]}]
                 )
                 return {
                     "provider": provider,
