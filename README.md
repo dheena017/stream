@@ -18,7 +18,6 @@ Create and activate a virtual environment, then install dependencies:
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
-pip install pillow
 ```
 
 Run Streamlit:

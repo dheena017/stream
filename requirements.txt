@@ -21,3 +21,6 @@ google-generativeai
 transformers
 torch
 torchvision
+
+# Testing
+pytest
