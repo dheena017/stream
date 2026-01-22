@@ -2591,6 +2591,7 @@ def preload_blip_model_with_progress(progress_callback: Optional[Callable[[int, 
         return False
 <<<<<<< HEAD
 
+<<<<<<< HEAD
 >>>>>>> 3e83144 (AI Review: Fix ui/chat_utils.py syntax and asyncio crash in ui/chat.py)
 =======
              progress_callback(0, f"Failed: {str(e)}")
@@ -2630,3 +2631,5 @@ def serialize_messages(messages: List[Dict]) -> str:
              progress_callback(0, f"Failed: {str(e)}")
         return False
 >>>>>>> 673954a (Resilience: [error handling])
+=======
+>>>>>>> 3e83144 (AI Review: Fix ui/chat_utils.py syntax and asyncio crash in ui/chat.py)
