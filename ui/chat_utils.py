@@ -192,7 +192,7 @@ def prepare_brain_configuration(api_keys: Dict[str, str], requested_models: List
         models_to_query.append({"provider": "openai", "model": "gpt-4o-mini", "api_key": api_keys['openai']})
         
     if api_keys.get('anthropic'):
-         models_to_query.append({"provider": "anthropic", "model": "claude-3-haiku-20240307", "api_key": api_keys['anthropic']})
+         models_to_query.append({"provider": "anthropic", "model": "claude-3-5-haiku-20241022", "api_key": api_keys['anthropic']})
 
     return models_to_query
 

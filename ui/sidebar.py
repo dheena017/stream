@@ -62,45 +62,98 @@ def render_sidebar():
         # 3. Model Selection
         st.markdown("### 🤖 Model Selection")
         
-        # Provider Filter
-        provider_filter = st.selectbox(
-            "Filter by Provider",
-            ["All", "Google", "OpenAI", "Anthropic", "Together AI", "xAI", "DeepSeek"],
-            index=0
+        # Provider Filter (Horizontal Radio for cleaner look)
+        providers = ["All", "Google", "OpenAI", "Anthropic", "Together", "xAI", "DeepSeek"]
+        selected_provider_filter = st.radio(
+            "Provider Filter",
+            providers,
+            horizontal=True,
+            label_visibility="collapsed",
+            help="Filter specific model providers"
         )
         
-        filtered_models = MODEL_OPTIONS
-        if provider_filter != "All":
-            provider_map = {
-                "Google": "google",
-                "OpenAI": "openai",
-                "Anthropic": "anthropic",
-                "Together AI": "together",
-                "xAI": "xai",
-                "DeepSeek": "deepseek"
-            }
-            filtered_models = [m for m in MODEL_OPTIONS if m[2] == provider_map.get(provider_filter)]
+        # Filter Models based on selection
+        # Using the new MODEL_DETAILS structure
+        from ui.config import MODEL_DETAILS
+        
+        provider_map = {
+            "Google": "google",
+            "OpenAI": "openai",
+            "Anthropic": "anthropic",
+            "Together": "together",
+            "xAI": "xai",
+            "DeepSeek": "deepseek"
+        }
+        
+        filter_key = provider_map.get(selected_provider_filter)
+        
+        if filter_key:
+            filtered_models_list = [
+                (v['label'], k, v['provider']) 
+                for k, v in MODEL_DETAILS.items() 
+                if v['provider'] == filter_key
+            ]
+        else:
+            # show all
+            filtered_models_list = [
+               (v['label'], k, v['provider']) 
+               for k, v in MODEL_DETAILS.items() 
+            ]
 
         # Model Select Box
+        if not filtered_models_list:
+            st.warning(f"No models found for {selected_provider_filter}")
+            filtered_models_list = [(v['label'], k, v['provider']) for k, v in MODEL_DETAILS.items()]
+
         # Build display labels with icons
-        display_labels = [f"{PROVIDER_ICONS.get(m[2], '⚪')} {m[0]}" for m in filtered_models]
+        display_labels = [f"{PROVIDER_ICONS.get(m[2], '⚪')} {m[0]}" for m in filtered_models_list]
+        
+        # Persist selection if possible, otherwise default
+        current_selection = st.session_state.get('selected_model_name')
+        default_index = 0
+        if current_selection:
+            # try to find index
+            for i, m in enumerate(filtered_models_list):
+                if m[1] == current_selection:
+                    default_index = i
+                    break
+        
         model_choice_idx = st.selectbox(
             "Select Model",
-            range(len(filtered_models)),
+            range(len(filtered_models_list)),
             format_func=lambda i: display_labels[i],
-            index=0
+            index=default_index,
+            label_visibility="collapsed"
         )
         
-        selected_model_tuple = filtered_models[model_choice_idx]
+        selected_model_tuple = filtered_models_list[model_choice_idx]
         st.session_state.selected_model_label = selected_model_tuple[0]
         st.session_state.selected_model_name = selected_model_tuple[1]
         st.session_state.selected_provider = selected_model_tuple[2]
         
-        # Show capabilities
-        model_name = selected_model_tuple[1]
-        caps = MODEL_CAPABILITIES.get(model_name, [])
-        if caps:
-            st.caption(" ".join(caps))
+        # --- Enhanced Model Info Card ---
+        model_id = selected_model_tuple[1]
+        model_info = MODEL_DETAILS.get(model_id, {})
+        pricing = MODEL_PRICING.get(model_id, (0, 0))
+        
+        with st.container():
+            # Description
+            st.caption(model_info.get('description', 'No description available.'))
+            
+            # Badges (Capabilities)
+            caps = model_info.get('capabilities', [])
+            if caps:
+                badges_html = "".join(f"<span style='background:#334155; color:#e2e8f0; padding:2px 6px; border-radius:4px; font-size:0.75rem; margin-right:4px;'>{c}</span>" for c in caps)
+                st.markdown(f"<div style='margin-bottom:8px;'>{badges_html}</div>", unsafe_allow_html=True)
+            
+            # Stats Grid
+            c_info1, c_info2 = st.columns(2)
+            with c_info1:
+                st.markdown(f"**Context:** `{model_info.get('context', 'Unknown')}`")
+            with c_info2:
+                 st.markdown(f"**Cost:** `${pricing[0]} / ${pricing[1]}`")
+                 
+            st.caption(f"*Cost per 1M tokens (In/Out)*")
 
         st.divider()
 
