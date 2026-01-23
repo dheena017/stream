@@ -36,6 +36,10 @@ Run tests locally:
 pytest -q
 ```
 
+## Community
+- We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on how to get started.
+- Join our community to discuss features, report bugs, and share your ideas.
+
 ## Notes
 - Optional dependencies: `transformers`, `torch`, `torchvision`, `moviepy`, `speech_recognition`. These are only required for BLIP, video frame extraction, and audio transcription respectively.
 - Search library may warn about `duckduckgo_search` -> `ddgs` rename; consider installing `ddgs` if you see warnings.
