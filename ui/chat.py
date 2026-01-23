@@ -54,7 +54,11 @@ def show_chat_page():
         inet_on = st.session_state.get('enable_internet_search', False)
         
         status_html = f"""
-        <div style="text-align: right;">
+        <style>
+        .chat-status-container {{ text-align: right; }}
+        @media (max-width: 768px) {{ .chat-status-container {{ text-align: left; margin-top: 0.5rem; }} }}
+        </style>
+        <div class="chat-status-container">
             <div class="status-badge {'active' if brain_on else ''}" style="display:inline-flex; width:auto; font-size:0.8rem; padding: 2px 8px;">
                 {'🧠 Brain' if brain_on else '🤖 Std'}
             </div>
