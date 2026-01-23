@@ -24,17 +24,17 @@ def render_sidebar():
         
         # Navigation
         st.markdown("### 📍 Navigation")
-        col_nav1, col_nav2, col_nav3 = st.columns(3)
+        col_nav1, col_nav2, col_nav3 = st.columns([1, 1, 1.2])
         with col_nav1:
-            if st.button("📊 Dash", width="stretch", type="primary" if st.session_state.current_page == "dashboard" else "secondary", help="Go to Dashboard"):
+            if st.button("📊 Dash", use_container_width=True, type="primary" if st.session_state.current_page == "dashboard" else "secondary", help="Go to Dashboard"):
                 st.session_state.current_page = "dashboard"
                 st.rerun()
         with col_nav2:
-            if st.button("💬 Chat", width="stretch", type="primary" if st.session_state.current_page == "chat" else "secondary", help="Go to Chat"):
+            if st.button("💬 Chat", use_container_width=True, type="primary" if st.session_state.current_page == "chat" else "secondary", help="Go to Chat"):
                 st.session_state.current_page = "chat"
                 st.rerun()
         with col_nav3:
-            if st.button("👤 Profile", width="stretch", type="primary" if st.session_state.current_page == "profile" else "secondary", help="Go to Profile"):
+            if st.button("👤 Profile", use_container_width=True, type="primary" if st.session_state.current_page == "profile" else "secondary", help="Go to Profile"):
                 st.session_state.current_page = "profile"
                 st.rerun()
         
@@ -54,7 +54,7 @@ def render_sidebar():
         </div>
         """, unsafe_allow_html=True)
         
-        if st.button("🚪 Sign Out", key="sidebar_logout_btn", width="stretch"):
+        if st.button("🚪 Sign Out", key="sidebar_logout_btn", use_container_width=True):
             logout()
             
         st.divider()
@@ -306,13 +306,12 @@ def render_sidebar():
         # Chat Controls
         c1, c2 = st.columns(2)
         with c1:
-            if st.button("🗑️ Clear", width="stretch"):
+            if st.button("🗑️ Clear", use_container_width=True):
                 st.session_state.messages = []
                 st.rerun()
         with c2:
-            if st.button("💾 Save", width="stretch"):
+            if st.button("💾 Save", use_container_width=True):
                 # Simple export
                 msgs = st.session_state.get('messages', [])
                 text = "\n".join([f"{m['role']}: {m['content']}" for m in msgs])
                 st.download_button("TxT", text, "chat.txt")
-

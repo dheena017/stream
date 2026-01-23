@@ -29,19 +29,15 @@ def show_chat_page():
     
     # --- 1. Header & Status Bar ---
     # Compact Header
-    c_head1, c_head2 = st.columns([3, 1])
+    c_head1, c_head2 = st.columns([0.7, 0.3])
     with c_head1:
         st.markdown("""
         <div style="display: flex; align-items: center; gap: 1rem;">
             <div style="font-size: 2rem;">🤖</div>
             <div>
-                <h2 style="margin: 0; font-weight: 700; color: white;">Multi-Provider Chat</h2>
-                <div style="display: flex; gap: 0.8rem; flex-wrap: wrap; margin-top: 0.25rem;">
-                    <span class="subtle-text">GPT-4</span>
-                    <span class="subtle-text">•</span>
-                    <span class="subtle-text">Claude</span>
-                    <span class="subtle-text">•</span>
-                    <span class="subtle-text">Gemini</span>
+                <h2 style="margin: 0; font-weight: 700; color: white; font-size: 1.5rem;">Antigravity AI</h2>
+                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.25rem; font-size: 0.8rem;">
+                    <span class="subtle-text">GPT-4 • Claude • Gemini</span>
                 </div>
             </div>
         </div>
@@ -92,14 +88,14 @@ def show_chat_page():
         
         wc1, wc2 = st.columns(2)
         with wc1:
-            if st.button("🚀 Explain Quantum Computing", use_container_width=True):
+            if st.button("🚀 Quantum Computing", use_container_width=True, help="Explain quantum computing in simple terms"):
                 prompt = "Explain quantum computing in simple terms."
-            if st.button("📝 Write a Python Script", use_container_width=True):
+            if st.button("📝 Python Script", use_container_width=True, help="Write a python script to parse a CSV file and plot it"):
                  prompt = "Write a python script to parse a CSV file and plot it."
         with wc2:
-             if st.button("📰 Search Latest News", use_container_width=True):
+             if st.button("📰 Latest News", use_container_width=True, help="What are the latest tech news headlines today?"):
                  prompt = "What are the latest tech news headlines today?"
-             if st.button("🎨 Analyze an Image", use_container_width=True):
+             if st.button("🎨 Analyze Image", use_container_width=True, help="Help me analyze an image I'm about to upload"):
                  prompt = "Help me analyze an image I'm about to upload."
                  
         st.markdown("<div style='height: 2rem'></div>", unsafe_allow_html=True)
