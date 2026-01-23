@@ -5,6 +5,7 @@ import asyncio
 from typing import List, Dict, Optional, Any
 import json
 from datetime import datetime
+from ui.resilience import track_failure, async_retry_with_backoff
 
 
 class AIBrain:
@@ -87,6 +88,85 @@ class AIBrain:
         
         return context
     
+    @async_retry_with_backoff(retries=2)
+    async def _query_model_impl(
+        self,
+        provider: str,
+        model_name: str,
+        prompt: str,
+        api_key: str,
+        config: Dict[str, Any]
+    ) -> Dict[str, str]:
+        # Validate prompt is not empty
+        if not prompt or not prompt.strip():
+            return {
+                "provider": provider,
+                "model": model_name,
+                "response": "Error: Prompt cannot be empty",
+                "success": False
+            }
+        if provider == "google":
+            from google import genai
+            client = genai.Client(api_key=api_key)
+
+            # New SDK doesn't accept config dict directly
+            response = client.models.generate_content(
+                model=model_name,
+                contents=[{"role": "user", "parts": [{"text": prompt}]}]
+            )
+            return {
+                "provider": provider,
+                "model": model_name,
+                "response": response.text,
+                "success": True
+            }
+
+        elif provider in ["openai", "together", "xai", "deepseek"]:
+            from openai import OpenAI
+
+            base_urls = {
+                "together": "https://api.together.xyz/v1",
+                "xai": "https://api.x.ai/v1",
+                "deepseek": "https://api.deepseek.com"
+            }
+
+            client = OpenAI(
+                api_key=api_key,
+                base_url=base_urls.get(provider)
+            )
+
+            response = client.chat.completions.create(
+                model=model_name,
+                messages=[{"role": "user", "content": prompt}],
+                temperature=config.get("temperature", 0.7),
+                max_tokens=config.get("max_output_tokens", 1024)
+            )
+
+            return {
+                "provider": provider,
+                "model": model_name,
+                "response": response.choices[0].message.content,
+                "success": True
+            }
+
+        elif provider == "anthropic":
+            from anthropic import Anthropic
+            client = Anthropic(api_key=api_key)
+
+            response = client.messages.create(
+                model=model_name,
+                messages=[{"role": "user", "content": prompt}],
+                max_tokens=config.get("max_output_tokens", 1024),
+                temperature=config.get("temperature", 0.7)
+            )
+
+            return {
+                "provider": provider,
+                "model": model_name,
+                "response": response.content[0].text,
+                "success": True
+            }
+
     async def query_model(
         self,
         provider: str,
@@ -97,77 +177,9 @@ class AIBrain:
     ) -> Dict[str, str]:
         """Query a single AI model"""
         try:
-                        # Validate prompt is not empty
-            if not prompt or not prompt.strip():
-                return {
-                    "provider": provider,
-                    "model": model_name,
-                    "response": "Error: Prompt cannot be empty",
-                    "success": False
-                }
-            if provider == "google":
-                from google import genai
-                client = genai.Client(api_key=api_key)
-                
-                # New SDK doesn't accept config dict directly
-                response = client.models.generate_content(
-                    model=model_name,
-                    contents=[{"role": "user", "parts": [{"text": prompt}]}]
-                )
-                return {
-                    "provider": provider,
-                    "model": model_name,
-                    "response": response.text,
-                    "success": True
-                }
-            
-            elif provider in ["openai", "together", "xai", "deepseek"]:
-                from openai import OpenAI
-                
-                base_urls = {
-                    "together": "https://api.together.xyz/v1",
-                    "xai": "https://api.x.ai/v1",
-                    "deepseek": "https://api.deepseek.com"
-                }
-                
-                client = OpenAI(
-                    api_key=api_key,
-                    base_url=base_urls.get(provider)
-                )
-                
-                response = client.chat.completions.create(
-                    model=model_name,
-                    messages=[{"role": "user", "content": prompt}],
-                    temperature=config.get("temperature", 0.7),
-                    max_tokens=config.get("max_output_tokens", 1024)
-                )
-                
-                return {
-                    "provider": provider,
-                    "model": model_name,
-                    "response": response.choices[0].message.content,
-                    "success": True
-                }
-            
-            elif provider == "anthropic":
-                from anthropic import Anthropic
-                client = Anthropic(api_key=api_key)
-                
-                response = client.messages.create(
-                    model=model_name,
-                    messages=[{"role": "user", "content": prompt}],
-                    max_tokens=config.get("max_output_tokens", 1024),
-                    temperature=config.get("temperature", 0.7)
-                )
-                
-                return {
-                    "provider": provider,
-                    "model": model_name,
-                    "response": response.content[0].text,
-                    "success": True
-                }
-                
+            return await self._query_model_impl(provider, model_name, prompt, api_key, config)
         except Exception as e:
+            track_failure(f"{provider}/{model_name}", e)
             return {
                 "provider": provider,
                 "model": model_name,
