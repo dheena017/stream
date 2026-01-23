@@ -2,9 +2,13 @@
 AI Brain Module - Combines multiple AI models and internet knowledge
 """
 import asyncio
-from typing import List, Dict, Optional, Any
 import json
+import logging
 from datetime import datetime
+from typing import List, Dict, Any, Optional
+
+# Configure logger
+logger = logging.getLogger(__name__)
 
 
 class AIBrain:
@@ -33,6 +37,7 @@ class AIBrain:
         except ImportError:
             return [{"error": "DuckDuckGo search not available. Install: pip install duckduckgo-search"}]
         except Exception as e:
+            logger.error(f"Internet search failed: {e}")
             return [{"error": f"Search failed: {str(e)}"}]
     
     def scrape_webpage(self, url: str) -> str:
@@ -64,6 +69,7 @@ class AIBrain:
             # Limit to first 2000 characters
             return text[:2000]
         except Exception as e:
+            logger.error(f"Webpage scraping failed: {e}")
             return f"Failed to scrape webpage: {str(e)}"
     
     def gather_internet_context(self, query: str) -> str:
@@ -74,19 +80,129 @@ class AIBrain:
         # Search internet
         search_results = self.search_internet(query, num_results=3)
         
-        context = "\n\n--- INTERNET KNOWLEDGE ---\n"
+        context_parts = ["\n\n--- INTERNET KNOWLEDGE ---\n"]
         
         for i, result in enumerate(search_results, 1):
             if 'error' in result:
-                context += f"Search error: {result['error']}\n"
+                context_parts.append(f"Search error: {result['error']}\n")
                 continue
                 
-            context += f"\n{i}. {result['title']}\n"
-            context += f"   {result['snippet']}\n"
-            context += f"   Source: {result['url']}\n"
+            context_parts.append(f"\n{i}. {result['title']}\n")
+            context_parts.append(f"   {result['snippet']}\n")
+            context_parts.append(f"   Source: {result['url']}\n")
         
-        return context
+        return "".join(context_parts)
     
+    async def _query_google(
+        self,
+        model_name: str,
+        prompt: str,
+        api_key: str
+    ) -> Dict[str, Any]:
+        """Helper to query Google models"""
+        try:
+            from google import genai
+            client = genai.Client(api_key=api_key)
+
+            # New SDK doesn't accept config dict directly
+            response = client.models.generate_content(
+                model=model_name,
+                contents=[{"role": "user", "parts": [{"text": prompt}]}]
+            )
+            return {
+                "provider": "google",
+                "model": model_name,
+                "response": response.text,
+                "success": True
+            }
+        except Exception as e:
+            logger.error(f"Google query failed: {e}")
+            return {
+                "provider": "google",
+                "model": model_name,
+                "response": f"Error: {str(e)}",
+                "success": False
+            }
+
+    async def _query_openai_compatible(
+        self,
+        provider: str,
+        model_name: str,
+        prompt: str,
+        api_key: str,
+        config: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Helper to query OpenAI-compatible models"""
+        try:
+            from openai import OpenAI
+            
+            base_urls = {
+                "together": "https://api.together.xyz/v1",
+                "xai": "https://api.x.ai/v1",
+                "deepseek": "https://api.deepseek.com"
+            }
+            
+            client = OpenAI(
+                api_key=api_key,
+                base_url=base_urls.get(provider)
+            )
+
+            response = client.chat.completions.create(
+                model=model_name,
+                messages=[{"role": "user", "content": prompt}],
+                temperature=config.get("temperature", 0.7),
+                max_tokens=config.get("max_output_tokens", 1024)
+            )
+
+            return {
+                "provider": provider,
+                "model": model_name,
+                "response": response.choices[0].message.content,
+                "success": True
+            }
+        except Exception as e:
+            logger.error(f"{provider} query failed: {e}")
+            return {
+                "provider": provider,
+                "model": model_name,
+                "response": f"Error: {str(e)}",
+                "success": False
+            }
+
+    async def _query_anthropic(
+        self,
+        model_name: str,
+        prompt: str,
+        api_key: str,
+        config: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Helper to query Anthropic models"""
+        try:
+            from anthropic import Anthropic
+            client = Anthropic(api_key=api_key)
+
+            response = client.messages.create(
+                model=model_name,
+                messages=[{"role": "user", "content": prompt}],
+                max_tokens=config.get("max_output_tokens", 1024),
+                temperature=config.get("temperature", 0.7)
+            )
+
+            return {
+                "provider": "anthropic",
+                "model": model_name,
+                "response": response.content[0].text,
+                "success": True
+            }
+        except Exception as e:
+            logger.error(f"Anthropic query failed: {e}")
+            return {
+                "provider": "anthropic",
+                "model": model_name,
+                "response": f"Error: {str(e)}",
+                "success": False
+            }
+
     async def query_model(
         self,
         provider: str,
@@ -96,82 +212,31 @@ class AIBrain:
         config: Dict[str, Any]
     ) -> Dict[str, str]:
         """Query a single AI model"""
-        try:
-                        # Validate prompt is not empty
-            if not prompt or not prompt.strip():
-                return {
-                    "provider": provider,
-                    "model": model_name,
-                    "response": "Error: Prompt cannot be empty",
-                    "success": False
-                }
-            if provider == "google":
-                from google import genai
-                client = genai.Client(api_key=api_key)
-                
-                # New SDK doesn't accept config dict directly
-                response = client.models.generate_content(
-                    model=model_name,
-                    contents=[{"role": "user", "parts": [{"text": prompt}]}]
-                )
-                return {
-                    "provider": provider,
-                    "model": model_name,
-                    "response": response.text,
-                    "success": True
-                }
-            
-            elif provider in ["openai", "together", "xai", "deepseek"]:
-                from openai import OpenAI
-                
-                base_urls = {
-                    "together": "https://api.together.xyz/v1",
-                    "xai": "https://api.x.ai/v1",
-                    "deepseek": "https://api.deepseek.com"
-                }
-                
-                client = OpenAI(
-                    api_key=api_key,
-                    base_url=base_urls.get(provider)
-                )
-                
-                response = client.chat.completions.create(
-                    model=model_name,
-                    messages=[{"role": "user", "content": prompt}],
-                    temperature=config.get("temperature", 0.7),
-                    max_tokens=config.get("max_output_tokens", 1024)
-                )
-                
-                return {
-                    "provider": provider,
-                    "model": model_name,
-                    "response": response.choices[0].message.content,
-                    "success": True
-                }
-            
-            elif provider == "anthropic":
-                from anthropic import Anthropic
-                client = Anthropic(api_key=api_key)
-                
-                response = client.messages.create(
-                    model=model_name,
-                    messages=[{"role": "user", "content": prompt}],
-                    max_tokens=config.get("max_output_tokens", 1024),
-                    temperature=config.get("temperature", 0.7)
-                )
-                
-                return {
-                    "provider": provider,
-                    "model": model_name,
-                    "response": response.content[0].text,
-                    "success": True
-                }
-                
-        except Exception as e:
+        # Validate prompt is not empty
+        if not prompt or not prompt.strip():
             return {
                 "provider": provider,
                 "model": model_name,
-                "response": f"Error: {str(e)}",
+                "response": "Error: Prompt cannot be empty",
+                "success": False
+            }
+
+        if provider == "google":
+            return await self._query_google(model_name, prompt, api_key)
+
+        elif provider in ["openai", "together", "xai", "deepseek"]:
+            return await self._query_openai_compatible(
+                provider, model_name, prompt, api_key, config
+            )
+
+        elif provider == "anthropic":
+            return await self._query_anthropic(model_name, prompt, api_key, config)
+
+        else:
+            return {
+                "provider": provider,
+                "model": model_name,
+                "response": f"Error: Unsupported provider {provider}",
                 "success": False
             }
     
@@ -202,38 +267,44 @@ class AIBrain:
         model_responses: List[Dict[str, str]],
         internet_context: str
     ) -> str:
-        """Synthesize multiple AI responses and internet knowledge into a unified answer"""
+        """Synthesize multiple AI responses and internet knowledge"""
         
-        synthesis = f"# AI Brain Synthesis\n\n"
-        synthesis += f"**Your Question:** {query}\n\n"
+        parts = [f"# AI Brain Synthesis\n\n**Your Question:** {query}\n\n"]
         
         # Add internet context if available
         if internet_context and internet_context.strip():
-            synthesis += f"## Internet Knowledge\n{internet_context}\n\n"
+            parts.append(f"## Internet Knowledge\n{internet_context}\n\n")
         
         # Add model responses
-        synthesis += "## AI Model Responses\n\n"
+        parts.append("## AI Model Responses\n\n")
         
         successful_responses = [r for r in model_responses if r.get("success")]
         
         for i, response in enumerate(successful_responses, 1):
-            synthesis += f"### {i}. {response['provider'].upper()} - {response['model']}\n"
-            synthesis += f"{response['response']}\n\n"
+            parts.append(
+                f"### {i}. {response['provider'].upper()} - {response['model']}\n"
+            )
+            parts.append(f"{response['response']}\n\n")
         
         # Add failed models if any
         failed_responses = [r for r in model_responses if not r.get("success")]
         if failed_responses:
-            synthesis += "\n## Failed Queries\n"
+            parts.append("\n## Failed Queries\n")
             for response in failed_responses:
-                synthesis += f"- {response['provider']}/{response['model']}: {response['response']}\n"
+                parts.append(
+                    f"- {response['provider']}/{response['model']}: "
+                    f"{response['response']}\n"
+                )
         
         # Add summary
-        synthesis += "\n---\n\n"
-        synthesis += f"**Total models consulted:** {len(model_responses)}\n"
-        synthesis += f"**Successful responses:** {len(successful_responses)}\n"
-        synthesis += f"**Internet search:** {'✓ Enabled' if internet_context else '✗ Disabled'}\n"
+        parts.append("\n---\n\n")
+        parts.append(f"**Total models consulted:** {len(model_responses)}\n")
+        parts.append(f"**Successful responses:** {len(successful_responses)}\n")
+        parts.append(
+            f"**Internet search:** {'✓ Enabled' if internet_context else '✗ Disabled'}\n"
+        )
         
-        return synthesis
+        return "".join(parts)
     
     def add_to_memory(self, query: str, response: str):
         """Store conversation in memory"""
