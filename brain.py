@@ -4,7 +4,9 @@ AI Brain Module - Combines multiple AI models and internet knowledge
 import asyncio
 from typing import List, Dict, Optional, Any
 import json
+import time
 from datetime import datetime
+from monitoring import get_monitor
 
 
 class AIBrain:
@@ -96,9 +98,12 @@ class AIBrain:
         config: Dict[str, Any]
     ) -> Dict[str, str]:
         """Query a single AI model"""
+        monitor = get_monitor()
+        start_time = time.time()
         try:
-                        # Validate prompt is not empty
+            # Validate prompt is not empty
             if not prompt or not prompt.strip():
+                monitor.log_request(provider, model_name, 0, False, "Empty prompt")
                 return {
                     "provider": provider,
                     "model": model_name,
@@ -114,6 +119,7 @@ class AIBrain:
                     model=model_name,
                     contents=[{"role": "user", "parts": [{"text": prompt}]}]
                 )
+                monitor.log_request(provider, model_name, time.time() - start_time, True)
                 return {
                     "provider": provider,
                     "model": model_name,
@@ -142,6 +148,7 @@ class AIBrain:
                     max_tokens=config.get("max_output_tokens", 1024)
                 )
                 
+                monitor.log_request(provider, model_name, time.time() - start_time, True)
                 return {
                     "provider": provider,
                     "model": model_name,
@@ -160,6 +167,7 @@ class AIBrain:
                     temperature=config.get("temperature", 0.7)
                 )
                 
+                monitor.log_request(provider, model_name, time.time() - start_time, True)
                 return {
                     "provider": provider,
                     "model": model_name,
@@ -168,6 +176,7 @@ class AIBrain:
                 }
                 
         except Exception as e:
+            monitor.log_request(provider, model_name, time.time() - start_time, False, str(e))
             return {
                 "provider": provider,
                 "model": model_name,

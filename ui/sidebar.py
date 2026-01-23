@@ -11,6 +11,7 @@ from ui.auth import load_user_credentials, save_user_credentials, hash_password
 from ui.config import MODEL_OPTIONS, MODEL_PRICING, MODEL_CAPABILITIES, PROVIDER_ICONS, PROVIDER_LABELS
 from brain_learning import LearningBrain
 from multimodal_voice_integration import MultimodalVoiceIntegrator
+from monitoring import get_monitor
 
 def render_sidebar():
     """Render the application sidebar and handle settings"""
@@ -315,4 +316,26 @@ def render_sidebar():
                 msgs = st.session_state.get('messages', [])
                 text = "\n".join([f"{m['role']}: {m['content']}" for m in msgs])
                 st.download_button("TxT", text, "chat.txt")
+
+        st.divider()
+
+        # 10. System Health
+        with st.expander("🩺 System Health", expanded=False):
+            monitor = get_monitor()
+            alerts = monitor.check_alerts()
+            if alerts:
+                st.error(f"Active Alerts: {len(alerts)}")
+                for alert in alerts:
+                    st.write(f"• {alert}")
+            else:
+                st.success("System Healthy")
+
+            stats = monitor.get_stats(window_seconds=86400)
+            c1, c2 = st.columns(2)
+            with c1:
+                st.metric("Avg Latency", f"{stats['avg_latency']:.2f}s")
+            with c2:
+                st.metric("Error Rate", f"{stats['error_rate']*100:.1f}%")
+
+            st.caption(f"Requests (24h): {stats['total_requests']}")
 
