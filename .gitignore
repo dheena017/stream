@@ -29,3 +29,5 @@ dist/
 # Streamlit
 .streamlit/secrets.toml
 .streamlit/config.toml
+backup.key
+backups/
