@@ -310,9 +310,15 @@ def render_sidebar():
                 st.session_state.messages = []
                 st.rerun()
         with c2:
-            if st.button("💾 Save", width="stretch"):
-                # Simple export
-                msgs = st.session_state.get('messages', [])
-                text = "\n".join([f"{m['role']}: {m['content']}" for m in msgs])
-                st.download_button("TxT", text, "chat.txt")
+            # Prepare export data dynamically
+            msgs = st.session_state.get('messages', [])
+            export_text = "\n".join([f"{m.get('role', 'UNKNOWN').upper()}: {m.get('content', '')}" for m in msgs])
+
+            st.download_button(
+                label="💾 Save",
+                data=export_text,
+                file_name=f"chat_export_{datetime.now().strftime('%Y%m%d_%H%M')}.txt",
+                mime="text/plain",
+                use_container_width=True
+            )
 
