@@ -16,17 +16,18 @@ from ui.chat_utils import (
     get_openai_client, get_google_client, get_anthropic_client,
     build_conversation_history, create_openai_messages, handle_openai_compatible_provider,
     perform_internet_search, augment_prompt_with_search,
-    process_images_for_context, transcribe_audio_file, extract_video_frame_thumbnails, 
+    process_images_for_context, transcribe_audio_file, extract_video_frame_thumbnails,
     generate_image_captions, generate_standard_response, prepare_brain_configuration
 )
 from brain import AIBrain
 from brain_learning import LearningBrain
 from multimodal_voice_integration import MultimodalVoiceIntegrator
 from ui.config import MODEL_PRICING, MODEL_CAPABILITIES, PROVIDER_ICONS
+from ui.database import get_conversation_messages
 
 def show_chat_page():
     """Display the main chat interface"""
-    
+
     # --- 1. Header & Status Bar ---
     # Compact Header
     c_head1, c_head2 = st.columns([3, 1])
@@ -46,13 +47,13 @@ def show_chat_page():
             </div>
         </div>
         """, unsafe_allow_html=True)
-    
+
     with c_head2:
         # Mini Status Details
         provider = st.session_state.get('selected_provider', 'google').upper()
         brain_on = st.session_state.get('enable_brain_mode', False)
         inet_on = st.session_state.get('enable_internet_search', False)
-        
+
         status_html = f"""
         <div style="text-align: right;">
             <div class="status-badge {'active' if brain_on else ''}" style="display:inline-flex; width:auto; font-size:0.8rem; padding: 2px 8px;">
@@ -76,11 +77,11 @@ def show_chat_page():
 
     # --- 3. Chat History or Welcome Screen ---
     messages = st.session_state.get('messages', [])
-    
+
     if not messages:
         # ZERO STATE: Welcome Screen
         user_name = st.session_state.get('username', 'Traveler')
-        
+
         st.markdown(f"""
         <div class="welcome-container">
             <div class="welcome-title">Welcome back, {user_name}! 👋</div>
@@ -89,7 +90,7 @@ def show_chat_page():
             </div>
         </div>
         """, unsafe_allow_html=True)
-        
+
         wc1, wc2 = st.columns(2)
         with wc1:
             if st.button("🚀 Explain Quantum Computing", use_container_width=True):
@@ -101,12 +102,30 @@ def show_chat_page():
                  prompt = "What are the latest tech news headlines today?"
              if st.button("🎨 Analyze an Image", use_container_width=True):
                  prompt = "Help me analyze an image I'm about to upload."
-                 
+
         st.markdown("<div style='height: 2rem'></div>", unsafe_allow_html=True)
-    
+
     # 4. Filter logic (kept from original)
     chat_search = st.session_state.get('chat_search_value', '')
     messages_to_display = messages
+
+    # Pagination Control
+    if 'conversation_id' in st.session_state and not chat_search and messages:
+        # Only show pagination if we are in a saved conversation and not searching
+        if st.button("⬆️ Load Previous Messages", key="load_more_msgs", type="secondary", use_container_width=True):
+            # Use current message count as offset to skip already loaded messages
+            current_offset = len(st.session_state.messages)
+            c_id = st.session_state.conversation_id
+
+            # Fetch next batch
+            older_msgs = get_conversation_messages(c_id, limit=50, offset=current_offset)
+
+            if older_msgs:
+                st.session_state.messages = older_msgs + st.session_state.messages
+                st.rerun()
+            else:
+                st.info("No older messages found.")
+
     if chat_search:
         messages_to_display = [m for m in messages if chat_search.lower() in m.get('content', '').lower()]
         st.info(f"🔍 Found {len(messages_to_display)} matching messages")
@@ -121,7 +140,7 @@ def show_chat_page():
                 for i, img in enumerate(msg["images"]):
                     with cols[i%3]:
                         st.image(img, width="stretch")
-            
+
             # Files info
             if "files" in msg and msg["files"]:
                 for file_info in msg["files"]:
@@ -129,7 +148,7 @@ def show_chat_page():
 
             # Content
             st.markdown(msg["content"])
-            
+
             # Metadata footer
             if msg["role"] == "assistant":
                 st.markdown("---")
@@ -139,11 +158,11 @@ def show_chat_page():
                     mod = msg.get('model', '')
                     icon = model_icons.get(prov, "🤖")
                     st.caption(f"{icon} {mod} • {msg.get('timestamp','')}")
-                
+
                 with mc2:
                      if "response_time" in msg:
                          st.caption(f"⚡ {msg['response_time']:.2f}s")
-                
+
                 with mc3:
                     # Action buttons
                     c_copy, c_regen = st.columns(2)
@@ -153,10 +172,10 @@ def show_chat_page():
                     with c_regen:
                         if st.button("🔄", key=f"regen_{idx}", help="Regenerate (Not implemented yet)"):
                              st.toast("Regeneration coming soon!")
-    
+
     # 4. Internet Search Configuration
     with st.expander("🌐 Internet Search Settings", expanded=st.session_state.get('enable_internet_search', False)):
-        
+
         c_search1, c_search2 = st.columns([1, 1])
         with c_search1:
             enable_internet = st.toggle(
@@ -165,10 +184,10 @@ def show_chat_page():
                 help="Augment answers with live web data"
             )
             st.session_state.enable_internet_search = enable_internet
-            
+
             search_type = st.radio(
-                "Search Mode", 
-                ["Web", "News"], 
+                "Search Mode",
+                ["Web", "News"],
                 horizontal=True,
                 index=0 if st.session_state.get('search_type') != "News" else 1,
                 key="search_type_selector"
@@ -177,36 +196,36 @@ def show_chat_page():
 
         with c_search2:
             result_count = st.slider(
-                "Result Count", 
-                1, 10, 
+                "Result Count",
+                1, 10,
                 st.session_state.get('search_result_count', 5)
             )
             st.session_state.search_result_count = result_count
-            
+
             # Future-proofing for time filtering
             time_range = st.selectbox(
-                "Time Range", 
-                ["Anytime", "Past Day", "Past Week", "Past Month"], 
+                "Time Range",
+                ["Anytime", "Past Day", "Past Week", "Past Month"],
                 index=0
             )
             st.session_state.search_time_range = time_range
 
         # Optional Domain Filter
         domain_filter = st.text_input(
-            "Limit to Site (optional)", 
+            "Limit to Site (optional)",
             placeholder="e.g. reddit.com, stackoverflow.com",
             help="Restrict search results to a specific domain"
         )
         st.session_state.search_domain_filter = domain_filter
-    
+
     # 5. Multimodal Uploads Area
     multimodal_options = ["Images", "Documents (PDF/TXT)", "Audio Files", "Video Frames"]
-    
+
     uploaded_images = []
     uploaded_file_info = []
     extra_context = ""
     search_results = []
-    
+
     # 7. Multimodal Uploads Area
     with st.expander("📎 Upload Files & Images", expanded=False):
         uploaded_files = st.file_uploader(
@@ -214,18 +233,18 @@ def show_chat_page():
             type=["jpg", "jpeg", "png", "pdf", "txt", "md", "mp3", "wav", "mp4"],
             accept_multiple_files=True
         )
-        
+
         if uploaded_files:
             for file in uploaded_files:
                 file_ext = file.name.split('.')[-1].lower()
-                
+
                 # Images
                 if file_ext in ["jpg", "jpeg", "png", "webp"]:
                     img = Image.open(file)
                     uploaded_images.append(img)
                     uploaded_file_info.append({"name": file.name, "type": "Image"})
                     st.success(f"Image: {file.name}")
-                    
+
                 # PDF/TXT
                 elif file_ext in ["pdf", "txt", "md"]:
                     if file_ext == "pdf":
@@ -293,15 +312,15 @@ def show_chat_page():
     if adv_caption:
         # Check readiness without triggering download/load
         from ui.chat_utils import get_blip_model
-        
+
         # Check if the resource is already cached in Streamlit
-        # We can try to peek or just rely on a session state flag that indicates explicit load success 
+        # We can try to peek or just rely on a session state flag that indicates explicit load success
         model_ready = st.session_state.get('blip_loaded', False)
-        
+
         if not model_ready:
             st.warning("⚠️ High Performance Model Required")
             st.caption("Advanced captioning requires downloading the BLIP model (~1GB). This happens only once.")
-            
+
             if st.button("⬇️ Download & Load BLIP Model"):
                 from ui.chat_utils import preload_blip_model_with_progress
                 progress_bar = st.progress(0)
@@ -326,7 +345,7 @@ def show_chat_page():
                          st.error("Failed to load BLIP model.")
         else:
              st.success("✅ BLIP Model Ready")
-             
+
         # Hosted URL options
         with st.expander("Hosted Caption API (Alternative)", expanded=False):
              hosted_url = st.text_input(
@@ -336,13 +355,13 @@ def show_chat_page():
             )
              st.session_state.hosted_caption_url = hosted_url
     # 'prompt' might already be set by Welcome Screen buttons or Voice mode simulation
-    
+
     # We still need to render the chat input widget to allow typing
     input_prompt = st.chat_input("Ask anything...")
-    
+
     if input_prompt:
         prompt = input_prompt
-    
+
     # Check voice mode override if not already set
     if not prompt and st.session_state.get('voice_mode'):
          # Simple simulation specific logic check
@@ -353,14 +372,14 @@ def show_chat_page():
     if prompt:
         # User Message Object
         user_msg = {
-            "role": "user", 
-            "content": prompt, 
-            "timestamp": datetime.now().strftime('%H:%M:%S'), 
-            "images": uploaded_images, 
+            "role": "user",
+            "content": prompt,
+            "timestamp": datetime.now().strftime('%H:%M:%S'),
+            "images": uploaded_images,
             "files": uploaded_file_info
         }
         st.session_state.messages.append(user_msg)
-        
+
         # --- DB SAVE: USER ---
         from ui.database import create_new_conversation, save_message
         try:
@@ -369,12 +388,12 @@ def show_chat_page():
                 # Smart title generation
                 title = (prompt[:30] + '..') if len(prompt) > 30 else prompt
                 st.session_state.conversation_id = create_new_conversation(user_id, title)
-            
+
             # Save to DB
             save_message(
-                st.session_state.conversation_id, 
-                "user", 
-                prompt, 
+                st.session_state.conversation_id,
+                "user",
+                prompt,
                 {"images": bool(uploaded_images), "files": [f['name'] for f in uploaded_file_info]}
             )
         except Exception as e:
@@ -391,10 +410,10 @@ def show_chat_page():
                 for f in uploaded_file_info:
                     st.caption(f"📎 {f['name']}")
             st.markdown(prompt)
-            
+
         with st.chat_message("assistant"):
             start_time = time.time()
-            
+
             final_prompt = prompt
             if extra_context:
                 final_prompt += f"\n\nContext:\n{extra_context}"
@@ -409,7 +428,7 @@ def show_chat_page():
                         final_prompt += f"\n\nImage Context:\n{img_texts}"
                 except Exception as e:
                     st.warning(f"Image processing error: {e}")
-            
+
             # Internet Search Integration
             if st.session_state.get('enable_internet_search', False):
                 with st.spinner("🔍 Searching the internet..."):
@@ -417,7 +436,7 @@ def show_chat_page():
                     search_type_val = st.session_state.get('search_type', 'Web')
                     time_range_val = st.session_state.get('search_time_range', 'Anytime')
                     domain_val = st.session_state.get('search_domain_filter', None)
-                    
+
                     search_results, search_context = perform_internet_search(
                         prompt,
                         enable_search=True,
@@ -426,19 +445,19 @@ def show_chat_page():
                         time_range=time_range_val,
                         domain=domain_val
                     )
-                    
+
                     if search_results:
                         st.success(f"📡 Found {len(search_results)} web results")
-                        
+
                         # Display search results
                         with st.expander("🌐 Search Results", expanded=False):
                             from ui.internet_search import format_search_results_for_chat
                             search_display = format_search_results_for_chat(search_results, "web")
                             st.markdown(search_display)
-                        
+
                         # Augment prompt with search results
                         final_prompt = augment_prompt_with_search(prompt, search_results)
-            
+
             # Gather API keys once
             api_key_map = {
                 "google": st.session_state.get('google_api_key'),
@@ -454,15 +473,15 @@ def show_chat_page():
                 st.info("🧠 Brain processing...")
                 brain = AIBrain()
                 brain.internet_enabled = st.session_state.get('enable_internet', True)
-                
+
                 models_to_query = prepare_brain_configuration(api_key_map)
-                
+
                 if not models_to_query:
                     response_text = "Please configure API keys (Google, OpenAI, or Claude) to use Brain Mode."
                 else:
                     try:
                         config = {"temperature": 0.7, "max_output_tokens": 1024}
-                        
+
                         # Internet Search
                         internet_ctx = ""
                         if brain.internet_enabled:
@@ -470,40 +489,40 @@ def show_chat_page():
                                 internet_ctx = brain.gather_internet_context(prompt)
                                 if internet_ctx:
                                     final_prompt += f"\n\nInternet Info:\n{internet_ctx}"
-                        
+
                         # Query Models
                         # Async execution wrapper
                         responses = asyncio.run(brain.query_multiple_models(final_prompt, models_to_query, config))
-                        
+
                         # Synthesize
                         response_text = brain.synthesize_responses(prompt, responses, internet_ctx)
-                        
+
                         # Show comparison
                         with st.expander("Model Comparison"):
                             for r in responses:
                                 st.markdown(f"**{r['provider'].upper()}**: {r.get('success', False)}")
                                 st.text(r.get('response', '')[:200] + "...")
-                                
+
                     except Exception as e:
                         response_text = f"Brain Error: {e}"
-                
+
                 provider = "brain-mode"
                 model_name = "ensemble"
-                
+
             else:
                 # Standard Mode
                 provider = st.session_state.get('selected_provider', 'google')
                 model_name = st.session_state.get('selected_model_name', 'gemini-1.5-flash')
-                
+
                 config = {
                     "temperature": st.session_state.get('temperature', 1.0),
                     "max_tokens": st.session_state.get('max_tokens', 2048),
                     "top_p": st.session_state.get('top_p', 0.95),
                     "enable_streaming": st.session_state.get('enable_streaming', True)
                 }
-                
+
                 sys_prompt = st.session_state.get('system_instruction', "")
-                
+
                 response_text = generate_standard_response(
                     provider=provider,
                     model_name=model_name,
@@ -514,17 +533,17 @@ def show_chat_page():
                     config=config,
                     images=uploaded_images
                 )
-            
+
             end_time = time.time()
             st.session_state.messages.append({
-                "role": "assistant", 
-                "content": response_text, 
+                "role": "assistant",
+                "content": response_text,
                 "timestamp": datetime.now().strftime('%H:%M:%S'),
                 "response_time": end_time - start_time,
                 "provider": provider,
                 "model": model_name
             })
-            
+
             # --- DB SAVE: ASSISTANT ---
             try:
                 if 'conversation_id' in st.session_state:
@@ -533,9 +552,8 @@ def show_chat_page():
                      })
             except Exception as e:
                  print(f"DB Save Assistant Error: {e}")
-            
+
             if st.session_state.get('voice_mode') and st.session_state.get('auto_speak'):
                 pass
-            
-            st.rerun()
 
+            st.rerun()

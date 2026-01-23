@@ -14,13 +14,17 @@ def init_db():
         c = conn.cursor()
         # conversations: id, user_id, title, created_at, updated_at
         c.execute('''CREATE TABLE IF NOT EXISTS conversations
-                     (id TEXT PRIMARY KEY, user_id TEXT, title TEXT, 
+                     (id TEXT PRIMARY KEY, user_id TEXT, title TEXT,
                       created_at TIMESTAMP, updated_at TIMESTAMP)''')
-        
+
         # messages: id, conversation_id, role, content, meta_json, timestamp
         c.execute('''CREATE TABLE IF NOT EXISTS messages
-                     (id INTEGER PRIMARY KEY AUTOINCREMENT, conversation_id TEXT, 
+                     (id INTEGER PRIMARY KEY AUTOINCREMENT, conversation_id TEXT,
                       role TEXT, content TEXT, meta_json TEXT, timestamp TIMESTAMP)''')
+
+        # Performance index for looking up messages by conversation
+        c.execute('CREATE INDEX IF NOT EXISTS idx_messages_conversation_id ON messages (conversation_id)')
+
         conn.commit()
         conn.close()
     except Exception as e:
@@ -48,11 +52,11 @@ def save_message(conversation_id: str, role: str, content: str, meta: Dict = Non
     conn = sqlite3.connect(DB_FILE)
     c = conn.cursor()
     now = datetime.now()
-    
+
     # Ensure raw content is saved, meta handles images/files references
     c.execute("INSERT INTO messages (conversation_id, role, content, meta_json, timestamp) VALUES (?, ?, ?, ?, ?)",
               (conversation_id, role, content, json.dumps(meta), now))
-    
+
     # Update conversation timestamp
     c.execute("UPDATE conversations SET updated_at = ? WHERE id = ?", (now, conversation_id))
     conn.commit()
@@ -67,13 +71,25 @@ def get_user_conversations(user_id: str) -> List[Tuple]:
     conn.close()
     return rows
 
-def get_conversation_messages(conversation_id: str) -> List[Dict]:
+def get_conversation_messages(conversation_id: str, limit: int = None, offset: int = 0) -> List[Dict]:
     conn = sqlite3.connect(DB_FILE)
     c = conn.cursor()
-    c.execute("SELECT role, content, meta_json, timestamp FROM messages WHERE conversation_id = ? ORDER BY id ASC", (conversation_id,))
-    rows = c.fetchall()
+
+    if limit is not None:
+        # Fetch latest N messages (descending ID) to support pagination
+        # We need to reverse them later to return chronological order
+        query = "SELECT role, content, meta_json, timestamp FROM messages WHERE conversation_id = ? ORDER BY id DESC LIMIT ? OFFSET ?"
+        c.execute(query, (conversation_id, limit, offset))
+        rows = c.fetchall()
+        # Reverse rows to restore chronological order (ASC)
+        rows = rows[::-1]
+    else:
+        # Default behavior: fetch all, chronological
+        c.execute("SELECT role, content, meta_json, timestamp FROM messages WHERE conversation_id = ? ORDER BY id ASC", (conversation_id,))
+        rows = c.fetchall()
+
     conn.close()
-    
+
     messages = []
     for r in rows:
         msg = {
