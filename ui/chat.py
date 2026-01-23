@@ -17,7 +17,8 @@ from ui.chat_utils import (
     build_conversation_history, create_openai_messages, handle_openai_compatible_provider,
     perform_internet_search, augment_prompt_with_search,
     process_images_for_context, transcribe_audio_file, extract_video_frame_thumbnails, 
-    generate_image_captions, generate_standard_response, prepare_brain_configuration
+    generate_image_captions, generate_standard_response, prepare_brain_configuration,
+    sanitize_text, RateLimiter
 )
 from brain import AIBrain
 from brain_learning import LearningBrain
@@ -83,7 +84,7 @@ def show_chat_page():
         
         st.markdown(f"""
         <div class="welcome-container">
-            <div class="welcome-title">Welcome back, {user_name}! 👋</div>
+            <div class="welcome-title">Welcome back, {sanitize_text(user_name)}! 👋</div>
             <div class="welcome-subtitle">
                 I'm your intelligent assistant. Select a starter or type below to begin.
             </div>
@@ -351,6 +352,13 @@ def show_chat_page():
 
     # 5. Processing
     if prompt:
+        # Check rate limit
+        limiter = RateLimiter(max_requests=5, window_seconds=60)
+        user_id = st.session_state.get('username', 'guest')
+        if not limiter.check(user_id):
+            st.error("⚠️ Rate limit exceeded. Please wait a moment.")
+            return
+
         # User Message Object
         user_msg = {
             "role": "user", 

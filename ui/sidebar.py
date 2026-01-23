@@ -9,6 +9,7 @@ from typing import Dict, Any
 from ui.common import logout, get_session_cost
 from ui.auth import load_user_credentials, save_user_credentials, hash_password
 from ui.config import MODEL_OPTIONS, MODEL_PRICING, MODEL_CAPABILITIES, PROVIDER_ICONS, PROVIDER_LABELS
+from ui.chat_utils import sanitize_text
 from brain_learning import LearningBrain
 from multimodal_voice_integration import MultimodalVoiceIntegrator
 
@@ -48,7 +49,7 @@ def render_sidebar():
         st.markdown(f"""
         <div class="sidebar-user-card">
             <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
-                <span style="font-weight: 600; color: var(--text-primary);">👤 {username}</span>
+                <span style="font-weight: 600; color: var(--text-primary);">👤 {sanitize_text(username)}</span>
                 <span style="font-size: 0.8rem; background: var(--bg-tertiary); padding: 2px 6px; border-radius: 4px; color: var(--text-secondary);">{auth_type}</span>
             </div>
         </div>

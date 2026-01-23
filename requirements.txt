@@ -1,10 +1,10 @@
-streamlit
+streamlit>=1.53.1
 google-genai
 google-auth
 google-auth-oauthlib
 google-auth-httplib2
-openai
-anthropic
+openai>=2.15.0
+anthropic>=0.76.0
 together
 Pillow
 PyPDF2
@@ -15,7 +15,7 @@ duckduckgo-search
 beautifulsoup4
 requests
 aiohttp
-google-generativeai
+google-generativeai>=0.8.6
 
 # Optional (for advanced multimodal/image captioning)
 transformers

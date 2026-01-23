@@ -1,9 +1,41 @@
 
 import streamlit as st
 import logging
+import html
 from typing import List, Dict, Optional, Any, Callable, Tuple
 
 logger = logging.getLogger(__name__)
+
+def sanitize_text(text: str) -> str:
+    """Sanitize text to prevent XSS attacks."""
+    if not text:
+        return ""
+    return html.escape(str(text))
+
+class RateLimiter:
+    """Simple in-memory rate limiter based on sliding window."""
+    def __init__(self, max_requests: int = 10, window_seconds: int = 60):
+        self.max_requests = max_requests
+        self.window_seconds = window_seconds
+
+    def check(self, key: str) -> bool:
+        """Check if request is allowed for the given key."""
+        import time
+        now = time.time()
+
+        if 'rate_limit_history' not in st.session_state:
+            st.session_state.rate_limit_history = {}
+
+        history = st.session_state.rate_limit_history.get(key, [])
+        # Filter out old requests
+        valid_requests = [t for t in history if now - t < self.window_seconds]
+
+        if len(valid_requests) >= self.max_requests:
+            return False
+
+        valid_requests.append(now)
+        st.session_state.rate_limit_history[key] = valid_requests
+        return True
 
 # BLIP cache holds (processor, model, device)
 BLIP_CACHE: Optional[Tuple[Any, Any, Any]] = None
@@ -90,9 +122,9 @@ def retry_with_backoff(retries=3, backoff_in_seconds=1):
 
 # --- Provider Handlers ---
 def handle_google_provider(
-    api_key: str, 
-    model_name: str, 
-    prompt: str, 
+    api_key: str,
+    model_name: str,
+    prompt: str,
     system_instruction: Optional[str] = None,
     temperature: float = 0.7,
     max_tokens: int = 2048,
@@ -105,14 +137,14 @@ def handle_google_provider(
         import google.generativeai as genai
         # Configure the global instance
         genai.configure(api_key=api_key)
-        
+
         # Mapping config specifically for GenerativeModel
         generation_config = genai.types.GenerationConfig(
             temperature=temperature,
             max_output_tokens=max_tokens,
             top_p=top_p
         )
-        
+
         # Initialize model
         # system_instruction is supported in newer versions as init argument or via specific methods
         # For broader compatibility, passing via constructor if supported, else prepending to prompt might be needed
@@ -124,7 +156,7 @@ def handle_google_provider(
             model = genai.GenerativeModel(model_name=model_name)
             if system_instruction:
                 prompt = f"{system_instruction}\n\n{prompt}"
-            
+
         contents = []
         if images:
             from io import BytesIO
@@ -132,20 +164,20 @@ def handle_google_provider(
             for img in images:
                 # Gemai SDK can take PIL images directly in 'contents'
                 contents.append(img)
-        
+
         contents.append(prompt)
-        
+
         @retry_with_backoff(retries=2)
         def _generate():
             # For gemini, we can pass stream=True/False to generate_content
             return model.generate_content(
-                contents, 
+                contents,
                 generation_config=generation_config,
                 stream=enable_streaming
             )
 
         response = _generate()
-        
+
         if enable_streaming:
             collected_text = []
             def _stream_gen():
@@ -153,12 +185,12 @@ def handle_google_provider(
                     if chunk.text:
                         collected_text.append(chunk.text)
                         yield chunk.text
-            
+
             try:
                 st.write_stream(_stream_gen())
             except Exception as e:
                 logger.warning(f"Google streaming visualization failed: {e}")
-            
+
             return "".join(collected_text)
         else:
              return response.text
@@ -180,7 +212,7 @@ def handle_anthropic_provider(
         if not api_key: return "Please provide an Anthropic API Key."
         from anthropic import Anthropic
         client = Anthropic(api_key=api_key)
-        
+
         kwargs = {
              "model": model_name,
              "messages": messages,
@@ -189,7 +221,7 @@ def handle_anthropic_provider(
         }
         if system_instruction:
              kwargs["system"] = system_instruction
-             
+
         @retry_with_backoff(retries=2)
         def _create_message():
             if enable_streaming:
@@ -198,7 +230,7 @@ def handle_anthropic_provider(
                 return client.messages.create(stream=False, **kwargs)
 
         response = _create_message()
-        
+
         if enable_streaming:
             collected_text = []
             def _stream_gen():
@@ -207,7 +239,7 @@ def handle_anthropic_provider(
                         text = event.delta.text
                         collected_text.append(text)
                         yield text
-            
+
             try:
                 st.write_stream(_stream_gen())
             except Exception:
@@ -243,10 +275,10 @@ def generate_standard_response(
 
         if provider == "google":
             return handle_google_provider(
-                api_key, model_name, prompt, system_instruction, 
+                api_key, model_name, prompt, system_instruction,
                 temp, max_tok, top_p, images, enable_streaming=stream
             )
-            
+
         elif provider in ["openai", "together", "xai", "deepseek"]:
             base_urls = {
                 "together": "https://api.together.xyz/v1",
@@ -256,33 +288,33 @@ def generate_standard_response(
             client = get_openai_client(api_key, base_urls.get(provider))
             msgs = create_openai_messages(build_conversation_history(chat_history), prompt, system_instruction)
             return handle_openai_compatible_provider(client, model_name, msgs, temp, max_tok, top_p, stream)
-            
+
         elif provider == "anthropic":
             # Anthropic expects just user/assistant messages
             msgs = [{"role": "user", "content": prompt}] # Simplified for this call; ideally use full history if supported
             return handle_anthropic_provider(
-                api_key, model_name, msgs, system_instruction, 
+                api_key, model_name, msgs, system_instruction,
                 temp, max_tok, enable_streaming=stream
             )
-            
+
         return "Provider not supported."
-        
+
     except Exception as e:
         return f"Generation Error: {str(e)}"
 
 def prepare_brain_configuration(api_keys: Dict[str, str], requested_models: List[str] = None) -> List[Dict[str, Any]]:
     """Helper to build the list of models for Brain Mode based on available keys"""
     models_to_query = []
-    
+
     # Default strategy: Use available keys (simplified)
     # In a real app, 'requested_models' would come from user config
-    
+
     if api_keys.get('google'):
         models_to_query.append({"provider": "google", "model": "gemini-1.5-flash", "api_key": api_keys['google']})
-        
+
     if api_keys.get('openai'):
         models_to_query.append({"provider": "openai", "model": "gpt-4o-mini", "api_key": api_keys['openai']})
-        
+
     if api_keys.get('anthropic'):
          models_to_query.append({"provider": "anthropic", "model": "claude-3-5-haiku-20241022", "api_key": api_keys['anthropic']})
 
@@ -349,17 +381,17 @@ def perform_internet_search(query: str, enable_search: bool = True, max_results:
         return [], ""
     try:
         search_engine = get_internet_search_engine()
-        
+
         if search_type == "News":
-             # News search generally supports time range implicitly by recency, 
+             # News search generally supports time range implicitly by recency,
              # but standard DDG news api might handle max_results.
-             # If we want detailed time filtering for news, we'd need to extend it, 
+             # If we want detailed time filtering for news, we'd need to extend it,
              # but for now we route to search_news.
              results = search_engine.search_news(query, max_results=max_results)
         else:
              # Standard Web Search with filters
              results = search_engine.search(query, max_results=max_results, time_range=time_range, domain=domain)
-             
+
         if results:
             from ui.internet_search import create_search_context
             context = create_search_context(results, query)
@@ -536,9 +568,9 @@ def preload_blip_model(timeout: int = 120) -> bool:
 def _load_blip_resources():
     from transformers import BlipProcessor, BlipForConditionalGeneration
     import torch
-    
+
     model_id = "Salesforce/blip-image-captioning-base"
-    
+
     # helper to load with retry strategy
     def load_with_fallback(cls, model_id):
         # 1. Try local cache first
@@ -550,7 +582,7 @@ def _load_blip_resources():
 
     processor = load_with_fallback(BlipProcessor, model_id)
     model = load_with_fallback(BlipForConditionalGeneration, model_id)
-    
+
     device = "cuda" if torch.cuda.is_available() else "cpu"
     model.to(device)
     return processor, model, device
@@ -566,16 +598,16 @@ def preload_blip_model_with_progress(progress_callback: Optional[Callable[[int, 
     try:
         if progress_callback:
             progress_callback(10, "Checking local cache...")
-        
+
         # We'll use a thread/process safe check by just calling the cached function
         # Streamlit's cache will handle the heavy lifting.
-        
+
         if progress_callback:
              progress_callback(30, "Loading BLIP model items...")
-        
+
         # This will block until loaded
         _load_blip_resources()
-        
+
         if progress_callback:
             progress_callback(100, "BLIP model ready")
         return True
@@ -584,7 +616,3 @@ def preload_blip_model_with_progress(progress_callback: Optional[Callable[[int, 
         if progress_callback:
              progress_callback(0, f"Failed: {str(e)}")
         return False
-
-    except Exception as e:
-        logger.info(f"extract_video_frame_thumbnails error: {e}")
-        return thumbnails
