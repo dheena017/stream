@@ -199,6 +199,50 @@ def show_chat_page():
         )
         st.session_state.search_domain_filter = domain_filter
     
+
+    # Experimental: Chat Export
+    with st.expander("🧪 Experimental: Chat Export", expanded=False):
+        st.caption("Download your conversation history.")
+
+        # Prepare data
+        chat_data = st.session_state.get('messages', [])
+
+        # JSON
+        try:
+            json_str = json.dumps(chat_data, indent=2, default=str)
+            st.download_button(
+                label="📄 Download as JSON",
+                data=json_str,
+                file_name=f"chat_export_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json",
+                mime="application/json",
+                use_container_width=True
+            )
+        except Exception as e:
+            st.error(f"Error preparing JSON export: {e}")
+
+        # Markdown
+        try:
+            md_lines = ["# Chat Export\n"]
+            for msg in chat_data:
+                role = msg.get('role', 'unknown').capitalize()
+                timestamp = msg.get('timestamp', '')
+                content = msg.get('content', '')
+                md_lines.append(f"### {role} ({timestamp})")
+                md_lines.append(f"{content}\n")
+                if msg.get('images'):
+                    md_lines.append(f"*(Included {len(msg['images'])} images)*\n")
+
+            md_str = "\n".join(md_lines)
+            st.download_button(
+                label="📝 Download as Markdown",
+                data=md_str,
+                file_name=f"chat_export_{datetime.now().strftime('%Y%m%d_%H%M%S')}.md",
+                mime="text/markdown",
+                use_container_width=True
+            )
+        except Exception as e:
+            st.error(f"Error preparing Markdown export: {e}")
+
     # 5. Multimodal Uploads Area
     multimodal_options = ["Images", "Documents (PDF/TXT)", "Audio Files", "Video Frames"]
     
