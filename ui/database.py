@@ -21,6 +21,11 @@ def init_db():
         c.execute('''CREATE TABLE IF NOT EXISTS messages
                      (id INTEGER PRIMARY KEY AUTOINCREMENT, conversation_id TEXT, 
                       role TEXT, content TEXT, meta_json TEXT, timestamp TIMESTAMP)''')
+
+        # feedback: id, user_id, category, rating, comment, timestamp
+        c.execute('''CREATE TABLE IF NOT EXISTS feedback
+                     (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id TEXT,
+                      category TEXT, rating INTEGER, comment TEXT, timestamp TIMESTAMP)''')
         conn.commit()
         conn.close()
     except Exception as e:
@@ -103,3 +108,17 @@ def update_conversation_title(conversation_id: str, title: str):
     c.execute("UPDATE conversations SET title = ? WHERE id = ?", (title, conversation_id))
     conn.commit()
     conn.close()
+
+def save_feedback(user_id: str, category: str, rating: int, comment: str) -> bool:
+    try:
+        conn = sqlite3.connect(DB_FILE)
+        c = conn.cursor()
+        now = datetime.now()
+        c.execute("INSERT INTO feedback (user_id, category, rating, comment, timestamp) VALUES (?, ?, ?, ?, ?)",
+                  (user_id, category, rating, comment, now))
+        conn.commit()
+        conn.close()
+        return True
+    except Exception as e:
+        logger.error(f"Error saving feedback: {e}")
+        return False

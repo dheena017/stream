@@ -17,6 +17,7 @@ from ui.profile import show_profile_page
 from ui.dashboard import show_dashboard
 from ui.sidebar import render_sidebar
 from ui.chat import show_chat_page
+from ui.feedback import show_feedback_page
 from ui.database import init_db
 
 # Initialize DB on startup
@@ -161,7 +162,8 @@ def handle_page_routing():
     page_router = {
         "dashboard": show_dashboard,
         "profile": show_profile_page,
-        "chat": show_chat_page
+        "chat": show_chat_page,
+        "feedback": show_feedback_page
     }
     
     current_page = st.session_state.current_page
