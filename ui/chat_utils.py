@@ -31,6 +31,8 @@ def get_anthropic_client(api_key: str):
 @st.cache_resource
 def get_google_client(api_key: str):
     # Import dynamically to avoid hard dependency if not used
+    # NOTE: google.generativeai is deprecated in favor of google.genai (v1.0+).
+    # Migration requires refactoring handle_google_provider to use Client API.
     import google.generativeai as genai
     genai.configure(api_key=api_key)
     return genai
@@ -584,7 +586,3 @@ def preload_blip_model_with_progress(progress_callback: Optional[Callable[[int, 
         if progress_callback:
              progress_callback(0, f"Failed: {str(e)}")
         return False
-
-    except Exception as e:
-        logger.info(f"extract_video_frame_thumbnails error: {e}")
-        return thumbnails

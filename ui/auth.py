@@ -25,6 +25,9 @@ def load_user_credentials() -> Dict[str, Dict[str, str]]:
             pass
     
     # Default credentials with email support
+    # SECURITY WARNING: These are default credentials for development.
+    # PROD: Change these via environment variables (ADMIN_PASSWORD, USER_PASSWORD)
+    # or ensure 'users.json' is populated with secure credentials.
     return {
         "admin": {
             "password": hash_password(os.getenv("ADMIN_PASSWORD", "admin123")),
@@ -264,8 +267,9 @@ def show_login_page():
             with col_info:
                 with st.popover("ℹ️ Info"):
                     st.markdown("<div style='box-shadow:0 2px 12px rgba(0,0,0,0.07); border-radius:12px; padding:1rem 1.2rem; background:#f9fafb;'>", unsafe_allow_html=True)
-                    st.markdown("**Default Credentials:**")
+                    st.markdown("**Default Credentials (DEV ONLY):**")
                     st.code("Email: admin@example.com\nUsername: admin\nPassword: admin123")
+                    st.caption("⚠️ Do not use these in production!")
                     st.markdown("---")
                     st.markdown("**Login with email or username**")
                     st.caption("You can use either your email address or username to login")
