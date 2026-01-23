@@ -17,9 +17,9 @@ def render_sidebar():
     with st.sidebar:
         # 1. Header & Theme
         st.markdown("""
-        <div class="sidebar-header">
+        <header class="sidebar-header">
             <h1 style="color: white; margin: 0; font-size: 1.4rem; font-weight: 800; letter-spacing: 0.5px;">⚙️ Control Panel</h1>
-        </div>
+        </header>
         """, unsafe_allow_html=True)
         
         # Navigation

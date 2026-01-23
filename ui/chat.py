@@ -36,13 +36,13 @@ def show_chat_page():
             <div style="font-size: 2rem;">🤖</div>
             <div>
                 <h2 style="margin: 0; font-weight: 700; color: white;">Multi-Provider Chat</h2>
-                <div style="display: flex; gap: 0.8rem; flex-wrap: wrap; margin-top: 0.25rem;">
-                    <span class="subtle-text">GPT-4</span>
-                    <span class="subtle-text">•</span>
-                    <span class="subtle-text">Claude</span>
-                    <span class="subtle-text">•</span>
-                    <span class="subtle-text">Gemini</span>
-                </div>
+                <ul style="display: flex; gap: 0.8rem; flex-wrap: wrap; margin-top: 0.25rem; list-style: none; padding: 0;">
+                    <li class="subtle-text">GPT-4</li>
+                    <li class="subtle-text" aria-hidden="true">•</li>
+                    <li class="subtle-text">Claude</li>
+                    <li class="subtle-text" aria-hidden="true">•</li>
+                    <li class="subtle-text">Gemini</li>
+                </ul>
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -54,7 +54,7 @@ def show_chat_page():
         inet_on = st.session_state.get('enable_internet_search', False)
         
         status_html = f"""
-        <div style="text-align: right;">
+        <div style="text-align: right;" role="status" aria-live="polite">
             <div class="status-badge {'active' if brain_on else ''}" style="display:inline-flex; width:auto; font-size:0.8rem; padding: 2px 8px;">
                 {'🧠 Brain' if brain_on else '🤖 Std'}
             </div>
