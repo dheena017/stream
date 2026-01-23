@@ -17,7 +17,8 @@ from ui.chat_utils import (
     build_conversation_history, create_openai_messages, handle_openai_compatible_provider,
     perform_internet_search, augment_prompt_with_search,
     process_images_for_context, transcribe_audio_file, extract_video_frame_thumbnails, 
-    generate_image_captions, generate_standard_response, prepare_brain_configuration
+    generate_image_captions, generate_standard_response, prepare_brain_configuration,
+    safe_run_async
 )
 from brain import AIBrain
 from brain_learning import LearningBrain
@@ -473,7 +474,7 @@ def show_chat_page():
                         
                         # Query Models
                         # Async execution wrapper
-                        responses = asyncio.run(brain.query_multiple_models(final_prompt, models_to_query, config))
+                        responses = safe_run_async(brain.query_multiple_models(final_prompt, models_to_query, config))
                         
                         # Synthesize
                         response_text = brain.synthesize_responses(prompt, responses, internet_ctx)
