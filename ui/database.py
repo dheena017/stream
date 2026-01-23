@@ -103,3 +103,15 @@ def update_conversation_title(conversation_id: str, title: str):
     c.execute("UPDATE conversations SET title = ? WHERE id = ?", (title, conversation_id))
     conn.commit()
     conn.close()
+
+
+def delete_user_data(user_id: str):
+    """Delete all data for a user (conversations and messages)."""
+    conn = sqlite3.connect(DB_FILE)
+    c = conn.cursor()
+    # Delete all messages for conversations belonging to this user
+    c.execute("DELETE FROM messages WHERE conversation_id IN (SELECT id FROM conversations WHERE user_id = ?)", (user_id,))
+    # Delete all conversations for this user
+    c.execute("DELETE FROM conversations WHERE user_id = ?", (user_id,))
+    conn.commit()
+    conn.close()
