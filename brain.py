@@ -5,6 +5,7 @@ import asyncio
 from typing import List, Dict, Optional, Any
 import json
 from datetime import datetime
+import streamlit as st
 
 
 class AIBrain:
@@ -16,7 +17,9 @@ class AIBrain:
         self.conversation_memory = []
         self.internet_enabled = True
         
-    def search_internet(self, query: str, num_results: int = 5) -> List[Dict[str, str]]:
+    @staticmethod
+    @st.cache_data(ttl=3600, show_spinner=False)
+    def search_internet(query: str, num_results: int = 5) -> List[Dict[str, str]]:
         """Search the internet using DuckDuckGo"""
         try:
             from duckduckgo_search import DDGS  # type: ignore
@@ -35,7 +38,9 @@ class AIBrain:
         except Exception as e:
             return [{"error": f"Search failed: {str(e)}"}]
     
-    def scrape_webpage(self, url: str) -> str:
+    @staticmethod
+    @st.cache_data(ttl=86400, show_spinner=False)
+    def scrape_webpage(url: str) -> str:
         """Extract text content from a webpage"""
         try:
             import requests  # type: ignore
