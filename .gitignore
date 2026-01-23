@@ -29,3 +29,4 @@ dist/
 # Streamlit
 .streamlit/secrets.toml
 .streamlit/config.toml
+chat_history.db
