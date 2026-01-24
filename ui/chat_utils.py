@@ -70,8 +70,9 @@ def create_openai_messages(conversation_history: List[Dict], current_prompt: str
 # --- Resilience Helpers ---
 import time
 import functools
+import random
 
-def retry_with_backoff(retries=3, backoff_in_seconds=1):
+def retry_with_backoff(retries=3, backoff_in_seconds=1, exceptions=(Exception,)):
     def decorator(func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
@@ -79,20 +80,56 @@ def retry_with_backoff(retries=3, backoff_in_seconds=1):
             while True:
                 try:
                     return func(*args, **kwargs)
-                except Exception as e:
+                except exceptions as e:
                     if x == retries:
+                        logger.warning(f"Max retries ({retries}) reached for {func.__name__}. Error: {e}")
                         raise e
-                    sleep = (backoff_in_seconds * 2 ** x)
+
+                    # Exponential backoff with jitter
+                    sleep = (backoff_in_seconds * 2 ** x) + random.uniform(0, 1)
+                    logger.info(f"Retrying {func.__name__} in {sleep:.2f}s due to error: {e}")
                     time.sleep(sleep)
                     x += 1
         return wrapper
     return decorator
 
+class CircuitBreaker:
+    def __init__(self, failure_threshold=3, recovery_timeout=60):
+        self.failure_threshold = failure_threshold
+        self.recovery_timeout = recovery_timeout
+        self.failures = {}  # {provider: count}
+        self.last_failure_time = {} # {provider: timestamp}
+        self.state = {} # {provider: "CLOSED" | "OPEN" | "HALF_OPEN"}
+
+    def record_failure(self, provider):
+        self.failures[provider] = self.failures.get(provider, 0) + 1
+        self.last_failure_time[provider] = time.time()
+        if self.failures[provider] >= self.failure_threshold:
+            self.state[provider] = "OPEN"
+            logger.warning(f"Circuit breaker OPEN for {provider}")
+
+    def record_success(self, provider):
+        self.failures[provider] = 0
+        self.state[provider] = "CLOSED"
+
+    def is_open(self, provider):
+        if self.state.get(provider) == "OPEN":
+            elapsed = time.time() - self.last_failure_time.get(provider, 0)
+            if elapsed > self.recovery_timeout:
+                self.state[provider] = "HALF_OPEN"
+                logger.info(f"Circuit breaker HALF_OPEN for {provider}")
+                return False
+            return True
+        return False
+
+# Global circuit breaker instance
+CIRCUIT_BREAKER = CircuitBreaker()
+
 # --- Provider Handlers ---
 def handle_google_provider(
-    api_key: str, 
-    model_name: str, 
-    prompt: str, 
+    api_key: str,
+    model_name: str,
+    prompt: str,
     system_instruction: Optional[str] = None,
     temperature: float = 0.7,
     max_tokens: int = 2048,
@@ -100,19 +137,22 @@ def handle_google_provider(
     images: List = None,
     enable_streaming: bool = False
 ) -> str:
+    if CIRCUIT_BREAKER.is_open("google"):
+        return "⚠️ Google service is temporarily unavailable due to repeated failures."
+
     try:
         if not api_key: return "Please provide a Google API Key."
         import google.generativeai as genai
         # Configure the global instance
         genai.configure(api_key=api_key)
-        
+
         # Mapping config specifically for GenerativeModel
         generation_config = genai.types.GenerationConfig(
             temperature=temperature,
             max_output_tokens=max_tokens,
             top_p=top_p
         )
-        
+
         # Initialize model
         # system_instruction is supported in newer versions as init argument or via specific methods
         # For broader compatibility, passing via constructor if supported, else prepending to prompt might be needed
@@ -124,7 +164,7 @@ def handle_google_provider(
             model = genai.GenerativeModel(model_name=model_name)
             if system_instruction:
                 prompt = f"{system_instruction}\n\n{prompt}"
-            
+
         contents = []
         if images:
             from io import BytesIO
@@ -132,20 +172,20 @@ def handle_google_provider(
             for img in images:
                 # Gemai SDK can take PIL images directly in 'contents'
                 contents.append(img)
-        
+
         contents.append(prompt)
-        
+
         @retry_with_backoff(retries=2)
         def _generate():
             # For gemini, we can pass stream=True/False to generate_content
             return model.generate_content(
-                contents, 
+                contents,
                 generation_config=generation_config,
                 stream=enable_streaming
             )
 
         response = _generate()
-        
+
         if enable_streaming:
             collected_text = []
             def _stream_gen():
@@ -153,17 +193,21 @@ def handle_google_provider(
                     if chunk.text:
                         collected_text.append(chunk.text)
                         yield chunk.text
-            
+
             try:
                 st.write_stream(_stream_gen())
             except Exception as e:
                 logger.warning(f"Google streaming visualization failed: {e}")
-            
-            return "".join(collected_text)
+
+            final_text = "".join(collected_text)
+            CIRCUIT_BREAKER.record_success("google")
+            return final_text
         else:
+             CIRCUIT_BREAKER.record_success("google")
              return response.text
 
     except Exception as e:
+        CIRCUIT_BREAKER.record_failure("google")
         logger.error(f"Google provider error: {e}")
         return f"Error connecting to Google Gemini: {str(e)}"
 
@@ -176,11 +220,14 @@ def handle_anthropic_provider(
     max_tokens: int = 2048,
     enable_streaming: bool = False
 ) -> str:
+    if CIRCUIT_BREAKER.is_open("anthropic"):
+        return "⚠️ Anthropic service is temporarily unavailable due to repeated failures."
+
     try:
         if not api_key: return "Please provide an Anthropic API Key."
         from anthropic import Anthropic
         client = Anthropic(api_key=api_key)
-        
+
         kwargs = {
              "model": model_name,
              "messages": messages,
@@ -189,7 +236,7 @@ def handle_anthropic_provider(
         }
         if system_instruction:
              kwargs["system"] = system_instruction
-             
+
         @retry_with_backoff(retries=2)
         def _create_message():
             if enable_streaming:
@@ -198,7 +245,7 @@ def handle_anthropic_provider(
                 return client.messages.create(stream=False, **kwargs)
 
         response = _create_message()
-        
+
         if enable_streaming:
             collected_text = []
             def _stream_gen():
@@ -207,16 +254,22 @@ def handle_anthropic_provider(
                         text = event.delta.text
                         collected_text.append(text)
                         yield text
-            
+
             try:
                 st.write_stream(_stream_gen())
             except Exception:
                 pass
-            return "".join(collected_text)
+
+            final_text = "".join(collected_text)
+            CIRCUIT_BREAKER.record_success("anthropic")
+            return final_text
         else:
-            return response.content[0].text
+            text = response.content[0].text
+            CIRCUIT_BREAKER.record_success("anthropic")
+            return text
 
     except Exception as e:
+         CIRCUIT_BREAKER.record_failure("anthropic")
          logger.error(f"Anthropic provider error: {e}")
          return f"Error connecting to Anthropic Claude: {str(e)}"
 
@@ -230,59 +283,103 @@ def generate_standard_response(
     config: Dict[str, Any] = {},
     images: List = None
 ) -> str:
-    """Unified dispatcher for standard mode chat generation"""
-    api_key = api_keys.get(provider)
-    if not api_key:
-        return f"❌ Missing API Key for {provider}. Please check sidebar settings."
+    """Unified dispatcher for standard mode chat generation with fallback logic"""
 
-    try:
-        temp = config.get('temperature', 0.7)
-        max_tok = config.get('max_tokens', 2048)
-        top_p = config.get('top_p', 0.95)
-        stream = config.get('enable_streaming', False)
+    fallback_models = {
+         "openai": "gpt-4o-mini",
+         "google": "gemini-1.5-flash",
+         "anthropic": "claude-3-5-haiku-20241022",
+         "deepseek": "deepseek-chat",
+         "xai": "grok-beta",
+         "together": "meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo"
+    }
 
-        if provider == "google":
-            return handle_google_provider(
-                api_key, model_name, prompt, system_instruction, 
-                temp, max_tok, top_p, images, enable_streaming=stream
-            )
-            
-        elif provider in ["openai", "together", "xai", "deepseek"]:
-            base_urls = {
-                "together": "https://api.together.xyz/v1",
-                "xai": "https://api.x.ai/v1",
-                "deepseek": "https://api.deepseek.com"
-            }
-            client = get_openai_client(api_key, base_urls.get(provider))
-            msgs = create_openai_messages(build_conversation_history(chat_history), prompt, system_instruction)
-            return handle_openai_compatible_provider(client, model_name, msgs, temp, max_tok, top_p, stream)
-            
-        elif provider == "anthropic":
-            # Anthropic expects just user/assistant messages
-            msgs = [{"role": "user", "content": prompt}] # Simplified for this call; ideally use full history if supported
-            return handle_anthropic_provider(
-                api_key, model_name, msgs, system_instruction, 
-                temp, max_tok, enable_streaming=stream
-            )
-            
-        return "Provider not supported."
-        
-    except Exception as e:
-        return f"Generation Error: {str(e)}"
+    # Determine fallback order: requested first, then others with API keys
+    available_providers = [p for p, k in api_keys.items() if k]
+    fallback_order = [provider] + [p for p in available_providers if p != provider]
+    supported_providers = ["google", "openai", "anthropic", "together", "xai", "deepseek"]
+    fallback_order = [p for p in fallback_order if p in supported_providers]
+
+    # Remove duplicates while preserving order
+    seen = set()
+    fallback_order = [x for x in fallback_order if not (x in seen or seen.add(x))]
+
+    last_error = "No providers available."
+
+    for current_provider in fallback_order:
+        api_key = api_keys.get(current_provider)
+        if not api_key: continue
+
+        # Determine model to use
+        use_model = model_name
+        if current_provider != provider:
+            use_model = fallback_models.get(current_provider, model_name)
+
+        try:
+            logger.info(f"Attempting generation with {current_provider} (model: {use_model})...")
+
+            temp = config.get('temperature', 0.7)
+            max_tok = config.get('max_tokens', 2048)
+            top_p = config.get('top_p', 0.95)
+            stream = config.get('enable_streaming', False)
+
+            response = None
+            if current_provider == "google":
+                response = handle_google_provider(
+                    api_key, use_model, prompt, system_instruction,
+                    temp, max_tok, top_p, images, enable_streaming=stream
+                )
+            elif current_provider in ["openai", "together", "xai", "deepseek"]:
+                base_urls = {
+                    "together": "https://api.together.xyz/v1",
+                    "xai": "https://api.x.ai/v1",
+                    "deepseek": "https://api.deepseek.com"
+                }
+                client = get_openai_client(api_key, base_urls.get(current_provider))
+                msgs = create_openai_messages(build_conversation_history(chat_history), prompt, system_instruction)
+                response = handle_openai_compatible_provider(
+                    client, use_model, msgs, temp, max_tok, top_p, stream, provider_name=current_provider
+                )
+            elif current_provider == "anthropic":
+                msgs = [{"role": "user", "content": prompt}]
+                response = handle_anthropic_provider(
+                    api_key, use_model, msgs, system_instruction,
+                    temp, max_tok, enable_streaming=stream
+                )
+            else:
+                 response = "Provider not supported."
+
+            # Check for error indicators
+            if response and any(str(response).startswith(err) for err in ["Error", "❌", "⚠️", "Provider not supported"]):
+                logger.warning(f"Provider {current_provider} returned error: {response}")
+                last_error = response
+                continue
+
+            # Success
+            if current_provider != provider:
+                return f"*[Fallback to {current_provider}]* {response}"
+            return response
+
+        except Exception as e:
+            logger.error(f"Provider {current_provider} exception: {e}")
+            last_error = f"Exception: {str(e)}"
+            continue
+
+    return f"All providers failed. Last error: {last_error}"
 
 def prepare_brain_configuration(api_keys: Dict[str, str], requested_models: List[str] = None) -> List[Dict[str, Any]]:
     """Helper to build the list of models for Brain Mode based on available keys"""
     models_to_query = []
-    
+
     # Default strategy: Use available keys (simplified)
     # In a real app, 'requested_models' would come from user config
-    
+
     if api_keys.get('google'):
         models_to_query.append({"provider": "google", "model": "gemini-1.5-flash", "api_key": api_keys['google']})
-        
+
     if api_keys.get('openai'):
         models_to_query.append({"provider": "openai", "model": "gpt-4o-mini", "api_key": api_keys['openai']})
-        
+
     if api_keys.get('anthropic'):
          models_to_query.append({"provider": "anthropic", "model": "claude-3-5-haiku-20241022", "api_key": api_keys['anthropic']})
 
@@ -295,8 +392,12 @@ def handle_openai_compatible_provider(
     temperature: float,
     max_tokens: int,
     top_p: float,
-    enable_streaming: bool
+    enable_streaming: bool,
+    provider_name: str = "openai"
 ) -> str:
+    if CIRCUIT_BREAKER.is_open(provider_name):
+        return f"⚠️ {provider_name} service is temporarily unavailable due to repeated failures."
+
     @retry_with_backoff(retries=2)
     def _create_completion(stream_mode):
         return client.chat.completions.create(
@@ -312,7 +413,8 @@ def handle_openai_compatible_provider(
         try:
             stream = _create_completion(True)
         except Exception as e:
-            return f"Error: {str(e)}"
+            CIRCUIT_BREAKER.record_failure(provider_name)
+            return f"Error connecting to {provider_name}: {str(e)}"
 
         collected_chunks = []
         def _iter_chunks():
@@ -325,21 +427,23 @@ def handle_openai_compatible_provider(
             st.write_stream(_iter_chunks())
         except Exception:
             pass
+
         response_text = "".join(collected_chunks)
+        CIRCUIT_BREAKER.record_success(provider_name)
         return response_text if response_text else "I apologize, but I couldn't generate a response."
     else:
         try:
             response = _create_completion(False)
         except Exception as e:
-            return f"Error: {str(e)}"
+            CIRCUIT_BREAKER.record_failure(provider_name)
+            return f"Error connecting to {provider_name}: {str(e)}"
 
         response_text = getattr(response.choices[0].message, 'content', None) or response.choices[0].message['content']
         if not response_text:
             response_text = "I apologize, but I couldn't generate a response."
-        try:
-            st.markdown(response_text)
-        except Exception:
-            pass
+
+        CIRCUIT_BREAKER.record_success(provider_name)
+
         return response_text
 
 
@@ -349,17 +453,17 @@ def perform_internet_search(query: str, enable_search: bool = True, max_results:
         return [], ""
     try:
         search_engine = get_internet_search_engine()
-        
+
         if search_type == "News":
-             # News search generally supports time range implicitly by recency, 
+             # News search generally supports time range implicitly by recency,
              # but standard DDG news api might handle max_results.
-             # If we want detailed time filtering for news, we'd need to extend it, 
+             # If we want detailed time filtering for news, we'd need to extend it,
              # but for now we route to search_news.
              results = search_engine.search_news(query, max_results=max_results)
         else:
              # Standard Web Search with filters
              results = search_engine.search(query, max_results=max_results, time_range=time_range, domain=domain)
-             
+
         if results:
             from ui.internet_search import create_search_context
             context = create_search_context(results, query)
@@ -536,9 +640,9 @@ def preload_blip_model(timeout: int = 120) -> bool:
 def _load_blip_resources():
     from transformers import BlipProcessor, BlipForConditionalGeneration
     import torch
-    
+
     model_id = "Salesforce/blip-image-captioning-base"
-    
+
     # helper to load with retry strategy
     def load_with_fallback(cls, model_id):
         # 1. Try local cache first
@@ -550,7 +654,7 @@ def _load_blip_resources():
 
     processor = load_with_fallback(BlipProcessor, model_id)
     model = load_with_fallback(BlipForConditionalGeneration, model_id)
-    
+
     device = "cuda" if torch.cuda.is_available() else "cpu"
     model.to(device)
     return processor, model, device
@@ -566,16 +670,16 @@ def preload_blip_model_with_progress(progress_callback: Optional[Callable[[int, 
     try:
         if progress_callback:
             progress_callback(10, "Checking local cache...")
-        
+
         # We'll use a thread/process safe check by just calling the cached function
         # Streamlit's cache will handle the heavy lifting.
-        
+
         if progress_callback:
              progress_callback(30, "Loading BLIP model items...")
-        
+
         # This will block until loaded
         _load_blip_resources()
-        
+
         if progress_callback:
             progress_callback(100, "BLIP model ready")
         return True
@@ -584,7 +688,3 @@ def preload_blip_model_with_progress(progress_callback: Optional[Callable[[int, 
         if progress_callback:
              progress_callback(0, f"Failed: {str(e)}")
         return False
-
-    except Exception as e:
-        logger.info(f"extract_video_frame_thumbnails error: {e}")
-        return thumbnails
