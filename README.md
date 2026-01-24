@@ -27,13 +27,20 @@ streamlit run app.py
 ```
 
 ## Tests & CI
-- A lightweight pytest smoke test is provided at `tests/test_multimodal_smoke.py` to validate multimodal helpers without requiring heavy optional dependencies.
+- Unit tests are located in `tests/` covering:
+  - Multimodal helpers (`tests/test_multimodal_smoke.py`)
+  - Chat utility logic (`tests/test_chat_utils.py`)
+  - Application state initialization (`tests/test_app_state.py`)
 - A GitHub Actions workflow `.github/workflows/multimodal-smoke.yml` runs the tests on push and PR.
 
 Run tests locally:
 
 ```powershell
-pytest -q
+# Run all tests
+pytest
+
+# Run specific test file
+pytest tests/test_app_state.py
 ```
 
 ## Notes
