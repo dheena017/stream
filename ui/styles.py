@@ -3,37 +3,47 @@ import streamlit as st
 
 def load_css():
     """Load all custom CSS styles for the application"""
-    
+
     # Premium Dark Mode Theme - Enforced
     return """
     <style>
     /* Premium Dark Mode Theme - Deep Space & Neon Accents */
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
-    
+
     :root {
         /* Color Palette */
         --bg-primary: #0B0F19;       /* Deepest blue/black */
         --bg-secondary: #151B2B;     /* Slightly lighter panel bg */
         --bg-tertiary: #1E293B;      /* Card/Input bg */
         --bg-secondary-rgb: 21, 27, 43; /* Added for RGB usage */
-        
+
         --text-primary: #F8FAFC;     /* Bright white text */
-        --text-secondary: #94A3B8;   /* Muted text */
+        --text-secondary: #CBD5E1;   /* Muted text - Improved Contrast from #94A3B8 */
         --text-accent: #38BDF8;      /* Light blue accent text */
-        
+
         --accent-primary: #6366F1;   /* Indigo */
         --accent-secondary: #8B5CF6; /* Violet */
         --accent-glow: rgba(99, 102, 241, 0.4);
-        --accent-subtle: rgba(99, 102, 241, 0.1); 
-        
+        --accent-subtle: rgba(99, 102, 241, 0.1);
+
         --border-subtle: rgba(148, 163, 184, 0.1);
-        --border-focus: rgba(99, 102, 241, 0.5);
-        
+        --border-focus: #38BDF8; /* High contrast focus border */
+
         --gradient-primary: linear-gradient(135deg, #6366F1 0%, #A855F7 100%);
         --gradient-surface: linear-gradient(180deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.7) 100%);
-        
+
         --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.4);
         --glass-blur: blur(12px);
+    }
+
+    /* Reduced Motion Support */
+    @media (prefers-reduced-motion: reduce) {
+        *, ::before, ::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+            scroll-behavior: auto !important;
+        }
     }
 
     html, body, [class*="css"] {
@@ -45,7 +55,7 @@ def load_css():
     /* --- Main Layout & Background --- */
     .stApp {
         background-color: var(--bg-primary);
-        background-image: 
+        background-image:
             radial-gradient(circle at 15% 15%, rgba(99, 102, 241, 0.08) 0%, transparent 45%),
             radial-gradient(circle at 85% 85%, rgba(168, 85, 247, 0.08) 0%, transparent 45%);
         background-attachment: fixed;
@@ -57,7 +67,7 @@ def load_css():
         border-right: 1px solid var(--border-subtle);
         box-shadow: 4px 0 24px rgba(0,0,0,0.2);
     }
-    
+
     /* Sidebar Navigation Buttons */
     [data-testid="stSidebar"] .stButton > button {
         background: transparent !important;
@@ -92,8 +102,8 @@ def load_css():
     }
 
     /* --- Inputs & Interactive Elements --- */
-    .stTextInput > div > div > input, 
-    .stTextArea textarea, 
+    .stTextInput > div > div > input,
+    .stTextArea textarea,
     .stSelectbox > div > div {
         background-color: var(--bg-tertiary) !important;
         color: var(--text-primary) !important;
@@ -101,10 +111,10 @@ def load_css():
         border-radius: 8px !important;
         transition: all 0.2s ease;
     }
-    
-    .stTextInput > div > div > input:focus, 
+
+    .stTextInput > div > div > input:focus,
     .stTextArea textarea:focus {
-        border-color: var(--accent-primary) !important;
+        border-color: var(--border-focus) !important;
         box-shadow: 0 0 0 2px var(--accent-glow) !important;
         background-color: #1e293b !important;
     }
@@ -116,7 +126,7 @@ def load_css():
         border-radius: 12px !important;
         box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     }
-    
+
     /* Metric Cards */
     [data-testid="stMetric"] {
         background: linear-gradient(180deg, rgba(30, 41, 59, 1) 0%, rgba(20, 27, 45, 1) 100%) !important;
@@ -126,11 +136,11 @@ def load_css():
         box-shadow: 0 4px 12px rgba(0,0,0,0.2);
     }
     [data-testid="stMetricLabel"] { color: var(--text-secondary) !important; font-size: 0.9rem; }
-    [data-testid="stMetricValue"] { 
+    [data-testid="stMetricValue"] {
         background: linear-gradient(to right, #fff, #94a3b8);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        font-weight: 700 !important; 
+        font-weight: 700 !important;
     }
 
     /* --- Chat Interface --- */
@@ -169,13 +179,13 @@ def load_css():
         border: none !important;
         box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
     }
-    
+
     /* --- Scrollbars --- */
     ::-webkit-scrollbar { width: 10px; height: 10px; }
     ::-webkit-scrollbar-track { background: var(--bg-primary); }
-    ::-webkit-scrollbar-thumb { 
-        background: #334155; 
-        border-radius: 5px; 
+    ::-webkit-scrollbar-thumb {
+        background: #334155;
+        border-radius: 5px;
         border: 2px solid var(--bg-primary);
     }
     ::-webkit-scrollbar-thumb:hover { background: #475569; }
@@ -209,14 +219,14 @@ def load_css():
 
     /* --- Sidebar Specific --- */
     .sidebar-header {
-        background: var(--gradient-primary); 
-        padding: 1.25rem 1rem; 
-        border-radius: 14px; 
-        text-align: center; 
-        margin-bottom: 1.5rem; 
+        background: var(--gradient-primary);
+        padding: 1.25rem 1rem;
+        border-radius: 14px;
+        text-align: center;
+        margin-bottom: 1.5rem;
         box-shadow: 0 4px 20px rgba(0,0,0,0.2);
     }
-    
+
     .sidebar-user-card {
         background: var(--bg-tertiary);
         padding: 1rem;
@@ -251,7 +261,7 @@ def load_css():
         top: 0; left: 0; bottom: 0; width: 4px;
         background: var(--gradient-primary);
     }
-    
+
     .metric-value {
         font-size: 2.2rem;
         font-weight: 700;
@@ -344,9 +354,9 @@ def load_css():
     /* Custom Scrollbars & Utilities */
     ::-webkit-scrollbar { width: 8px; height: 8px; }
     ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { 
-        background: var(--text-secondary); 
-        border-radius: 4px; 
+    ::-webkit-scrollbar-thumb {
+        background: var(--text-secondary);
+        border-radius: 4px;
         opacity: 0.5;
     }
     ::-webkit-scrollbar-thumb:hover { background: var(--text-primary); }
