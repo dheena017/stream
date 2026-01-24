@@ -10,7 +10,7 @@ from ui.common import logout
 
 def show_dashboard():
     """Display user dashboard with stats and activity"""
-    
+
     # Modern gradient header for dashboard
     # Modern gradient header for dashboard
     st.markdown("""
@@ -26,12 +26,12 @@ def show_dashboard():
         </div>
     </div>
     """, unsafe_allow_html=True)
-    
+
     # User info
     user_info = st.session_state.get('user_info', {})
     user_name = user_info.get('name', st.session_state.username)
     user_email = user_info.get('email', '')
-    
+
     # Welcome card
     # Welcome card
     st.markdown(f"""
@@ -40,14 +40,14 @@ def show_dashboard():
         {"<p style='color: var(--text-secondary); margin: 0;'>📧 " + user_email + "</p>" if user_email else ""}
     </div>
     """, unsafe_allow_html=True)
-    
+
     # Activity metrics with modern cards
     col1, col2, col3, col4 = st.columns(4)
-    
+
     total_messages = len(st.session_state.get('messages', []))
     learning_brain = st.session_state.get('learning_brain')
     stats = learning_brain.get_learning_stats() if learning_brain else {}
-    
+
     with col1:
         st.markdown(f"""
         <div class="dashboard-card">
@@ -79,19 +79,19 @@ def show_dashboard():
             <div class="metric-label">📚 Convos</div>
         </div>
         """, unsafe_allow_html=True)
-    
+
     st.markdown("<div style='height: 1.5rem;'></div>", unsafe_allow_html=True)
-    
+
     # Enhanced Quick actions with descriptions
     st.markdown("""
     <h3 style="display: flex; align-items: center; gap: 0.5rem;">
         <span>🚀</span> Quick Actions
     </h3>
     """, unsafe_allow_html=True)
-    
+
     # Create action cards with descriptions
     action_col1, action_col2 = st.columns(2)
-    
+
     with action_col1:
         st.markdown(f"""
         <div class="action-card">
@@ -99,11 +99,11 @@ def show_dashboard():
             <div class="action-desc">Begin a new conversation with your selected AI model or enable AI Brain for multi-model responses</div>
         </div>
         """, unsafe_allow_html=True)
-        
+
         if st.button("▶️ Open Chat", width="stretch", type="primary", key="quick_chat_btn"):
             st.session_state.current_page = "chat"
             st.rerun()
-    
+
     with action_col2:
         st.markdown("""
         <div class="action-card">
@@ -111,13 +111,13 @@ def show_dashboard():
             <div class="action-desc">Manage your account settings, preferences, and view your usage statistics</div>
         </div>
         """, unsafe_allow_html=True)
-        
+
         if st.button("▶️ Go to Profile", width="stretch", key="quick_profile_btn"):
             st.session_state.current_page = "profile"
             st.rerun()
-    
+
     action_col3, action_col4 = st.columns(2)
-    
+
     with action_col3:
         st.markdown("""
         <div class="action-card">
@@ -125,11 +125,11 @@ def show_dashboard():
             <div class="action-desc">See what your AI brain has learned: topics, model performance, and insights</div>
         </div>
         """, unsafe_allow_html=True)
-        
+
         if st.button("▶️ Show Stats", width="stretch", key="quick_brain_btn"):
             st.session_state.show_brain_stats = not st.session_state.get('show_brain_stats', False)
             st.rerun()
-    
+
     with action_col4:
         st.markdown("""
         <div class="action-card">
@@ -137,7 +137,7 @@ def show_dashboard():
             <div class="action-desc">Download your chat history as JSON for backup, analysis, or sharing</div>
         </div>
         """, unsafe_allow_html=True)
-        
+
         if st.button("▶️ Download", width="stretch", key="quick_export_btn"):
             if st.session_state.messages:
                 chat_export = json.dumps(st.session_state.messages, indent=2)
@@ -151,7 +151,7 @@ def show_dashboard():
                 )
             else:
                 st.warning("No chat history to export. Start a conversation first!")
-    
+
     # Additional quick action shortcuts (enhanced)
     st.markdown("---")
     st.markdown("### ⚡ Additional Actions")
@@ -265,12 +265,17 @@ def show_dashboard():
     with tog_col4:
         compact_ui = st.checkbox("📐 Compact UI", value=st.session_state.get('compact_ui', False), key="toggle_compact_ui")
         st.session_state.compact_ui = compact_ui
-    
+
+    st.markdown("#### Support")
+    from ui.feedback import render_feedback_form
+    with st.expander("🗣️ Give Feedback", expanded=False):
+        render_feedback_form(key_suffix="dashboard")
+
     # Brain stats display
     if st.session_state.get('show_brain_stats', False):
         st.divider()
         st.markdown("### 🧠 AI Brain Learning Stats")
-        
+
         if stats.get('model_strengths'):
             st.markdown("#### Model Performance")
             for model_stat in stats['model_strengths'][:5]:
@@ -281,18 +286,18 @@ def show_dashboard():
                     st.metric("Success Rate", f"{model_stat['success_rate']}%")
                 with col_total:
                     st.metric("Queries", f"{model_stat['success']}/{model_stat['total']}")
-        
+
         if stats.get('top_topics'):
             st.markdown("#### Top Knowledge Topics")
             cols = st.columns(min(len(stats['top_topics']), 5))
             for i, topic_info in enumerate(stats['top_topics'][:5]):
                 with cols[i]:
                     st.metric(topic_info['topic'], topic_info['count'])
-    
+
     # Recent activity
     st.divider()
     st.markdown("### 📝 Recent Activity")
-    
+
     recent_messages = st.session_state.get('messages', [])[-5:]
     if recent_messages:
         for msg in recent_messages:
@@ -301,13 +306,13 @@ def show_dashboard():
                 st.markdown(msg['content'])
     else:
         st.info("No recent activity. Start a conversation to see your history here!")
-    
+
     st.divider()
-    
+
     # Enhanced system info
     with st.expander("ℹ️ System Information", expanded=False):
         st.markdown("### 📊 Session Information")
-        
+
         # Session details
         col_info1, col_info2 = st.columns(2)
         with col_info1:
@@ -317,13 +322,13 @@ def show_dashboard():
             uptime_seconds = time.time() - st.session_state.get('session_start_time', time.time())
             st.metric("Session Duration", f"{int(uptime_seconds // 60)} min")
             st.metric("Current Time", datetime.now().strftime('%I:%M %p'))
-        
+
         st.markdown("---")
         st.markdown("### 👤 User Information")
-        
+
         user_info = st.session_state.get('user_info', {})
         col_user1, col_user2 = st.columns(2)
-        
+
         with col_user1:
             st.text_input("Username", value=st.session_state.username, disabled=True)
             st.text_input("Display Name", value=user_info.get('name', st.session_state.username), disabled=True)
@@ -331,101 +336,101 @@ def show_dashboard():
             auth_method = "🔐 Google OAuth" if 'google_oauth_token' in st.session_state else "🔐 Traditional Login"
             st.text_input("Authentication", value=auth_method, disabled=True)
             st.text_input("Email", value=user_info.get('email', 'Not set'), disabled=True)
-        
+
         st.markdown("---")
         st.markdown("### 💻 System Details")
-        
+
         col_sys1, col_sys2, col_sys3 = st.columns(3)
-        
+
         with col_sys1:
             st.metric("Platform", platform.system())
             st.metric("Python", platform.python_version())
-        
+
         with col_sys2:
             st.metric("Streamlit", st.__version__)
             st.metric("Browser", "Chrome/Safari/Firefox")
-        
+
         with col_sys3:
             total_messages = len(st.session_state.get('messages', []))
             st.metric("Messages", total_messages)
             st.metric("Files Uploaded", len(st.session_state.get('uploaded_files', [])))
-        
+
         st.markdown("---")
         st.markdown("### 🤖 AI Information")
-        
+
         learning_brain = st.session_state.get('learning_brain')
         stats = learning_brain.get_learning_stats() if learning_brain else {}
-        
+
         col_ai1, col_ai2, col_ai3 = st.columns(3)
-        
+
         with col_ai1:
             st.metric("Topics Learned", stats.get('total_topics', 0))
             st.metric("Conversations", stats.get('total_conversations', 0))
-        
+
         with col_ai2:
             st.metric("Models Tracked", stats.get('models_tracked', 0))
             model_perf = stats.get('model_performance', {})
             st.metric("Total Model Calls", sum(m.get('total', 0) for m in model_perf.values()))
-        
+
         with col_ai3:
             if stats.get('model_strengths'):
                 best_model = stats['model_strengths'][0]
                 st.metric("Best Model", best_model['model'][:15] + "...")
                 st.metric("Best Success Rate", f"{best_model['success_rate']}%")
-        
+
         st.markdown("---")
         st.markdown("### 🎛️ Configuration")
-        
+
         col_config1, col_config2 = st.columns(2)
-        
+
         with col_config1:
             prefs = st.session_state.get('profile_preferences', {})
             st.text_input("Theme", value=prefs.get('theme', 'Auto'), disabled=True)
             st.text_input("Language", value=prefs.get('language', 'English'), disabled=True)
-        
+
         with col_config2:
             st.text_input("Timezone", value=prefs.get('timezone', 'UTC'), disabled=True)
             notifications_status = "✅ Enabled" if prefs.get('notifications', True) else "❌ Disabled"
             st.text_input("Notifications", value=notifications_status, disabled=True)
-        
+
         st.markdown("---")
         st.markdown("### 🔧 Feature Status")
-        
+
         col_feat1, col_feat2, col_feat3, col_feat4 = st.columns(4)
-        
+
         with col_feat1:
             voice_status = "🔊 On" if st.session_state.voice_mode else "🔇 Off"
             st.metric("Voice Mode", voice_status)
-        
+
         with col_feat2:
             multimodal_count = len(st.session_state.get('multimodal_options', []))
             st.metric("Multimodal", f"{multimodal_count} types")
-        
+
         with col_feat3:
             streaming_status = "✅ On" if st.session_state.get('enable_streaming', True) else "❌ Off"
             st.metric("Streaming", streaming_status)
-        
+
         with col_feat4:
             brain_status = "🧠 On" if st.session_state.get('enable_brain_mode', False) else "⚪ Off"
             st.metric("Brain Mode", brain_status)
-        
+
         st.markdown("---")
         st.markdown("### 📝 Quick Debug Info")
-        
+
         with st.expander("🔍 Developer Info", expanded=False):
             col_debug1, col_debug2 = st.columns(2)
-            
+
             with col_debug1:
                 st.write("**Session State Keys:**")
                 st.code(', '.join(list(st.session_state.keys())[:10]))
-            
+
             with col_debug2:
                 st.write("**Memory Usage:**")
                 messages_size = sys.getsizeof(st.session_state.messages)
                 st.caption(f"📦 Messages: ~{messages_size / 1024:.1f} KB")
-        
+
         st.markdown("---")
-        
+
         # Copy session info button
         session_info = f"""
 Session Information - {datetime.now().isoformat()}
@@ -435,7 +440,7 @@ Messages: {total_messages}
 Platform: {platform.system()}
 Python: {platform.python_version()}
 """
-        
+
         if st.button("📋 Copy Session Info", width="stretch"):
             st.success("✅ Session info copied to clipboard!")
             st.code(session_info)

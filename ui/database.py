@@ -14,13 +14,18 @@ def init_db():
         c = conn.cursor()
         # conversations: id, user_id, title, created_at, updated_at
         c.execute('''CREATE TABLE IF NOT EXISTS conversations
-                     (id TEXT PRIMARY KEY, user_id TEXT, title TEXT, 
+                     (id TEXT PRIMARY KEY, user_id TEXT, title TEXT,
                       created_at TIMESTAMP, updated_at TIMESTAMP)''')
-        
+
         # messages: id, conversation_id, role, content, meta_json, timestamp
         c.execute('''CREATE TABLE IF NOT EXISTS messages
-                     (id INTEGER PRIMARY KEY AUTOINCREMENT, conversation_id TEXT, 
+                     (id INTEGER PRIMARY KEY AUTOINCREMENT, conversation_id TEXT,
                       role TEXT, content TEXT, meta_json TEXT, timestamp TIMESTAMP)''')
+
+        # feedback: id, user_id, category, rating, comment, timestamp
+        c.execute('''CREATE TABLE IF NOT EXISTS feedback
+                     (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id TEXT,
+                      category TEXT, rating INTEGER, comment TEXT, timestamp TIMESTAMP)''')
         conn.commit()
         conn.close()
     except Exception as e:
@@ -48,11 +53,11 @@ def save_message(conversation_id: str, role: str, content: str, meta: Dict = Non
     conn = sqlite3.connect(DB_FILE)
     c = conn.cursor()
     now = datetime.now()
-    
+
     # Ensure raw content is saved, meta handles images/files references
     c.execute("INSERT INTO messages (conversation_id, role, content, meta_json, timestamp) VALUES (?, ?, ?, ?, ?)",
               (conversation_id, role, content, json.dumps(meta), now))
-    
+
     # Update conversation timestamp
     c.execute("UPDATE conversations SET updated_at = ? WHERE id = ?", (now, conversation_id))
     conn.commit()
@@ -73,7 +78,7 @@ def get_conversation_messages(conversation_id: str) -> List[Dict]:
     c.execute("SELECT role, content, meta_json, timestamp FROM messages WHERE conversation_id = ? ORDER BY id ASC", (conversation_id,))
     rows = c.fetchall()
     conn.close()
-    
+
     messages = []
     for r in rows:
         msg = {
@@ -101,5 +106,14 @@ def update_conversation_title(conversation_id: str, title: str):
     conn = sqlite3.connect(DB_FILE)
     c = conn.cursor()
     c.execute("UPDATE conversations SET title = ? WHERE id = ?", (title, conversation_id))
+    conn.commit()
+    conn.close()
+
+def save_feedback(user_id: str, category: str, rating: int, comment: str):
+    conn = sqlite3.connect(DB_FILE)
+    c = conn.cursor()
+    now = datetime.now()
+    c.execute("INSERT INTO feedback (user_id, category, rating, comment, timestamp) VALUES (?, ?, ?, ?, ?)",
+              (user_id, category, rating, comment, now))
     conn.commit()
     conn.close()
