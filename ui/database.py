@@ -21,6 +21,10 @@ def init_db():
         c.execute('''CREATE TABLE IF NOT EXISTS messages
                      (id INTEGER PRIMARY KEY AUTOINCREMENT, conversation_id TEXT, 
                       role TEXT, content TEXT, meta_json TEXT, timestamp TIMESTAMP)''')
+
+        # Performance Indexes
+        c.execute('CREATE INDEX IF NOT EXISTS idx_messages_conversation_id ON messages (conversation_id)')
+
         conn.commit()
         conn.close()
     except Exception as e:
@@ -67,13 +71,25 @@ def get_user_conversations(user_id: str) -> List[Tuple]:
     conn.close()
     return rows
 
-def get_conversation_messages(conversation_id: str) -> List[Dict]:
+def get_conversation_messages(conversation_id: str, limit: int = 50, offset: int = 0) -> List[Dict]:
     conn = sqlite3.connect(DB_FILE)
     c = conn.cursor()
-    c.execute("SELECT role, content, meta_json, timestamp FROM messages WHERE conversation_id = ? ORDER BY id ASC", (conversation_id,))
+
+    # Fetch in reverse order (latest first) with limit/offset
+    c.execute("""
+        SELECT role, content, meta_json, timestamp
+        FROM messages
+        WHERE conversation_id = ?
+        ORDER BY id DESC
+        LIMIT ? OFFSET ?
+    """, (conversation_id, limit, offset))
+
     rows = c.fetchall()
     conn.close()
     
+    # Reverse back to chronological order
+    rows.reverse()
+
     messages = []
     for r in rows:
         msg = {

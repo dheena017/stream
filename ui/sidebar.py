@@ -84,7 +84,7 @@ def render_sidebar():
                     type_ = "primary" if st.session_state.get("conversation_id") == c_id else "secondary"
                     if st.button(f"{c_title}", key=f"hist_{c_id}", use_container_width=True, type=type_):
                         st.session_state.conversation_id = c_id
-                        st.session_state.messages = get_conversation_messages(c_id)
+                        st.session_state.messages = get_conversation_messages(c_id, limit=50)
                         st.rerun()
                 
                 if len(conversations) > 5:
@@ -92,7 +92,7 @@ def render_sidebar():
                          for c_id, c_title, c_date in conversations[5:15]:
                             if st.button(f"{c_title}", key=f"hist_old_{c_id}", use_container_width=True):
                                 st.session_state.conversation_id = c_id
-                                st.session_state.messages = get_conversation_messages(c_id)
+                                st.session_state.messages = get_conversation_messages(c_id, limit=50)
                                 st.rerun()
                                 
         except Exception as e:
@@ -315,4 +315,3 @@ def render_sidebar():
                 msgs = st.session_state.get('messages', [])
                 text = "\n".join([f"{m['role']}: {m['content']}" for m in msgs])
                 st.download_button("TxT", text, "chat.txt")
-
