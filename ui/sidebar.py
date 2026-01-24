@@ -24,7 +24,7 @@ def render_sidebar():
         
         # Navigation
         st.markdown("### 📍 Navigation")
-        col_nav1, col_nav2, col_nav3 = st.columns(3)
+        col_nav1, col_nav2, col_nav3, col_nav4 = st.columns(4)
         with col_nav1:
             if st.button("📊 Dash", width="stretch", type="primary" if st.session_state.current_page == "dashboard" else "secondary", help="Go to Dashboard"):
                 st.session_state.current_page = "dashboard"
@@ -36,6 +36,10 @@ def render_sidebar():
         with col_nav3:
             if st.button("👤 Profile", width="stretch", type="primary" if st.session_state.current_page == "profile" else "secondary", help="Go to Profile"):
                 st.session_state.current_page = "profile"
+                st.rerun()
+        with col_nav4:
+            if st.button("🔒 Privacy", width="stretch", type="primary" if st.session_state.current_page == "privacy" else "secondary", help="Privacy & Security"):
+                st.session_state.current_page = "privacy"
                 st.rerun()
         
         st.divider()
