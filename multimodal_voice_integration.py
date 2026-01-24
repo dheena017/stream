@@ -3,18 +3,22 @@ Multimodal & Voice Features Integration
 Seamless integration of advanced multimodal and voice capabilities into Streamlit app
 """
 
-from typing import List, Dict, Any, Optional, Tuple
-import streamlit as st
-from datetime import datetime
 import os
+from datetime import datetime
+from typing import Any, Dict, List, Optional
 
-from multimodal_advanced import (
-    MultimodalManager, ImageProcessor, DocumentProcessor,
-    AudioProcessor, VideoProcessor, MediaType
-)
+import streamlit as st
+
+from multimodal_advanced import MultimodalManager
 from voice_advanced import (
-    TextToSpeech, SpeechToText, VoiceSessionManager,
-    TTSConfig, STTConfig, VoicePreference, VoiceProfile, VoiceGender
+    SpeechToText,
+    STTConfig,
+    TextToSpeech,
+    TTSConfig,
+    VoiceGender,
+    VoicePreference,
+    VoiceProfile,
+    VoiceSessionManager,
 )
 
 

@@ -9,7 +9,6 @@ from enum import Enum
 import os
 import io
 from datetime import datetime
-import json
 
 
 class MediaType(Enum):
@@ -491,14 +490,6 @@ class VideoProcessor:
         """Compress video for faster processing"""
         try:
             from moviepy.editor import VideoFileClip
-            
-            quality_settings = {
-                "low": {"bitrate": "500k", "fps": 15},
-                "medium": {"bitrate": "2000k", "fps": 24},
-                "high": {"bitrate": "5000k", "fps": 30},
-            }
-            
-            settings = quality_settings.get(quality, quality_settings["medium"])
             
             video = VideoFileClip(file_path)
             

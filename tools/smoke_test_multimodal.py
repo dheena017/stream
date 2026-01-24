@@ -1,6 +1,7 @@
+import os
+import sys
 import traceback
 from io import BytesIO
-import sys, os
 
 # Ensure project root is on sys.path for imports
 ROOT = os.getcwd()
@@ -9,11 +10,15 @@ if ROOT not in sys.path:
 
 out = {}
 try:
-    from ui.chat_utils import (
-        process_images_for_context, generate_image_captions, transcribe_audio_file,
-        extract_video_frame_thumbnails, perform_internet_search
-    )
     from PIL import Image
+
+    from ui.chat_utils import (
+        extract_video_frame_thumbnails,
+        generate_image_captions,
+        perform_internet_search,
+        process_images_for_context,
+        transcribe_audio_file,
+    )
 
     # Test image processing
     try:
@@ -48,7 +53,7 @@ try:
     except Exception as e:
         out['search_error'] = repr(e)
 
-except Exception as e:
+except Exception:
     out['import_error'] = traceback.format_exc()
 
 print(out)

@@ -1,6 +1,8 @@
 
+from typing import Any, Dict
+
 import streamlit as st
-from typing import Dict, Any, List
+
 from ui.config import MODEL_PRICING
 
 def logout():

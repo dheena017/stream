@@ -1,5 +1,5 @@
-from io import BytesIO
 from PIL import Image
+
 from ui.chat_utils import generate_image_captions, process_images_for_context
 
 

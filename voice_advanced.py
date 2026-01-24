@@ -3,11 +3,11 @@ Advanced Voice & Speech Processing Module
 Handles text-to-speech, speech-to-text, voice profiles, and real-time processing
 """
 
-from typing import Dict, List, Optional, Tuple, Any
+import os
 from dataclasses import dataclass
-from enum import Enum
-import io
 from datetime import datetime
+from enum import Enum
+from typing import Any, Dict, List, Optional, Tuple
 
 
 class VoiceGender(Enum):
@@ -562,9 +562,6 @@ class RealTimeAudioProcessor:
     def detect_silence(self, chunk: bytes, threshold: float = 0.02) -> bool:
         """Detect if chunk contains silence"""
         return self.get_audio_level(chunk) < threshold
-
-
-import os
 
 
 # Export

@@ -2,8 +2,8 @@
 AI Brain Module - Combines multiple AI models and internet knowledge
 """
 import asyncio
-from typing import List, Dict, Optional, Any
 import json
+from typing import Any, Dict, List
 from datetime import datetime
 
 
