@@ -1,5 +1,7 @@
 # Stream — Multimodal AI Chat
 
+Repository: https://github.com/dheen/stream
+
 This project is a Streamlit-based multi-provider AI chat with multimodal (image/audio/video) support, internet search augmentation, and optional advanced image captioning via BLIP or a hosted caption API.
 
 ## BLIP (Optional)
@@ -35,6 +37,10 @@ Run tests locally:
 ```powershell
 pytest -q
 ```
+
+## Community
+- **Active Contributors**: Growing!
+- **Guidelines**: Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on how to contribute.
 
 ## Notes
 - Optional dependencies: `transformers`, `torch`, `torchvision`, `moviepy`, `speech_recognition`. These are only required for BLIP, video frame extraction, and audio transcription respectively.
