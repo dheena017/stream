@@ -2,6 +2,15 @@
 
 This project is a Streamlit-based multi-provider AI chat with multimodal (image/audio/video) support, internet search augmentation, and optional advanced image captioning via BLIP or a hosted caption API.
 
+## Supported Providers
+- Google (Gemini)
+- OpenAI (GPT-4o, etc.)
+- Anthropic (Claude)
+- Together AI (Llama)
+- xAI (Grok)
+- DeepSeek
+- Groq (Llama, Mixtral)
+
 ## BLIP (Optional)
 - BLIP model (`Salesforce/blip-image-captioning-base`) is optional and will be downloaded on first preload.
 - To enable advanced captioning in the UI, toggle "Enable Advanced Image Captioning (BLIP)" in the chat page and optionally provide a Hosted Caption API URL.
