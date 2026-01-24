@@ -58,7 +58,7 @@ def save_message(conversation_id: str, role: str, content: str, meta: Dict = Non
     conn.commit()
     conn.close()
 
-def get_user_conversations(user_id: str) -> List[Tuple]:
+def get_user_conversations(user_id: str) -> List[Tuple[str, str, str]]:
     """Returns list of (id, title, updated_at)"""
     conn = sqlite3.connect(DB_FILE)
     c = conn.cursor()
@@ -85,7 +85,8 @@ def get_conversation_messages(conversation_id: str) -> List[Dict]:
             try:
                 meta = json.loads(r[2])
                 msg.update(meta)
-            except: pass
+            except json.JSONDecodeError as e:
+                logger.error(f"JSON decode error in message: {e}")
         messages.append(msg)
     return messages
 

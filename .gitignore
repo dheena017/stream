@@ -29,3 +29,10 @@ dist/
 # Streamlit
 .streamlit/secrets.toml
 .streamlit/config.toml
+
+# Security
+users.json
+*.db
+*.jsonl
+backup.key
+backups/

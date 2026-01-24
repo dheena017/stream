@@ -4,7 +4,10 @@ AI Brain Module - Combines multiple AI models and internet knowledge
 import asyncio
 from typing import List, Dict, Optional, Any
 import json
+import logging
 from datetime import datetime
+
+logger = logging.getLogger(__name__)
 
 
 class AIBrain:
@@ -31,8 +34,10 @@ class AIBrain:
                     })
             return results
         except ImportError:
+            logger.warning("DuckDuckGo search not available.")
             return [{"error": "DuckDuckGo search not available. Install: pip install duckduckgo-search"}]
         except Exception as e:
+            logger.error(f"Search failed: {str(e)}")
             return [{"error": f"Search failed: {str(e)}"}]
     
     def scrape_webpage(self, url: str) -> str:
@@ -64,6 +69,7 @@ class AIBrain:
             # Limit to first 2000 characters
             return text[:2000]
         except Exception as e:
+            logger.error(f"Failed to scrape webpage: {str(e)}")
             return f"Failed to scrape webpage: {str(e)}"
     
     def gather_internet_context(self, query: str) -> str:
