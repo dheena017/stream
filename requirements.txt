@@ -24,3 +24,5 @@ torchvision
 
 # Testing
 pytest
+cryptography
+schedule
