@@ -7,6 +7,7 @@ from datetime import datetime
 from typing import Dict, Any
 
 from ui.common import logout, get_session_cost
+from ui.experimental import render_experimental_section
 from ui.auth import load_user_credentials, save_user_credentials, hash_password
 from ui.config import MODEL_OPTIONS, MODEL_PRICING, MODEL_CAPABILITIES, PROVIDER_ICONS, PROVIDER_LABELS
 from brain_learning import LearningBrain
@@ -303,16 +304,14 @@ def render_sidebar():
 
         st.divider()
         
+        # 10. Experimental
+        with st.expander("🧪 Experimental (Beta)", expanded=False):
+             render_experimental_section()
+
+        st.divider()
+
         # Chat Controls
-        c1, c2 = st.columns(2)
-        with c1:
-            if st.button("🗑️ Clear", width="stretch"):
-                st.session_state.messages = []
-                st.rerun()
-        with c2:
-            if st.button("💾 Save", width="stretch"):
-                # Simple export
-                msgs = st.session_state.get('messages', [])
-                text = "\n".join([f"{m['role']}: {m['content']}" for m in msgs])
-                st.download_button("TxT", text, "chat.txt")
+        if st.button("🗑️ Clear Chat", width="stretch"):
+            st.session_state.messages = []
+            st.rerun()
 

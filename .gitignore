@@ -29,3 +29,9 @@ dist/
 # Streamlit
 .streamlit/secrets.toml
 .streamlit/config.toml
+
+# Local Data
+*.db
+users.json
+logs/
+chat_history.db

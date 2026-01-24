@@ -11,6 +11,11 @@ This project is a Streamlit-based multi-provider AI chat with multimodal (image/
 - Provide an endpoint that accepts multipart image uploads and returns JSON containing `caption` or `text` fields.
 - The app will prefer the hosted caption API if configured, then BLIP (if available), then fallback heuristics.
 
+## Experimental Features
+- **Chat Export**: Export your conversation history to JSON (data) or Markdown (readable transcript).
+- **Conversation Analytics**: View basic statistics about the current session (message count, average response time, etc).
+- These features are available in the sidebar under "🧪 Experimental (Beta)".
+
 ## Running locally
 Create and activate a virtual environment, then install dependencies:
 
