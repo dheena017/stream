@@ -1,0 +1,2 @@
+{"timestamp": "2026-01-24T10:33:45.330423", "type": "api_request", "provider": "test_provider", "model": "test_model", "success": true, "latency": 0.5, "token_usage": null}
+{"timestamp": "2026-01-24T10:33:45.330726", "type": "error", "error": "Test error", "context": "Testing monitoring module"}

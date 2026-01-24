@@ -24,3 +24,4 @@ torchvision
 
 # Testing
 pytest
+loguru
