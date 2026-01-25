@@ -1,5 +1,6 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import streamlit as st
 
 
@@ -515,6 +516,10 @@ def load_css():
 
 import streamlit as st
 >>>>>>> origin/ui-ux-improvements-11896252316584290961
+=======
+
+import streamlit as st
+>>>>>>> origin/accessibility-improvements-6998911318674562570
 
 def load_css():
     """Load all custom CSS styles for the application"""
@@ -533,7 +538,11 @@ def load_css():
         --bg-secondary-rgb: 21, 27, 43; /* Added for RGB usage */
 
         --text-primary: #F8FAFC;     /* Bright white text */
+<<<<<<< HEAD
         --text-secondary: #94A3B8;   /* Muted text */
+=======
+        --text-secondary: #CBD5E1;   /* Muted text - Improved Contrast from #94A3B8 */
+>>>>>>> origin/accessibility-improvements-6998911318674562570
         --text-accent: #38BDF8;      /* Light blue accent text */
 
         --accent-primary: #6366F1;   /* Indigo */
@@ -542,7 +551,11 @@ def load_css():
         --accent-subtle: rgba(99, 102, 241, 0.1);
 
         --border-subtle: rgba(148, 163, 184, 0.1);
+<<<<<<< HEAD
         --border-focus: rgba(99, 102, 241, 0.5);
+=======
+        --border-focus: #38BDF8; /* High contrast focus border */
+>>>>>>> origin/accessibility-improvements-6998911318674562570
 
         --gradient-primary: linear-gradient(135deg, #6366F1 0%, #A855F7 100%);
         --gradient-surface: linear-gradient(180deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.7) 100%);
@@ -551,12 +564,26 @@ def load_css():
         --glass-blur: blur(12px);
     }
 
+<<<<<<< HEAD
+=======
+    /* Reduced Motion Support */
+    @media (prefers-reduced-motion: reduce) {
+        *, ::before, ::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+            scroll-behavior: auto !important;
+        }
+    }
+
+>>>>>>> origin/accessibility-improvements-6998911318674562570
     html, body, [class*="css"] {
         font-family: 'Inter', sans-serif;
         background-color: var(--bg-primary);
         color: var(--text-primary);
     }
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
     /* --- Animations --- */
@@ -570,6 +597,8 @@ def load_css():
     }
 
 >>>>>>> origin/ui-ux-improvements-11896252316584290961
+=======
+>>>>>>> origin/accessibility-improvements-6998911318674562570
     /* --- Main Layout & Background --- */
     .stApp {
         background-color: var(--bg-primary);
@@ -632,7 +661,11 @@ def load_css():
 
     .stTextInput > div > div > input:focus,
     .stTextArea textarea:focus {
+<<<<<<< HEAD
         border-color: var(--accent-primary) !important;
+=======
+        border-color: var(--border-focus) !important;
+>>>>>>> origin/accessibility-improvements-6998911318674562570
         box-shadow: 0 0 0 2px var(--accent-glow) !important;
         background-color: #1e293b !important;
     }
@@ -667,6 +700,7 @@ def load_css():
         border: 1px solid var(--border-subtle) !important;
         border-radius: 12px !important;
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
         transition: all 0.3s ease;
     }
@@ -674,6 +708,8 @@ def load_css():
         border-color: var(--border-focus) !important;
         background-color: rgba(30, 41, 59, 0.6) !important;
 >>>>>>> origin/ui-ux-improvements-11896252316584290961
+=======
+>>>>>>> origin/accessibility-improvements-6998911318674562570
     }
     [data-testid="chatAvatarIcon-user"] {
         background-color: var(--bg-tertiary) !important;
@@ -708,6 +744,9 @@ def load_css():
 
     /* --- Scrollbars --- */
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin/accessibility-improvements-6998911318674562570
     ::-webkit-scrollbar { width: 10px; height: 10px; }
     ::-webkit-scrollbar-track { background: var(--bg-primary); }
     ::-webkit-scrollbar-thumb {
@@ -716,6 +755,7 @@ def load_css():
         border: 2px solid var(--bg-primary);
     }
     ::-webkit-scrollbar-thumb:hover { background: #475569; }
+<<<<<<< HEAD
 =======
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: transparent; }
@@ -725,6 +765,8 @@ def load_css():
     }
     ::-webkit-scrollbar-thumb:hover { background: #64748b; }
 >>>>>>> origin/ui-ux-improvements-11896252316584290961
+=======
+>>>>>>> origin/accessibility-improvements-6998911318674562570
 
     /* Custom Classes */
     .highlight-text { color: var(--accent-primary); font-weight: 600; }
@@ -887,6 +929,9 @@ def load_css():
         margin-bottom: 3rem;
     }
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin/accessibility-improvements-6998911318674562570
 
     /* Custom Scrollbars & Utilities */
     ::-webkit-scrollbar { width: 8px; height: 8px; }
@@ -899,8 +944,11 @@ def load_css():
     ::-webkit-scrollbar-thumb:hover { background: var(--text-primary); }
     </style>
     """
+<<<<<<< HEAD
 >>>>>>> origin/code-quality-refactor-17423438479402428749
 =======
     </style>
     """
 >>>>>>> origin/ui-ux-improvements-11896252316584290961
+=======
+>>>>>>> origin/accessibility-improvements-6998911318674562570

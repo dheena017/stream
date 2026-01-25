@@ -1,5 +1,6 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import hashlib
 import json
 import logging
@@ -371,6 +372,8 @@ def show_login_page():
 =======
 =======
 >>>>>>> security-hardening-12270959347982184821
+=======
+>>>>>>> origin/accessibility-improvements-6998911318674562570
 
 import streamlit as st
 import os
@@ -380,6 +383,7 @@ import logging
 from typing import Dict, Optional, Any
 from google.oauth2 import id_token
 from google.auth.transport import requests
+<<<<<<< HEAD
 <<<<<<< HEAD
 
 def hash_password(password: str) -> str:
@@ -392,6 +396,11 @@ rate_limiter = RateLimiter(max_requests=5, period=60)
 def legacy_hash_password(password: str) -> str:
     """Hash password using SHA-256 (Legacy)"""
 >>>>>>> security-hardening-12270959347982184821
+=======
+
+def hash_password(password: str) -> str:
+    """Hash password using SHA-256"""
+>>>>>>> origin/accessibility-improvements-6998911318674562570
     return hashlib.sha256(password.encode()).hexdigest()
 
 def load_user_credentials() -> Dict[str, Dict[str, str]]:
@@ -410,19 +419,27 @@ def load_user_credentials() -> Dict[str, Dict[str, str]]:
     return {
         "admin": {
 <<<<<<< HEAD
+<<<<<<< HEAD
             "password": hash_password(os.getenv("ADMIN_PASSWORD", "admin123")),
 =======
             "password": legacy_hash_password(os.getenv("ADMIN_PASSWORD", "admin123")),
 >>>>>>> security-hardening-12270959347982184821
+=======
+            "password": hash_password(os.getenv("ADMIN_PASSWORD", "admin123")),
+>>>>>>> origin/accessibility-improvements-6998911318674562570
             "email": "admin@example.com",
             "name": "Admin User"
         },
         "user": {
 <<<<<<< HEAD
+<<<<<<< HEAD
             "password": hash_password(os.getenv("USER_PASSWORD", "user123")),
 =======
             "password": legacy_hash_password(os.getenv("USER_PASSWORD", "user123")),
 >>>>>>> security-hardening-12270959347982184821
+=======
+            "password": hash_password(os.getenv("USER_PASSWORD", "user123")),
+>>>>>>> origin/accessibility-improvements-6998911318674562570
             "email": "user@example.com",
             "name": "Regular User"
         }
@@ -441,6 +458,9 @@ def save_user_credentials(users: Dict[str, Dict[str, str]]) -> bool:
 def check_login(username_or_email: str, password: str) -> Optional[Dict[str, str]]:
     """Verify login credentials - accepts username or email"""
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin/accessibility-improvements-6998911318674562570
     logging.info(f"Login attempt for: {username_or_email}")
     users = load_user_credentials()
 
@@ -463,6 +483,7 @@ def check_login(username_or_email: str, password: str) -> Optional[Dict[str, str
                     "email": user_data.get("email", ""),
                     "name": user_data.get("name", username)
                 }
+<<<<<<< HEAD
 =======
     if not rate_limiter.is_allowed(f"login_{username_or_email}"):
         st.error("Too many login attempts. Please try again later.")
@@ -513,11 +534,14 @@ def check_login(username_or_email: str, password: str) -> Optional[Dict[str, str
                 "name": user_data.get("name", user_key)
             }
 >>>>>>> security-hardening-12270959347982184821
+=======
+>>>>>>> origin/accessibility-improvements-6998911318674562570
 
     return None
 
 def register_user(username: str, email: str, password: str, name: str = "") -> bool:
     """Register a new user"""
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
     if not rate_limiter.is_allowed(f"register_{username}") or not rate_limiter.is_allowed(f"register_{email}"):
@@ -530,6 +554,8 @@ def register_user(username: str, email: str, password: str, name: str = "") -> b
     name = sanitize_html(name)
 
 >>>>>>> security-hardening-12270959347982184821
+=======
+>>>>>>> origin/accessibility-improvements-6998911318674562570
     users = load_user_credentials()
 
     # Check if username already exists
@@ -551,6 +577,7 @@ def register_user(username: str, email: str, password: str, name: str = "") -> b
     return save_user_credentials(users)
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 def delete_user(username: str) -> bool:
     """Delete a user from the credentials file"""
     users = load_user_credentials()
@@ -561,6 +588,8 @@ def delete_user(username: str) -> bool:
 
 =======
 >>>>>>> security-hardening-12270959347982184821
+=======
+>>>>>>> origin/accessibility-improvements-6998911318674562570
 def verify_google_oauth() -> Optional[Dict[str, Any]]:
     """Verify Google OAuth token and return user info"""
     try:
@@ -615,17 +644,34 @@ def show_login_page():
         :root {
             --bg: #0b1220;
             --card: #0f1724;
+<<<<<<< HEAD
             --muted: #9ca3af;
+=======
+            --muted: #cbd5e1; /* Improved contrast */
+>>>>>>> origin/accessibility-improvements-6998911318674562570
             --text: #e6eef8;
             --accent-1: #7c3aed;
             --accent-2: #2563eb;
         }
+<<<<<<< HEAD
+=======
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation: none !important;
+                transition: none !important;
+            }
+        }
+>>>>>>> origin/accessibility-improvements-6998911318674562570
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-20px);} to { opacity: 1; transform: translateY(0);} }
         @keyframes slideIn { from { opacity: 0; transform: translateX(-30px);} to { opacity: 1; transform: translateX(0);} }
         .stApp { background: var(--bg) !important; color: var(--text) !important; }
         .login-header { text-align: center; animation: fadeIn 0.8s ease-out; margin-bottom: 2rem; }
         .login-header h1 { background: linear-gradient(135deg, var(--accent-2), var(--accent-1)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 3rem; font-weight: 800; margin-bottom: 0.5rem; }
         .login-subtitle { color: var(--muted); font-size: 1.2rem; margin-bottom: 1rem; }
+<<<<<<< HEAD
+=======
+        .feature-list { list-style: none; padding: 0; margin: 0; }
+>>>>>>> origin/accessibility-improvements-6998911318674562570
         .feature-card { background: linear-gradient(135deg, rgba(124,58,237,0.06), rgba(37,99,235,0.03)); border-radius: 10px; padding: 1rem; margin: 0.5rem 0; border-left: 4px solid var(--accent-1); animation: slideIn 0.6s ease-out; color: var(--text); }
         .google-btn { background: linear-gradient(135deg, #1f6feb, #1646b2); color: white; padding: 12px 20px; border-radius: 8px; text-decoration: none; display: inline-block; width: 100%; text-align: center; font-weight: 600; margin-top: 10px; transition: all 0.3s ease; box-shadow: 0 6px 20px rgba(0,0,0,0.6); }
         .google-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 26px rgba(0,0,0,0.7); }
@@ -647,10 +693,21 @@ def show_login_page():
 
         # Feature highlights
         st.markdown(
+<<<<<<< HEAD
             '<div class="feature-card">✨ <strong>25+ AI Models</strong> from Google, OpenAI, Anthropic, Meta & more</div>'
             '<div class="feature-card">🧠 <strong>AI Brain Mode</strong> - Combines multiple models for enhanced responses</div>'
             '<div class="feature-card">🌐 <strong>Internet Search</strong> - Real-time information from the web</div>'
             '<div class="feature-card">📎 <strong>Multimodal</strong> - Images, PDFs, Audio & Video support</div>',
+=======
+            """
+            <ul class="feature-list">
+                <li class="feature-card">✨ <strong>25+ AI Models</strong> from Google, OpenAI, Anthropic, Meta & more</li>
+                <li class="feature-card">🧠 <strong>AI Brain Mode</strong> - Combines multiple models for enhanced responses</li>
+                <li class="feature-card">🌐 <strong>Internet Search</strong> - Real-time information from the web</li>
+                <li class="feature-card">📎 <strong>Multimodal</strong> - Images, PDFs, Audio & Video support</li>
+            </ul>
+            """,
+>>>>>>> origin/accessibility-improvements-6998911318674562570
             unsafe_allow_html=True
         )
 
@@ -768,6 +825,9 @@ def show_login_page():
         st.markdown("---")
         st.caption("🔒 Your credentials are secure and never stored in plain text")
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> 8a352f7 (Privacy: [compliance updates])
 =======
 >>>>>>> security-hardening-12270959347982184821
+=======
+>>>>>>> origin/accessibility-improvements-6998911318674562570
