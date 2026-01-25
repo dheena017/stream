@@ -2,13 +2,17 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 streamlit
+=======
+streamlit>=1.53.1
+>>>>>>> origin/security-hardening-9145044555925710481
 google-genai
 google-auth
 google-auth-oauthlib
 google-auth-httplib2
-openai
-anthropic
+openai>=2.15.0
+anthropic>=0.76.0
 together
 Pillow
 PyPDF2
@@ -19,9 +23,13 @@ duckduckgo-search
 beautifulsoup4
 requests
 aiohttp
+<<<<<<< HEAD
 google-generativeai
 cryptography
 schedule
+=======
+google-generativeai>=0.8.6
+>>>>>>> origin/security-hardening-9145044555925710481
 
 # Optional (for advanced multimodal/image captioning)
 # transformers

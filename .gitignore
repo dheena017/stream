@@ -56,6 +56,7 @@ logs/
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 *.db
 =======
 
@@ -203,3 +204,8 @@ chat_history.db
 # Database
 *.db
 >>>>>>> origin/privacy-compliance-updates-6913709404570951522
+=======
+
+users.json
+chat_history.db
+>>>>>>> origin/security-hardening-9145044555925710481

@@ -20,8 +20,12 @@ from ui.common import logout, get_session_cost
 from ui.experimental import render_experimental_section
 from ui.auth import load_user_credentials, save_user_credentials, hash_password
 from ui.config import MODEL_OPTIONS, MODEL_PRICING, MODEL_CAPABILITIES, PROVIDER_ICONS, PROVIDER_LABELS
+<<<<<<< HEAD
 from ui.chat_utils import serialize_messages
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
+=======
+from ui.chat_utils import sanitize_text
+>>>>>>> origin/security-hardening-9145044555925710481
 from brain_learning import LearningBrain
 from multimodal_voice_integration import MultimodalVoiceIntegrator
 <<<<<<< HEAD
@@ -153,8 +157,13 @@ def render_sidebar():
         st.markdown(f"""
         <div class="sidebar-user-card" role="region" aria-label="User Information">
             <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+<<<<<<< HEAD
                 <span style="font-weight: 600; color: var(--text-primary);" aria-label="User: {username}">👤 {username}</span>
                 <span style="font-size: 0.8rem; background: var(--bg-tertiary); padding: 2px 6px; border-radius: 4px; color: var(--text-secondary);" aria-label="Authentication Type: {auth_type}">{auth_type}</span>
+=======
+                <span style="font-weight: 600; color: var(--text-primary);">👤 {sanitize_text(username)}</span>
+                <span style="font-size: 0.8rem; background: var(--bg-tertiary); padding: 2px 6px; border-radius: 4px; color: var(--text-secondary);">{auth_type}</span>
+>>>>>>> origin/security-hardening-9145044555925710481
             </div>
         </div>
         """, unsafe_allow_html=True)
