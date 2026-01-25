@@ -4,6 +4,7 @@ import os
 import time
 import base64
 import asyncio
+import logging
 import tempfile
 import json
 import pandas as pd
@@ -24,6 +25,7 @@ from brain_learning import LearningBrain
 from multimodal_voice_integration import MultimodalVoiceIntegrator
 from ui.config import MODEL_PRICING, MODEL_CAPABILITIES, PROVIDER_ICONS
 
+logger = logging.getLogger(__name__)
 def show_chat_page():
     """Display the main chat interface"""
     
@@ -379,7 +381,7 @@ def show_chat_page():
             )
         except Exception as e:
             # Don't block chat if DB fails
-            print(f"DB Save Error: {e}")
+            logger.error(f"DB Save Error: {e}")
 
         with st.chat_message("user"):
             if uploaded_images:
@@ -532,7 +534,7 @@ def show_chat_page():
                         "provider": provider, "model": model_name, "response_time": end_time - start_time
                      })
             except Exception as e:
-                 print(f"DB Save Assistant Error: {e}")
+                 logger.error(f"DB Save Assistant Error: {e}")
             
             if st.session_state.get('voice_mode') and st.session_state.get('auto_speak'):
                 pass
