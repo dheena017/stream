@@ -1,4 +1,7 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin/monitoring-setup-3291123637376011491
 """
 Antigravity AI - Multi-Provider Intelligent Chat Application
 A sophisticated Streamlit-based AI chat interface with learning capabilities,
@@ -7,6 +10,7 @@ voice integration, and multi-modal support.
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import logging
 import os
 import time
@@ -20,6 +24,8 @@ import time
 import logging
 from datetime import datetime
 =======
+=======
+>>>>>>> origin/monitoring-setup-3291123637376011491
 import streamlit as st
 import os
 import time
@@ -41,7 +47,10 @@ init_db()
 # Import Brain
 from brain_learning import LearningBrain
 from multimodal_voice_integration import MultimodalVoiceIntegrator
+<<<<<<< HEAD
 >>>>>>> 8a352f7 (Privacy: [compliance updates])
+=======
+>>>>>>> origin/monitoring-setup-3291123637376011491
 
 # --- LOGGER SETUP ---
 logging.basicConfig(
@@ -49,6 +58,7 @@ logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
+<<<<<<< HEAD
 <<<<<<< HEAD
 >>>>>>> 673954a (Resilience: [error handling])
 
@@ -96,6 +106,10 @@ logger = logging.getLogger(__name__)
 
 
 >>>>>>> 8a352f7 (Privacy: [compliance updates])
+=======
+
+
+>>>>>>> origin/monitoring-setup-3291123637376011491
 def initialize_page_config():
     """Configure Streamlit page settings and metadata."""
     st.set_page_config(
@@ -104,6 +118,7 @@ def initialize_page_config():
         layout="wide",
         initial_sidebar_state="expanded",
         menu_items={
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
             "About": "Antigravity AI - Multi-Provider Intelligence Platform v1.0"
@@ -116,6 +131,10 @@ def initialize_page_config():
             'About': "Antigravity AI - Multi-Provider Intelligence Platform v1.0"
         }
 >>>>>>> 8a352f7 (Privacy: [compliance updates])
+=======
+            'About': "Antigravity AI - Multi-Provider Intelligence Platform v1.0"
+        }
+>>>>>>> origin/monitoring-setup-3291123637376011491
     )
     logger.info("Page configuration initialized")
 
@@ -125,6 +144,7 @@ def initialize_theme():
     # Load persisted preference (global or per-user) before setting defaults
     try:
         from ui.prefs import get_pref
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 
@@ -140,6 +160,8 @@ def initialize_theme():
 =======
 =======
 >>>>>>> 8a352f7 (Privacy: [compliance updates])
+=======
+>>>>>>> origin/monitoring-setup-3291123637376011491
         username = st.session_state.get('username')
         pref_dark = get_pref('dark_mode', username, None)
         if pref_dark is not None and 'dark_mode' not in st.session_state:
@@ -150,9 +172,12 @@ def initialize_theme():
         if 'dark_mode' not in st.session_state:
             st.session_state['dark_mode'] = False
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> 673954a (Resilience: [error handling])
 =======
 >>>>>>> 8a352f7 (Privacy: [compliance updates])
+=======
+>>>>>>> origin/monitoring-setup-3291123637376011491
 
     # Apply theme CSS (uses st.session_state['dark_mode'])
     st.markdown(ui.styles.load_css(), unsafe_allow_html=True)
@@ -165,6 +190,7 @@ def configure_environment():
     logger.debug("Environment configured")
 
 
+<<<<<<< HEAD
 def initialize_auth_state():
     """Initialize authentication and user session state."""
 <<<<<<< HEAD
@@ -173,15 +199,32 @@ def initialize_auth_state():
 =======
 =======
 >>>>>>> 8a352f7 (Privacy: [compliance updates])
+=======
+def initialize_monitoring():
+    """Initialize monitoring resources."""
+    try:
+        from monitoring import Monitor
+        Monitor()
+        logger.info("Monitoring initialized")
+    except Exception as e:
+        logger.error(f"Failed to initialize monitoring: {e}")
+
+
+def initialize_auth_state():
+    """Initialize authentication and user session state."""
+>>>>>>> origin/monitoring-setup-3291123637376011491
     defaults = {
         "authenticated": False,
         "username": None,
         "current_page": "dashboard"
     }
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> 673954a (Resilience: [error handling])
 =======
 >>>>>>> 8a352f7 (Privacy: [compliance updates])
+=======
+>>>>>>> origin/monitoring-setup-3291123637376011491
 
     for key, value in defaults.items():
         if key not in st.session_state:
@@ -189,11 +232,14 @@ def initialize_auth_state():
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> 673954a (Resilience: [error handling])
 =======
 >>>>>>> 8a352f7 (Privacy: [compliance updates])
+=======
+>>>>>>> origin/monitoring-setup-3291123637376011491
     logger.info(f"Auth state initialized - User: {st.session_state.username}")
 
 
@@ -202,6 +248,7 @@ def initialize_session_tracking():
     tracking_defaults = {
         "session_start_time": time.time(),
         "total_sessions": 1,
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
         "user_joined_date": datetime.now().strftime("%Y-%m-%d"),
@@ -218,6 +265,11 @@ def initialize_session_tracking():
     }
 
 >>>>>>> 8a352f7 (Privacy: [compliance updates])
+=======
+        "user_joined_date": datetime.now().strftime('%Y-%m-%d')
+    }
+
+>>>>>>> origin/monitoring-setup-3291123637376011491
     for key, value in tracking_defaults.items():
         if key not in st.session_state:
             st.session_state[key] = value
@@ -243,11 +295,14 @@ def initialize_brain_state():
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> 673954a (Resilience: [error handling])
 =======
 >>>>>>> 8a352f7 (Privacy: [compliance updates])
+=======
+>>>>>>> origin/monitoring-setup-3291123637376011491
     logger.debug("Brain state initialized")
 
 
@@ -258,6 +313,7 @@ def initialize_chat_state():
         "voice_mode": False,
         "enable_internet_search": False,
         "search_result_count": 5,
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
         "enable_advanced_captioning": False,
@@ -274,10 +330,16 @@ def initialize_chat_state():
     }
 
 >>>>>>> 8a352f7 (Privacy: [compliance updates])
+=======
+        "enable_advanced_captioning": False
+    }
+
+>>>>>>> origin/monitoring-setup-3291123637376011491
     for key, value in chat_defaults.items():
         if key not in st.session_state:
             st.session_state[key] = value
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 
@@ -285,6 +347,8 @@ def initialize_chat_state():
 >>>>>>> 673954a (Resilience: [error handling])
 =======
 >>>>>>> 8a352f7 (Privacy: [compliance updates])
+=======
+>>>>>>> origin/monitoring-setup-3291123637376011491
     logger.debug("Chat state initialized")
 
 
@@ -311,6 +375,7 @@ def handle_page_routing():
         "profile": show_profile_page,
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         "chat": show_chat_page,
     }
 
@@ -322,6 +387,8 @@ def handle_page_routing():
 =======
 =======
 >>>>>>> 8a352f7 (Privacy: [compliance updates])
+=======
+>>>>>>> origin/monitoring-setup-3291123637376011491
         "chat": show_chat_page
     }
 
@@ -329,9 +396,12 @@ def handle_page_routing():
     page_handler = page_router.get(current_page, show_chat_page)
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> 673954a (Resilience: [error handling])
 =======
 >>>>>>> 8a352f7 (Privacy: [compliance updates])
+=======
+>>>>>>> origin/monitoring-setup-3291123637376011491
     logger.info(f"Routing to page: {current_page}")
     page_handler()
 
@@ -340,15 +410,19 @@ def main():
     """Main application entry point."""
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     # Analytics Setup
     init_analytics()
 
 =======
 >>>>>>> 8a352f7 (Privacy: [compliance updates])
+=======
+>>>>>>> origin/monitoring-setup-3291123637376011491
     # Setup
     initialize_page_config()
     initialize_theme()
     configure_environment()
+<<<<<<< HEAD
 
 <<<<<<< HEAD
 
@@ -360,12 +434,17 @@ def main():
     handle_authentication()
 
 =======
+=======
+    initialize_monitoring()
+
+>>>>>>> origin/monitoring-setup-3291123637376011491
     # Initialize all states
     initialize_all_states()
 
     # Authentication check
     handle_authentication()
 
+<<<<<<< HEAD
     # Privacy cleanup check
     if 'cleanup_done' not in st.session_state:
         try:
@@ -425,10 +504,16 @@ def main():
         st.error(f"An unexpected error occurred: {e}")
 >>>>>>> 673954a (Resilience: [error handling])
 =======
+=======
+    # Render sidebar for authenticated users
+    render_sidebar()
+
+>>>>>>> origin/monitoring-setup-3291123637376011491
     # Route to appropriate page
     handle_page_routing()
 
     logger.info("Application render completed")
+<<<<<<< HEAD
 >>>>>>> 8a352f7 (Privacy: [compliance updates])
 
 
@@ -659,3 +744,9 @@ def main():
 if __name__ == "__main__":
     main()
 >>>>>>> 89c4a85 (Feedback: [integrations])
+=======
+
+
+if __name__ == "__main__":
+    main()
+>>>>>>> origin/monitoring-setup-3291123637376011491

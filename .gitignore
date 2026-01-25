@@ -19,6 +19,10 @@ dist/
 # Logs
 *.log
 logs/
+<<<<<<< HEAD
+=======
+*.jsonl
+>>>>>>> origin/monitoring-setup-3291123637376011491
 
 # IDE / editor
 .vscode/
