@@ -3503,6 +3503,7 @@ def preload_blip_model_with_progress(progress_callback: Optional[Callable[[int, 
         return False
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 <<<<<<< HEAD
 >>>>>>> 3e83144 (AI Review: Fix ui/chat_utils.py syntax and asyncio crash in ui/chat.py)
@@ -3560,3 +3561,33 @@ def serialize_messages(messages: List[Dict]) -> str:
 >>>>>>> api-integrations-groq-3434217061461873316
 =======
 >>>>>>> bugfix-chat-utils-syntax-deps-9608846765366208701
+=======
+
+def serialize_messages(messages: List[Dict]) -> List[Dict]:
+    """Prepare messages for JSON export by handling non-serializable objects"""
+    import copy
+
+    serializable_messages = []
+
+    for msg in messages:
+        # Shallow copy to avoid modifying original
+        clean_msg = copy.copy(msg)
+
+        # Handle images - remove PIL objects
+        if "images" in clean_msg and clean_msg["images"]:
+            image_descriptions = []
+            for img in clean_msg["images"]:
+                try:
+                    # Check if it's a PIL Image
+                    if hasattr(img, 'size'):
+                        image_descriptions.append(f"[Image: {img.size[0]}x{img.size[1]}]")
+                    else:
+                        image_descriptions.append(str(img))
+                except Exception:
+                    image_descriptions.append("[Image: object]")
+            clean_msg["images"] = image_descriptions
+
+        serializable_messages.append(clean_msg)
+
+    return serializable_messages
+>>>>>>> origin/feature/json-chat-export-3053385537761538795

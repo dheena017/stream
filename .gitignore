@@ -34,6 +34,7 @@ logs/
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 *.db
 =======
 
@@ -50,10 +51,13 @@ secret.key
 logs/
 >>>>>>> 8a352f7 (Privacy: [compliance updates])
 =======
+=======
+>>>>>>> origin/feature/json-chat-export-3053385537761538795
 
 # Application Data
 *.db
 users.json
+<<<<<<< HEAD
 secret.key
 >>>>>>> api-integrations-groq-3434217061461873316
 =======
@@ -61,3 +65,13 @@ secret.key
 # Database
 *.db
 >>>>>>> origin/engagement-features-5881933724913241534
+=======
+chat_history.json
+chat_history.txt
+
+# Verification
+verification/
+
+# Logs
+logs/
+>>>>>>> origin/feature/json-chat-export-3053385537761538795

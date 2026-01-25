@@ -429,6 +429,7 @@ def render_sidebar():
         c1, c2 = st.columns(2)
         with c1:
 <<<<<<< HEAD
+<<<<<<< HEAD
             if st.button("🗑️ Clear", width="stretch", help="Clear current conversation"):
                 st.session_state.messages = []
                 st.rerun()
@@ -450,10 +451,28 @@ def render_sidebar():
                     "📄 Download as .txt",
                     data=txt_data,
                     file_name=f"chat_export_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt",
+=======
+            if st.button("🗑️ Clear", use_container_width=True):
+                st.session_state.messages = []
+                st.rerun()
+        with c2:
+            # Use popover for export options
+            with st.popover("💾 Export", use_container_width=True):
+                st.markdown("### Export Chat")
+                msgs = st.session_state.get('messages', [])
+
+                # Text format
+                text_content = "\n".join([f"{m['role'].upper()}: {m['content']}" for m in msgs])
+                st.download_button(
+                    "📄 Download as Text",
+                    text_content,
+                    "chat_history.txt",
+>>>>>>> origin/feature/json-chat-export-3053385537761538795
                     mime="text/plain",
                     use_container_width=True
                 )
 
+<<<<<<< HEAD
                 # JSON Export
                 try:
                     json_data = serialize_messages(msgs)
@@ -461,12 +480,27 @@ def render_sidebar():
                         "﹛﹜ Download as .json",
                         data=json_data,
                         file_name=f"chat_export_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json",
+=======
+                # JSON format
+                try:
+                    from ui.chat_utils import serialize_messages
+                    import json
+                    json_data = json.dumps(serialize_messages(msgs), indent=2)
+                    st.download_button(
+                        "📦 Download as JSON",
+                        json_data,
+                        "chat_history.json",
+>>>>>>> origin/feature/json-chat-export-3053385537761538795
                         mime="application/json",
                         use_container_width=True
                     )
                 except Exception as e:
+<<<<<<< HEAD
                     st.error(f"JSON export failed: {e}")
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
+=======
+                    st.error(f"JSON Export error: {e}")
+>>>>>>> origin/feature/json-chat-export-3053385537761538795
 
                 # Prepare data
                 msgs = st.session_state.get('messages', [])
