@@ -21,7 +21,11 @@ from ui.chat_utils import serialize_messages
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
 from brain_learning import LearningBrain
 from multimodal_voice_integration import MultimodalVoiceIntegrator
+<<<<<<< HEAD
 from ui.chat_utils import serialize_messages
+=======
+from monitoring import get_monitor
+>>>>>>> origin/monitoring-setup-15681340840960488850
 
 def render_sidebar():
     """Render the application sidebar and handle settings"""
@@ -1193,6 +1197,7 @@ def render_sidebar():
                 msgs = st.session_state.get('messages', [])
                 text = "\n".join([f"{m['role']}: {m['content']}" for m in msgs])
                 st.download_button("TxT", text, "chat.txt")
+<<<<<<< HEAD
 >>>>>>> origin/ui-ux-improvements-3860328367442600035
 =======
 >>>>>>> origin/ui-ux-improvements-11896252316584290961
@@ -1217,5 +1222,29 @@ def render_sidebar():
                 mime="text/plain",
                 use_container_width=True
             )
+=======
+
+        st.divider()
+
+        # 10. System Health
+        with st.expander("🩺 System Health", expanded=False):
+            monitor = get_monitor()
+            alerts = monitor.check_alerts()
+            if alerts:
+                st.error(f"Active Alerts: {len(alerts)}")
+                for alert in alerts:
+                    st.write(f"• {alert}")
+            else:
+                st.success("System Healthy")
+
+            stats = monitor.get_stats(window_seconds=86400)
+            c1, c2 = st.columns(2)
+            with c1:
+                st.metric("Avg Latency", f"{stats['avg_latency']:.2f}s")
+            with c2:
+                st.metric("Error Rate", f"{stats['error_rate']*100:.1f}%")
+
+            st.caption(f"Requests (24h): {stats['total_requests']}")
+>>>>>>> origin/monitoring-setup-15681340840960488850
 
 >>>>>>> origin/feature-chat-export-regen-2510491870086228569

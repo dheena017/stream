@@ -43,6 +43,7 @@ logs/
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 *.db
 =======
 
@@ -124,10 +125,15 @@ backup.key
 
 # Local databases & Sensitive info
 *.db
+=======
+
+# Application Data
+>>>>>>> origin/monitoring-setup-15681340840960488850
 chat_history.db
 users.json
 logs/
 *.jsonl
+<<<<<<< HEAD
 >>>>>>> origin/mobile-optimizations-6398649563128325227
 =======
 
@@ -143,3 +149,5 @@ backups/
 # Databases
 *.db
 >>>>>>> origin/feature-chat-export-regen-2510491870086228569
+=======
+>>>>>>> origin/monitoring-setup-15681340840960488850
