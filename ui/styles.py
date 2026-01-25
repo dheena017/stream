@@ -353,6 +353,7 @@ def load_css():
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     /* --- Header & Status --- */
     .chat-header-container {
         display: flex;
@@ -444,6 +445,19 @@ def load_css():
              margin-top: 0.5rem;
         }
 >>>>>>> origin/ui-ux-improvements-15420733255677191781
+=======
+    /* --- Accessibility Enhancements --- */
+    /* Strong focus indicators for keyboard navigation */
+    :focus-visible, [tabindex="0"]:focus, button:focus, input:focus, select:focus, textarea:focus {
+        outline: 3px solid var(--accent-primary) !important;
+        outline-offset: 2px !important;
+        box-shadow: 0 0 0 4px var(--accent-subtle) !important;
+    }
+
+    /* Ensure text visibility */
+    .stMarkdown, p, span, div {
+        text-rendering: optimizeLegibility;
+>>>>>>> origin/accessibility-improvements-8538246568398497801
     }
     </style>
     """

@@ -35,6 +35,7 @@ logs/
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 *.db
 =======
 
@@ -75,3 +76,10 @@ verification/
 # Logs
 logs/
 >>>>>>> origin/feature/json-chat-export-3053385537761538795
+=======
+
+# Database & Sensitive Files
+*.db
+users.json
+secret.key
+>>>>>>> origin/accessibility-improvements-8538246568398497801
