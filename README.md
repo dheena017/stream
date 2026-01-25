@@ -199,6 +199,8 @@ pytest -q tests/test_multimodal_smoke.py
 =======
 # Stream — Multimodal AI Chat
 
+Repository: https://github.com/dheen/stream
+
 This project is a Streamlit-based multi-provider AI chat with multimodal (image/audio/video) support, internet search augmentation, and optional advanced image captioning via BLIP or a hosted caption API.
 
 ## BLIP (Optional)
@@ -238,10 +240,17 @@ Run tests locally:
 pytest -q
 ```
 
+<<<<<<< HEAD
 ## Community
 - We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on how to get started.
 - Join our community to discuss features, report bugs, and share your ideas.
 
+=======
+## Community
+- **Active Contributors**: Growing!
+- **Guidelines**: Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on how to contribute.
+
+>>>>>>> origin/community/docs-update-16630300047678031040
 ## Notes
 - Optional dependencies: `transformers`, `torch`, `torchvision`, `moviepy`, `speech_recognition`. These are only required for BLIP, video frame extraction, and audio transcription respectively.
 - Search library may warn about `duckduckgo_search` -> `ddgs` rename; consider installing `ddgs` if you see warnings.
