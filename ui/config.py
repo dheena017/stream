@@ -29,6 +29,10 @@ MODEL_PRICING = {
     # DeepSeek
     "deepseek-chat": (0.14, 0.28),
     "deepseek-coder": (0.14, 0.28),
+    # Groq
+    "llama-3.3-70b-versatile": (0.59, 0.79),
+    "llama-3.1-8b-instant": (0.05, 0.08),
+    "mixtral-8x7b-32768": (0.24, 0.24),
 }
 
 # Detailed Model Metadata
@@ -165,27 +169,51 @@ MODEL_DETAILS = {
         "description": "Specialized for programming tasks.",
         "capabilities": ["💻 Code", "💰 Cheap"]
     },
+    # Groq
+    "llama-3.3-70b-versatile": {
+        "label": "Groq Llama 3.3 70B",
+        "provider": "groq",
+        "context": "128k",
+        "description": "High speed open model.",
+        "capabilities": ["⚡ Fast", "🦙 Open"]
+    },
+    "llama-3.1-8b-instant": {
+        "label": "Groq Llama 3.1 8B",
+        "provider": "groq",
+        "context": "128k",
+        "description": "Extremely fast small model.",
+        "capabilities": ["⚡ Fast", "💰 Cheap"]
+    },
+    "mixtral-8x7b-32768": {
+        "label": "Groq Mixtral 8x7b",
+        "provider": "groq",
+        "context": "32k",
+        "description": "Balanced performance and speed.",
+        "capabilities": ["⚡ Fast", "🧠 Smart"]
+    },
 }
 
 # Legacy Compatibility Lists (Generated from MODEL_DETAILS)
 MODEL_OPTIONS = [
-    (v['label'], k, v['provider']) 
+    (v['label'], k, v['provider'])
     for k, v in MODEL_DETAILS.items()
 ]
 
 MODEL_CAPABILITIES = {
-    k: v['capabilities'] 
+    k: v['capabilities']
     for k, v in MODEL_DETAILS.items()
 }
 
 PROVIDER_ICONS = {
     "google": "🔵", "openai": "🟢", "anthropic": "🟣",
     "together": "🔴", "xai": "⚫", "deepseek": "🟠",
+    "groq": "⚡",
     "brain-mode": "🧠"
 }
 
 PROVIDER_LABELS = {
     "google": "Google Gemini", "openai": "OpenAI GPT", "anthropic": "Anthropic Claude",
     "together": "Meta Llama", "xai": "xAI Grok", "deepseek": "DeepSeek",
+    "groq": "Groq",
     "brain-mode": "Brain Mode"
 }

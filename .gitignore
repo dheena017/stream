@@ -18,6 +18,7 @@ dist/
 
 # Logs
 *.log
+logs/
 
 # IDE / editor
 .vscode/
@@ -29,3 +30,8 @@ dist/
 # Streamlit
 .streamlit/secrets.toml
 .streamlit/config.toml
+
+# Application Data
+*.db
+users.json
+secret.key

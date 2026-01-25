@@ -121,13 +121,14 @@ class AIBrain:
                     "success": True
                 }
             
-            elif provider in ["openai", "together", "xai", "deepseek"]:
+            elif provider in ["openai", "together", "xai", "deepseek", "groq"]:
                 from openai import OpenAI
                 
                 base_urls = {
                     "together": "https://api.together.xyz/v1",
                     "xai": "https://api.x.ai/v1",
-                    "deepseek": "https://api.deepseek.com"
+                    "deepseek": "https://api.deepseek.com",
+                    "groq": "https://api.groq.com/openai/v1"
                 }
                 
                 client = OpenAI(
