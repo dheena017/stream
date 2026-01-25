@@ -4,6 +4,7 @@ AI Brain Module - Combines multiple AI models and internet knowledge
 import asyncio
 from typing import List, Dict, Optional, Any
 import json
+from ui.ethics import EthicsGuardian
 from datetime import datetime
 
 
@@ -96,6 +97,14 @@ class AIBrain:
         config: Dict[str, Any]
     ) -> Dict[str, str]:
         """Query a single AI model"""
+
+        # Ethics Check on Prompt
+        guardian = EthicsGuardian()
+        is_safe_prompt, prompt_issue = guardian.check_safety(prompt)
+        if not is_safe_prompt:
+             # Append neutrality instruction to prompt since we don't have separate system msg here easily
+             prompt = f"{prompt}\n\n[System Note: {guardian.augment_system_instruction('', prompt_issue)}]"
+
         try:
                         # Validate prompt is not empty
             if not prompt or not prompt.strip():
@@ -204,6 +213,8 @@ class AIBrain:
     ) -> str:
         """Synthesize multiple AI responses and internet knowledge into a unified answer"""
         
+        guardian = EthicsGuardian()
+
         synthesis = f"# AI Brain Synthesis\n\n"
         synthesis += f"**Your Question:** {query}\n\n"
         
@@ -233,6 +244,11 @@ class AIBrain:
         synthesis += f"**Successful responses:** {len(successful_responses)}\n"
         synthesis += f"**Internet search:** {'✓ Enabled' if internet_context else '✗ Disabled'}\n"
         
+        # Ethics check on synthesis
+        is_safe, issue = guardian.check_safety(synthesis)
+        if not is_safe:
+            synthesis += guardian.get_disclaimer(issue)
+
         return synthesis
     
     def add_to_memory(self, query: str, response: str):
