@@ -38,6 +38,7 @@ logs/
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 *.db
 =======
 
@@ -101,3 +102,11 @@ logs/*.jsonl
 # User data
 users.json
 >>>>>>> origin/monitoring-setup-3187580208021102587
+=======
+
+# Sensitive Data
+users.json
+secret.key
+*.db
+backups/
+>>>>>>> origin/backup-automation-3294980274908117359
