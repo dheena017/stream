@@ -50,6 +50,7 @@ logs/
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 *.db
 =======
 
@@ -166,3 +167,11 @@ backups/
 chat_history.db
 users.json
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+
+# Local Data
+*.db
+users.json
+logs/
+chat_history.db
+>>>>>>> origin/innovation-chat-export-16090347511713793939

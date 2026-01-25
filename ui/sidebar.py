@@ -15,6 +15,7 @@ import streamlit as st
 <<<<<<< HEAD
 =======
 from ui.common import logout, get_session_cost
+from ui.experimental import render_experimental_section
 from ui.auth import load_user_credentials, save_user_credentials, hash_password
 from ui.config import MODEL_OPTIONS, MODEL_PRICING, MODEL_CAPABILITIES, PROVIDER_ICONS, PROVIDER_LABELS
 from ui.chat_utils import serialize_messages
@@ -476,6 +477,7 @@ def render_sidebar():
                 st.write(cost_data["by_provider"])
 
         st.divider()
+<<<<<<< HEAD
 
 
         # Chat Controls
@@ -1253,5 +1255,18 @@ def render_sidebar():
 
             st.caption(f"Requests (24h): {stats['total_requests']}")
 >>>>>>> origin/monitoring-setup-15681340840960488850
+=======
+        
+        # 10. Experimental
+        with st.expander("🧪 Experimental (Beta)", expanded=False):
+             render_experimental_section()
+
+        st.divider()
+
+        # Chat Controls
+        if st.button("🗑️ Clear Chat", width="stretch"):
+            st.session_state.messages = []
+            st.rerun()
+>>>>>>> origin/innovation-chat-export-16090347511713793939
 
 >>>>>>> origin/feature-chat-export-regen-2510491870086228569
