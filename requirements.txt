@@ -36,6 +36,7 @@ pytest
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 loguru
 =======
 cryptography
@@ -138,3 +139,7 @@ torch==2.5.1
 torchvision==0.20.1
 pytest==8.3.3
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+cryptography
+schedule
+>>>>>>> origin/backup-automation-4231149804985086977

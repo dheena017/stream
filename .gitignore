@@ -52,6 +52,7 @@ logs/
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 *.db
 =======
 
@@ -182,3 +183,7 @@ chat_history.db
 *.db
 users.json
 >>>>>>> origin/scalability-optimizations-5191153255901361581
+=======
+backup.key
+backups/
+>>>>>>> origin/backup-automation-4231149804985086977
