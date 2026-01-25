@@ -9,6 +9,7 @@ import os
 import time
 import logging
 from datetime import datetime
+from ui.analytics import init_analytics, log_session
 
 # Import UI Modules
 import ui.styles
@@ -81,11 +82,11 @@ def initialize_auth_state():
         "username": None,
         "current_page": "dashboard"
     }
-    
+
     for key, value in defaults.items():
         if key not in st.session_state:
             st.session_state[key] = value
-    
+
     logger.info(f"Auth state initialized - User: {st.session_state.username}")
 
 
@@ -96,11 +97,17 @@ def initialize_session_tracking():
         "total_sessions": 1,
         "user_joined_date": datetime.now().strftime('%Y-%m-%d')
     }
-    
+
     for key, value in tracking_defaults.items():
         if key not in st.session_state:
             st.session_state[key] = value
-    
+
+    # Log session start
+    if "session_logged" not in st.session_state:
+        username = st.session_state.get("username", "guest")
+        log_session(username, "session_start")
+        st.session_state.session_logged = True
+
     logger.debug("Session tracking initialized")
 
 
@@ -119,7 +126,7 @@ def initialize_brain_state():
         learning_brain, multimodal_voice = initialize_brain_components()
         st.session_state.learning_brain = learning_brain
         st.session_state.multimodal_voice_integrator = multimodal_voice
-    
+
     logger.debug("Brain state initialized")
 
 
@@ -132,11 +139,11 @@ def initialize_chat_state():
         "search_result_count": 5,
         "enable_advanced_captioning": False
     }
-    
+
     for key, value in chat_defaults.items():
         if key not in st.session_state:
             st.session_state[key] = value
-    
+
     logger.debug("Chat state initialized")
 
 
@@ -163,33 +170,36 @@ def handle_page_routing():
         "profile": show_profile_page,
         "chat": show_chat_page
     }
-    
+
     current_page = st.session_state.current_page
     page_handler = page_router.get(current_page, show_chat_page)
-    
+
     logger.info(f"Routing to page: {current_page}")
     page_handler()
 
 
 def main():
     """Main application entry point."""
+    # Analytics Setup
+    init_analytics()
+
     # Setup
     initialize_page_config()
     initialize_theme()
     configure_environment()
-    
+
     # Initialize all states
     initialize_all_states()
-    
+
     # Authentication check
     handle_authentication()
-    
+
     # Render sidebar for authenticated users
     render_sidebar()
-    
+
     # Route to appropriate page
     handle_page_routing()
-    
+
     logger.info("Application render completed")
 
 
