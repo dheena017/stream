@@ -1975,8 +1975,13 @@ def show_chat_page():
         inet_on = st.session_state.get('enable_internet_search', False)
         
         status_html = f"""
+<<<<<<< HEAD
         <div class="chat-status-container">
             <div class="status-badge {'active' if brain_on else ''} chat-status-badge">
+=======
+        <div class="header-status-container" style="text-align: right;">
+            <div class="status-badge {'active' if brain_on else ''}" style="display:inline-flex; width:auto; font-size:0.8rem; padding: 2px 8px;">
+>>>>>>> origin/mobile-optimizations-15403240101322836592
                 {'🧠 Brain' if brain_on else '🤖 Std'}
             </div>
              <div class="status-badge {'active' if inet_on else ''} chat-status-badge chat-status-badge-ml">

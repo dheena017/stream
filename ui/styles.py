@@ -351,6 +351,7 @@ def load_css():
     }
     ::-webkit-scrollbar-thumb:hover { background: var(--text-primary); }
 
+<<<<<<< HEAD
     /* --- Header & Status --- */
     .chat-header-container {
         display: flex;
@@ -392,6 +393,39 @@ def load_css():
 
     .spacer-2rem {
         height: 2rem;
+=======
+    /* --- Mobile Optimization --- */
+    @media only screen and (max-width: 768px) {
+        .main-header {
+            flex-direction: column;
+            padding: 1rem !important;
+            gap: 1rem;
+            text-align: center;
+        }
+        .header-status-container {
+            text-align: center !important;
+            margin-top: 0.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+        .welcome-title {
+            font-size: 1.8rem !important;
+        }
+        .welcome-container {
+            padding: 2rem 1rem !important;
+        }
+        .dashboard-card {
+            margin-bottom: 1rem;
+        }
+        /* Ensure badges wrap nicely */
+        .status-badge {
+            width: 100% !important;
+            margin-bottom: 4px;
+            justify-content: center !important;
+        }
+>>>>>>> origin/mobile-optimizations-15403240101322836592
     }
     </style>
     """
