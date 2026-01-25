@@ -1,9 +1,9 @@
-
 import streamlit as st
+
 
 def load_css():
     """Load all custom CSS styles for the application"""
-    
+
     # Premium Dark Mode Theme - Enforced
     return """
     <style>

@@ -32,8 +32,8 @@ streamlit run app.py
 
 Run tests locally:
 
-```powershell
-pytest -q
+```bash
+PYTHONPATH=. pytest -q
 ```
 
 ## Notes

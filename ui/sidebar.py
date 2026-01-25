@@ -1,14 +1,11 @@
-
-import streamlit as st
-import os
-import pandas as pd
 import json
+import os
 from datetime import datetime
-from typing import Dict, Any
+from typing import Any, Dict
 
-from ui.common import logout, get_session_cost
-from ui.auth import load_user_credentials, save_user_credentials, hash_password
-from ui.config import MODEL_OPTIONS, MODEL_PRICING, MODEL_CAPABILITIES, PROVIDER_ICONS, PROVIDER_LABELS
+import pandas as pd
+import streamlit as st
+
 from brain_learning import LearningBrain
 from multimodal_voice_integration import MultimodalVoiceIntegrator
 from ui.chat_utils import serialize_messages
@@ -17,7 +14,8 @@ def render_sidebar():
     """Render the application sidebar and handle settings"""
     with st.sidebar:
         # 1. Header & Theme
-        st.markdown("""
+        st.markdown(
+            """
         <div class="sidebar-header">
             <h1 style="color: white; margin: 0; font-size: 1.4rem; font-weight: 800; letter-spacing: 0.5px;">⚙️ Control Panel</h1>
         </div>
@@ -27,17 +25,45 @@ def render_sidebar():
         st.markdown("### 📍 Navigation")
         col_nav1, col_nav2, col_nav3 = st.columns(3)
         with col_nav1:
-            if st.button("📊 Dash", width="stretch", type="primary" if st.session_state.current_page == "dashboard" else "secondary", help="Go to Dashboard"):
+            if st.button(
+                "📊 Dash",
+                width="stretch",
+                type=(
+                    "primary"
+                    if st.session_state.current_page == "dashboard"
+                    else "secondary"
+                ),
+                help="Go to Dashboard",
+            ):
                 st.session_state.current_page = "dashboard"
                 st.rerun()
         with col_nav2:
-            if st.button("💬 Chat", width="stretch", type="primary" if st.session_state.current_page == "chat" else "secondary", help="Go to Chat"):
+            if st.button(
+                "💬 Chat",
+                width="stretch",
+                type=(
+                    "primary"
+                    if st.session_state.current_page == "chat"
+                    else "secondary"
+                ),
+                help="Go to Chat",
+            ):
                 st.session_state.current_page = "chat"
                 st.rerun()
         with col_nav3:
-            if st.button("👤 Profile", width="stretch", type="primary" if st.session_state.current_page == "profile" else "secondary", help="Go to Profile"):
+            if st.button(
+                "👤 Profile",
+                width="stretch",
+                type=(
+                    "primary"
+                    if st.session_state.current_page == "profile"
+                    else "secondary"
+                ),
+                help="Go to Profile",
+            ):
                 st.session_state.current_page = "profile"
                 st.rerun()
+
 
         st.divider()
 
@@ -58,6 +84,7 @@ def render_sidebar():
         if st.button("🚪 Sign Out", key="sidebar_logout_btn", width="stretch"):
             logout()
 
+
         st.divider()
 
         # --- CHAT HISTORY ---
@@ -66,7 +93,7 @@ def render_sidebar():
 
             c_hist1, c_hist2 = st.columns([0.2, 0.8])
             with c_hist1:
-                 st.markdown("### 🕒")
+                st.markdown("### 🕒")
             with c_hist2:
                 if st.button("➕ New Chat", use_container_width=True, type="primary"):
                      st.session_state.messages = []
@@ -82,19 +109,36 @@ def render_sidebar():
                 # Show most recent first
                 for c_id, c_title, c_date in conversations[:5]:
                     # Highlight active
-                    type_ = "primary" if st.session_state.get("conversation_id") == c_id else "secondary"
-                    if st.button(f"{c_title}", key=f"hist_{c_id}", use_container_width=True, type=type_):
+                    type_ = (
+                        "primary"
+                        if st.session_state.get("conversation_id") == c_id
+                        else "secondary"
+                    )
+                    if st.button(
+                        f"{c_title}",
+                        key=f"hist_{c_id}",
+                        use_container_width=True,
+                        type=type_,
+                    ):
                         st.session_state.conversation_id = c_id
                         st.session_state.messages = get_conversation_messages(c_id)
                         st.rerun()
 
+
                 if len(conversations) > 5:
                     with st.expander("Older Chats"):
-                         for c_id, c_title, c_date in conversations[5:15]:
-                            if st.button(f"{c_title}", key=f"hist_old_{c_id}", use_container_width=True):
+                        for c_id, c_title, c_date in conversations[5:15]:
+                            if st.button(
+                                f"{c_title}",
+                                key=f"hist_old_{c_id}",
+                                use_container_width=True,
+                            ):
                                 st.session_state.conversation_id = c_id
-                                st.session_state.messages = get_conversation_messages(c_id)
+                                st.session_state.messages = get_conversation_messages(
+                                    c_id
+                                )
                                 st.rerun()
+
 
         except Exception as e:
             st.error(f"History error: {e}")
@@ -104,19 +148,30 @@ def render_sidebar():
         # 3. Model Selection
         st.markdown("### 🤖 Model Selection")
 
+
         # Provider Filter (Horizontal Radio for cleaner look)
-        providers = ["All", "Google", "OpenAI", "Anthropic", "Together", "xAI", "DeepSeek"]
+        providers = [
+            "All",
+            "Google",
+            "OpenAI",
+            "Anthropic",
+            "Together",
+            "xAI",
+            "DeepSeek",
+        ]
         selected_provider_filter = st.radio(
             "Provider Filter",
             providers,
             horizontal=True,
             label_visibility="collapsed",
-            help="Filter specific model providers"
+            help="Filter specific model providers",
         )
+
 
         # Filter Models based on selection
         # Using the new MODEL_DETAILS structure
         from ui.config import MODEL_DETAILS
+
 
         provider_map = {
             "Google": "google",
@@ -124,10 +179,12 @@ def render_sidebar():
             "Anthropic": "anthropic",
             "Together": "together",
             "xAI": "xai",
-            "DeepSeek": "deepseek"
+            "DeepSeek": "deepseek",
         }
 
+
         filter_key = provider_map.get(selected_provider_filter)
+
 
         if filter_key:
             filtered_models_list = [
@@ -145,13 +202,15 @@ def render_sidebar():
         # Model Select Box
         if not filtered_models_list:
             st.warning(f"No models found for {selected_provider_filter}")
-            filtered_models_list = [(v['label'], k, v['provider']) for k, v in MODEL_DETAILS.items()]
+            filtered_models_list = [
+                (v["label"], k, v["provider"]) for k, v in MODEL_DETAILS.items()
+            ]
 
         # Build display labels with icons
         display_labels = [f"{PROVIDER_ICONS.get(m[2], '⚪')} {m[0]}" for m in filtered_models_list]
 
         # Persist selection if possible, otherwise default
-        current_selection = st.session_state.get('selected_model_name')
+        current_selection = st.session_state.get("selected_model_name")
         default_index = 0
         if current_selection:
             # try to find index
@@ -160,30 +219,34 @@ def render_sidebar():
                     default_index = i
                     break
 
+
         model_choice_idx = st.selectbox(
             "Select Model",
             range(len(filtered_models_list)),
             format_func=lambda i: display_labels[i],
             index=default_index,
-            label_visibility="collapsed"
+            label_visibility="collapsed",
         )
+
 
         selected_model_tuple = filtered_models_list[model_choice_idx]
         st.session_state.selected_model_label = selected_model_tuple[0]
         st.session_state.selected_model_name = selected_model_tuple[1]
         st.session_state.selected_provider = selected_model_tuple[2]
 
+
         # --- Enhanced Model Info Card ---
         model_id = selected_model_tuple[1]
         model_info = MODEL_DETAILS.get(model_id, {})
         pricing = MODEL_PRICING.get(model_id, (0, 0))
+
 
         with st.container():
             # Description
             st.caption(model_info.get('description', 'No description available.'))
 
             # Badges (Capabilities)
-            caps = model_info.get('capabilities', [])
+            caps = model_info.get("capabilities", [])
             if caps:
                 badges_html = "".join(f"<span style='background:#334155; color:#e2e8f0; padding:2px 6px; border-radius:4px; font-size:0.75rem; margin-right:4px;'>{c}</span>" for c in caps)
                 st.markdown(f"<div style='margin-bottom:8px;'>{badges_html}</div>", unsafe_allow_html=True)
@@ -234,18 +297,35 @@ def render_sidebar():
 
         # 5. Generation Settings
         with st.expander("⚙️ Parameters", expanded=False):
-            st.session_state.temperature = st.slider("Temperature", 0.0, 2.0, st.session_state.get('temperature', 1.0), 0.1)
-            st.session_state.top_p = st.slider("Top P", 0.0, 1.0, st.session_state.get('top_p', 0.95), 0.05)
-            st.session_state.max_tokens = st.slider("Max Tokens", 100, 8192, st.session_state.get('max_tokens', 2048), 100)
-            st.session_state.enable_streaming = st.checkbox("Enable Streaming", value=st.session_state.get('enable_streaming', True))
-            st.session_state.system_instruction = st.text_area("System Prompt", value=st.session_state.get('system_instruction', ""), placeholder="You are a helpful assistant...", height=100)
+            st.session_state.temperature = st.slider(
+                "Temperature", 0.0, 2.0, st.session_state.get("temperature", 1.0), 0.1
+            )
+            st.session_state.top_p = st.slider(
+                "Top P", 0.0, 1.0, st.session_state.get("top_p", 0.95), 0.05
+            )
+            st.session_state.max_tokens = st.slider(
+                "Max Tokens", 100, 8192, st.session_state.get("max_tokens", 2048), 100
+            )
+            st.session_state.enable_streaming = st.checkbox(
+                "Enable Streaming", value=st.session_state.get("enable_streaming", True)
+            )
+            st.session_state.system_instruction = st.text_area(
+                "System Prompt",
+                value=st.session_state.get("system_instruction", ""),
+                placeholder="You are a helpful assistant...",
+                height=100,
+            )
 
         st.divider()
 
         # 6. Brain Mode
         with st.expander("🧠 Brain Mode", expanded=False):
-            enable_brain = st.checkbox("Enable AI Brain", value=st.session_state.get('enable_brain_mode', False))
+            enable_brain = st.checkbox(
+                "Enable AI Brain",
+                value=st.session_state.get("enable_brain_mode", False),
+            )
             st.session_state.enable_brain_mode = enable_brain
+
 
             if enable_brain:
                 st.info("🧠 Brain Active")
@@ -255,15 +335,26 @@ def render_sidebar():
                 st.caption("Consulted Models:")
                 c1, c2 = st.columns(2)
                 with c1:
-                    google = st.checkbox("Google", value=True, disabled=not bool(st.session_state.google_api_key))
-                    openai = st.checkbox("OpenAI", value=False, disabled=not bool(st.session_state.openai_api_key))
+                    google = st.checkbox(
+                        "Google",
+                        value=True,
+                        disabled=not bool(st.session_state.google_api_key),
+                    )
+                    openai = st.checkbox(
+                        "OpenAI",
+                        value=False,
+                        disabled=not bool(st.session_state.openai_api_key),
+                    )
                 with c2:
                     anthropic = st.checkbox("Claude", value=False, disabled=not bool(st.session_state.anthropic_api_key))
                     together = st.checkbox("Llama", value=False, disabled=not bool(st.session_state.together_api_key))
 
                 # Logic to store which models to consult (could be stored in session state)
                 st.session_state.brain_consult_models = {
-                    "google": google, "openai": openai, "anthropic": anthropic, "together": together
+                    "google": google,
+                    "openai": openai,
+                    "anthropic": anthropic,
+                    "together": together,
                 }
 
         st.divider()
@@ -276,33 +367,36 @@ def render_sidebar():
             integrator = st.session_state.multimodal_voice_integrator
             integrator.create_multimodal_uploader()
 
+
             st.markdown("#### Voice")
             st.session_state.voice_mode = st.toggle("Voice Mode", value=st.session_state.get('voice_mode', False))
             st.session_state.auto_speak = st.checkbox("Auto-Speak", value=st.session_state.get('auto_speak', True))
 
         st.divider()
 
+
         # 8. Stats & Learning
         with st.expander("📊 Learning Brain Stats", expanded=False):
-            learning_brain = st.session_state.get('learning_brain')
+            learning_brain = st.session_state.get("learning_brain")
             if learning_brain:
                 stats = learning_brain.get_learning_stats()
                 st.metric("Topics", stats.get('total_topics', 0))
                 st.metric("Conversations", stats.get('total_conversations', 0))
 
                 if st.button("Download Report"):
-                     report = learning_brain.format_learning_report()
-                     st.download_button("Get Report", report, "report.md")
+                    report = learning_brain.format_learning_report()
+                    st.download_button("Get Report", report, "report.md")
 
         # 9. Cost
         with st.expander("💰 Cost Tracking", expanded=False):
             cost_data = get_session_cost()
             st.metric("Total Cost", f"${cost_data['total']:.4f}")
             st.caption(f"Msg Count: {cost_data['message_count']}")
-            if cost_data['by_provider']:
-                 st.write(cost_data['by_provider'])
+            if cost_data["by_provider"]:
+                st.write(cost_data["by_provider"])
 
         st.divider()
+
 
         # Chat Controls
         st.markdown("### 💬 Chat Controls")

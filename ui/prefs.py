@@ -1,6 +1,6 @@
 import json
 import os
-from typing import Optional, Dict, Any
+from typing import Any, Dict, Optional
 
 PREFS_FILE = os.path.join(os.path.dirname(os.path.dirname(__file__)), "user_prefs.json")
 
@@ -8,7 +8,7 @@ PREFS_FILE = os.path.join(os.path.dirname(os.path.dirname(__file__)), "user_pref
 def _read_prefs() -> Dict[str, Any]:
     try:
         if os.path.exists(PREFS_FILE):
-            with open(PREFS_FILE, 'r') as f:
+            with open(PREFS_FILE, "r") as f:
                 return json.load(f)
     except Exception:
         pass
@@ -17,7 +17,7 @@ def _read_prefs() -> Dict[str, Any]:
 
 def _write_prefs(data: Dict[str, Any]) -> bool:
     try:
-        with open(PREFS_FILE, 'w') as f:
+        with open(PREFS_FILE, "w") as f:
             json.dump(data, f, indent=2)
         return True
     except Exception:
@@ -54,7 +54,8 @@ def save_dark_mode_from_session(username: Optional[str] = None) -> bool:
     """Convenience: read `st.session_state['dark_mode']` and persist it."""
     try:
         import streamlit as st
-        val = bool(st.session_state.get('dark_mode', False))
-        return set_pref('dark_mode', val, username)
+
+        val = bool(st.session_state.get("dark_mode", False))
+        return set_pref("dark_mode", val, username)
     except Exception:
         return False
