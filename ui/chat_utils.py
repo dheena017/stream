@@ -1,5 +1,6 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import functools
 import logging
 import time
@@ -17,6 +18,18 @@ from ui.analytics import log_api_call, log_error
 
 logger = logging.getLogger(__name__)
 
+=======
+
+import streamlit as st
+import logging
+from typing import List, Dict, Optional, Any, Callable, Tuple
+from ui.ethics import EthicsGuardian
+
+logger = logging.getLogger(__name__)
+
+# BLIP cache holds (processor, model, device)
+BLIP_CACHE: Optional[Tuple[Any, Any, Any]] = None
+>>>>>>> 9a44f3f (Ethics: [bias fixes])
 
 
 # --- Cached clients / resources ---
@@ -24,15 +37,19 @@ logger = logging.getLogger(__name__)
 def get_internet_search_engine():
     from ui.internet_search import InternetSearchEngine
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> origin/analytics-monitoring-17353357073288903889
+=======
+>>>>>>> 9a44f3f (Ethics: [bias fixes])
     return InternetSearchEngine()
 
 
 @st.cache_resource
 def get_openai_client(api_key: str, base_url: Optional[str] = None):
     from openai import OpenAI
+<<<<<<< HEAD
 <<<<<<< HEAD
 
     return (
@@ -43,15 +60,21 @@ def get_openai_client(api_key: str, base_url: Optional[str] = None):
 =======
     return OpenAI(api_key=api_key, base_url=base_url) if base_url else OpenAI(api_key=api_key)
 >>>>>>> origin/analytics-monitoring-17353357073288903889
+=======
+    return OpenAI(api_key=api_key, base_url=base_url) if base_url else OpenAI(api_key=api_key)
+>>>>>>> 9a44f3f (Ethics: [bias fixes])
 
 
 @st.cache_resource
 def get_anthropic_client(api_key: str):
     from anthropic import Anthropic
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> origin/analytics-monitoring-17353357073288903889
+=======
+>>>>>>> 9a44f3f (Ethics: [bias fixes])
     return Anthropic(api_key=api_key)
 
 
@@ -59,6 +82,7 @@ def get_anthropic_client(api_key: str):
 def get_google_client(api_key: str):
     # Import dynamically to avoid hard dependency if not used
     import google.generativeai as genai
+<<<<<<< HEAD
 <<<<<<< HEAD
 
     genai.configure(api_key=api_key)
@@ -81,6 +105,8 @@ def build_conversation_history(
         if "role" in msg and "content" in msg
     ]
 =======
+=======
+>>>>>>> 9a44f3f (Ethics: [bias fixes])
     genai.configure(api_key=api_key)
     return genai
 
@@ -90,7 +116,10 @@ def build_conversation_history(messages: List[Dict], exclude_last: bool = True, 
     if not history:
         return []
     formatted = [{"role": msg["role"], "content": msg["content"]} for msg in history if "role" in msg and "content" in msg]
+<<<<<<< HEAD
 >>>>>>> origin/analytics-monitoring-17353357073288903889
+=======
+>>>>>>> 9a44f3f (Ethics: [bias fixes])
     total_chars = sum(len(m.get("content", "")) for m in formatted)
     if len(formatted) > max_messages or total_chars > max_chars:
         older = formatted[:-max_messages] if len(formatted) > max_messages else []
@@ -100,6 +129,7 @@ def build_conversation_history(messages: List[Dict], exclude_last: bool = True, 
             for msg in older[-10:]:
                 content = msg.get("content", "")
                 preview = content[:200] + "..." if len(content) > 200 else content
+<<<<<<< HEAD
 <<<<<<< HEAD
                 older_summary_parts.append(
                     f"{msg.get('role', 'unknown').upper()}: {preview}"
@@ -111,12 +141,17 @@ def build_conversation_history(messages: List[Dict], exclude_last: bool = True, 
                 older_summary_parts.append(f"{msg.get('role', 'unknown').upper()}: {preview}")
             summary_text = "[Earlier conversation summary]\n" + "\n".join(older_summary_parts)
 >>>>>>> origin/analytics-monitoring-17353357073288903889
+=======
+                older_summary_parts.append(f"{msg.get('role', 'unknown').upper()}: {preview}")
+            summary_text = "[Earlier conversation summary]\n" + "\n".join(older_summary_parts)
+>>>>>>> 9a44f3f (Ethics: [bias fixes])
             return [{"role": "system", "content": summary_text}] + recent
         else:
             return recent
     return formatted
 
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 def create_openai_messages(
     conversation_history: List[Dict],
@@ -126,6 +161,9 @@ def create_openai_messages(
 =======
 def create_openai_messages(conversation_history: List[Dict], current_prompt: str, system_instruction: Optional[str] = None) -> List[Dict]:
 >>>>>>> origin/analytics-monitoring-17353357073288903889
+=======
+def create_openai_messages(conversation_history: List[Dict], current_prompt: str, system_instruction: Optional[str] = None) -> List[Dict]:
+>>>>>>> 9a44f3f (Ethics: [bias fixes])
     messages = []
     if system_instruction:
         messages.append({"role": "system", "content": system_instruction})
@@ -136,11 +174,17 @@ def create_openai_messages(conversation_history: List[Dict], current_prompt: str
 
 # --- Resilience Helpers ---
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 import time
 import functools
 
 >>>>>>> origin/analytics-monitoring-17353357073288903889
+=======
+import time
+import functools
+
+>>>>>>> 9a44f3f (Ethics: [bias fixes])
 def retry_with_backoff(retries=3, backoff_in_seconds=1):
     def decorator(func):
         @functools.wraps(func)
@@ -153,6 +197,7 @@ def retry_with_backoff(retries=3, backoff_in_seconds=1):
                     if x == retries:
                         raise e
 <<<<<<< HEAD
+<<<<<<< HEAD
                     sleep = backoff_in_seconds * 2**x
                     time.sleep(sleep)
                     x += 1
@@ -163,29 +208,38 @@ def retry_with_backoff(retries=3, backoff_in_seconds=1):
 
 
 =======
+=======
+>>>>>>> 9a44f3f (Ethics: [bias fixes])
                     sleep = (backoff_in_seconds * 2 ** x)
                     time.sleep(sleep)
                     x += 1
         return wrapper
     return decorator
 
+<<<<<<< HEAD
 >>>>>>> origin/analytics-monitoring-17353357073288903889
+=======
+>>>>>>> 9a44f3f (Ethics: [bias fixes])
 # --- Provider Handlers ---
 def handle_google_provider(
     api_key: str,
     model_name: str,
     prompt: str,
 <<<<<<< HEAD
+<<<<<<< HEAD
     api_key: str,
     model_name: str,
     prompt: str,
 =======
 >>>>>>> origin/analytics-monitoring-17353357073288903889
+=======
+>>>>>>> 9a44f3f (Ethics: [bias fixes])
     system_instruction: Optional[str] = None,
     temperature: float = 0.7,
     max_tokens: int = 2048,
     top_p: float = 0.95,
     images: List = None,
+<<<<<<< HEAD
 <<<<<<< HEAD
     enable_streaming: bool = False,
 ) -> str:
@@ -209,6 +263,8 @@ def handle_google_provider(
 
 
 =======
+=======
+>>>>>>> 9a44f3f (Ethics: [bias fixes])
     enable_streaming: bool = False
 ) -> str:
     try:
@@ -224,12 +280,16 @@ def handle_google_provider(
             top_p=top_p
         )
 
+<<<<<<< HEAD
 >>>>>>> origin/analytics-monitoring-17353357073288903889
+=======
+>>>>>>> 9a44f3f (Ethics: [bias fixes])
         # Initialize model
         # system_instruction is supported in newer versions as init argument or via specific methods
         # For broader compatibility, passing via constructor if supported, else prepending to prompt might be needed
         # But latest SDK supports 'system_instruction' in GenerativeModel constructor
         try:
+<<<<<<< HEAD
 <<<<<<< HEAD
             model = genai.GenerativeModel(
                 model_name=model_name, system_instruction=system_instruction
@@ -237,6 +297,9 @@ def handle_google_provider(
 =======
             model = genai.GenerativeModel(model_name=model_name, system_instruction=system_instruction)
 >>>>>>> origin/analytics-monitoring-17353357073288903889
+=======
+            model = genai.GenerativeModel(model_name=model_name, system_instruction=system_instruction)
+>>>>>>> 9a44f3f (Ethics: [bias fixes])
         except TypeError:
             # Fallback for older SDK versions that don't support system_instruction in init
             model = genai.GenerativeModel(model_name=model_name)
@@ -244,19 +307,26 @@ def handle_google_provider(
                 prompt = f"{system_instruction}\n\n{prompt}"
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 
         contents = []
         if images:
 =======
+=======
+>>>>>>> 9a44f3f (Ethics: [bias fixes])
         contents = []
         if images:
             from io import BytesIO
             import base64
+<<<<<<< HEAD
 >>>>>>> origin/analytics-monitoring-17353357073288903889
+=======
+>>>>>>> 9a44f3f (Ethics: [bias fixes])
             for img in images:
                 # Gemai SDK can take PIL images directly in 'contents'
                 contents.append(img)
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 
         contents.append(prompt)
@@ -266,6 +336,10 @@ def handle_google_provider(
         contents.append(prompt)
 
 >>>>>>> origin/analytics-monitoring-17353357073288903889
+=======
+        contents.append(prompt)
+
+>>>>>>> 9a44f3f (Ethics: [bias fixes])
         @retry_with_backoff(retries=2)
         def _generate():
             # For gemini, we can pass stream=True/False to generate_content
@@ -276,6 +350,7 @@ def handle_google_provider(
             )
 
 <<<<<<< HEAD
+<<<<<<< HEAD
         response = _generate()
 
 
@@ -284,11 +359,16 @@ def handle_google_provider(
 
 =======
         start_time = time.time()
+=======
+>>>>>>> 9a44f3f (Ethics: [bias fixes])
         response = _generate()
 
         if enable_streaming:
             collected_text = []
+<<<<<<< HEAD
 >>>>>>> origin/analytics-monitoring-17353357073288903889
+=======
+>>>>>>> 9a44f3f (Ethics: [bias fixes])
             def _stream_gen():
                 for chunk in response:
                     if chunk.text:
@@ -296,24 +376,34 @@ def handle_google_provider(
                         yield chunk.text
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> origin/analytics-monitoring-17353357073288903889
+=======
+>>>>>>> 9a44f3f (Ethics: [bias fixes])
             try:
                 st.write_stream(_stream_gen())
             except Exception as e:
                 logger.warning(f"Google streaming visualization failed: {e}")
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 
             return "".join(collected_text)
         else:
             return response.text
+=======
+            return "".join(collected_text)
+        else:
+             return response.text
+>>>>>>> 9a44f3f (Ethics: [bias fixes])
 
     except Exception as e:
         logger.error(f"Google provider error: {e}")
         return f"Error connecting to Google Gemini: {str(e)}"
 
+<<<<<<< HEAD
 
 =======
             final_text = "".join(collected_text)
@@ -330,6 +420,8 @@ def handle_google_provider(
         return f"Error connecting to Google Gemini: {str(e)}"
 
 >>>>>>> origin/analytics-monitoring-17353357073288903889
+=======
+>>>>>>> 9a44f3f (Ethics: [bias fixes])
 def handle_anthropic_provider(
     api_key: str,
     model_name: str,
@@ -337,6 +429,7 @@ def handle_anthropic_provider(
     system_instruction: Optional[str] = None,
     temperature: float = 0.7,
     max_tokens: int = 2048,
+<<<<<<< HEAD
 <<<<<<< HEAD
     enable_streaming: bool = False,
 ) -> str:
@@ -357,6 +450,8 @@ def handle_anthropic_provider(
             "max_tokens": max_tokens,
             "temperature": temperature,
 =======
+=======
+>>>>>>> 9a44f3f (Ethics: [bias fixes])
     enable_streaming: bool = False
 ) -> str:
     try:
@@ -369,7 +464,10 @@ def handle_anthropic_provider(
              "messages": messages,
              "max_tokens": max_tokens,
              "temperature": temperature,
+<<<<<<< HEAD
 >>>>>>> origin/analytics-monitoring-17353357073288903889
+=======
+>>>>>>> 9a44f3f (Ethics: [bias fixes])
         }
         if system_instruction:
              kwargs["system"] = system_instruction
@@ -382,6 +480,7 @@ def handle_anthropic_provider(
                 return client.messages.create(stream=False, **kwargs)
 
 <<<<<<< HEAD
+<<<<<<< HEAD
         response = _create_message()
 
 
@@ -393,6 +492,8 @@ def handle_anthropic_provider(
                     if event.type == "content_block_delta":
 =======
         start_time = time.time()
+=======
+>>>>>>> 9a44f3f (Ethics: [bias fixes])
         response = _create_message()
 
         if enable_streaming:
@@ -400,25 +501,35 @@ def handle_anthropic_provider(
             def _stream_gen():
                 for event in response:
                     if event.type == 'content_block_delta':
+<<<<<<< HEAD
 >>>>>>> origin/analytics-monitoring-17353357073288903889
+=======
+>>>>>>> 9a44f3f (Ethics: [bias fixes])
                         text = event.delta.text
                         collected_text.append(text)
                         yield text
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> origin/analytics-monitoring-17353357073288903889
+=======
+>>>>>>> 9a44f3f (Ethics: [bias fixes])
             try:
                 st.write_stream(_stream_gen())
             except Exception:
                 pass
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 9a44f3f (Ethics: [bias fixes])
             return "".join(collected_text)
         else:
             return response.content[0].text
 
     except Exception as e:
+<<<<<<< HEAD
         logger.error(f"Anthropic provider error: {e}")
         return f"Error connecting to Anthropic Claude: {str(e)}"
 
@@ -436,6 +547,10 @@ def handle_anthropic_provider(
          logger.error(f"Anthropic provider error: {e}")
          return f"Error connecting to Anthropic Claude: {str(e)}"
 >>>>>>> origin/analytics-monitoring-17353357073288903889
+=======
+         logger.error(f"Anthropic provider error: {e}")
+         return f"Error connecting to Anthropic Claude: {str(e)}"
+>>>>>>> 9a44f3f (Ethics: [bias fixes])
 
 def generate_standard_response(
     provider: str,
@@ -446,16 +561,21 @@ def generate_standard_response(
     system_instruction: str = "",
     config: Dict[str, Any] = {},
 <<<<<<< HEAD
+<<<<<<< HEAD
     images: List = None,
 =======
     images: List = None
 >>>>>>> origin/analytics-monitoring-17353357073288903889
+=======
+    images: List = None
+>>>>>>> 9a44f3f (Ethics: [bias fixes])
 ) -> str:
     """Unified dispatcher for standard mode chat generation"""
     api_key = api_keys.get(provider)
     if not api_key:
         return f"❌ Missing API Key for {provider}. Please check sidebar settings."
 
+<<<<<<< HEAD
     try:
 <<<<<<< HEAD
         temp = config.get("temperature", 0.7)
@@ -463,26 +583,49 @@ def generate_standard_response(
         top_p = config.get("top_p", 0.95)
         stream = config.get("enable_streaming", False)
 =======
+=======
+    guardian = EthicsGuardian()
+
+    # 1. Check prompt for ethics
+    is_safe_prompt, prompt_issue = guardian.check_safety(prompt)
+    if not is_safe_prompt:
+        system_instruction = guardian.augment_system_instruction(system_instruction, prompt_issue)
+        logger.info(f"Ethics Guardian flagged prompt: {prompt_issue}")
+
+    try:
+>>>>>>> 9a44f3f (Ethics: [bias fixes])
         temp = config.get('temperature', 0.7)
         max_tok = config.get('max_tokens', 2048)
         top_p = config.get('top_p', 0.95)
         stream = config.get('enable_streaming', False)
+<<<<<<< HEAD
 >>>>>>> origin/analytics-monitoring-17353357073288903889
 
         if provider == "google":
             return handle_google_provider(
+=======
+
+        response_text = ""
+
+        if provider == "google":
+            response_text = handle_google_provider(
+>>>>>>> 9a44f3f (Ethics: [bias fixes])
                 api_key, model_name, prompt, system_instruction,
                 temp, max_tok, top_p, images, enable_streaming=stream
             )
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> origin/analytics-monitoring-17353357073288903889
+=======
+>>>>>>> 9a44f3f (Ethics: [bias fixes])
         elif provider in ["openai", "together", "xai", "deepseek"]:
             base_urls = {
                 "together": "https://api.together.xyz/v1",
                 "xai": "https://api.x.ai/v1",
+<<<<<<< HEAD
 <<<<<<< HEAD
                 "deepseek": "https://api.deepseek.com",
 =======
@@ -525,6 +668,32 @@ def prepare_brain_configuration(
 
 =======
         return "Provider not supported."
+=======
+                "deepseek": "https://api.deepseek.com"
+            }
+            client = get_openai_client(api_key, base_urls.get(provider))
+            msgs = create_openai_messages(build_conversation_history(chat_history), prompt, system_instruction)
+            response_text = handle_openai_compatible_provider(client, model_name, msgs, temp, max_tok, top_p, stream)
+
+        elif provider == "anthropic":
+            # Anthropic expects just user/assistant messages
+            msgs = [{"role": "user", "content": prompt}] # Simplified for this call; ideally use full history if supported
+            response_text = handle_anthropic_provider(
+                api_key, model_name, msgs, system_instruction,
+                temp, max_tok, enable_streaming=stream
+            )
+        else:
+            return "Provider not supported."
+
+        # 2. Check response for ethics
+        is_safe_resp, resp_issue = guardian.check_safety(response_text)
+        if not is_safe_resp:
+            disclaimer = guardian.get_disclaimer(resp_issue)
+            response_text += disclaimer
+            logger.info(f"Ethics Guardian flagged response: {resp_issue}")
+
+        return response_text
+>>>>>>> 9a44f3f (Ethics: [bias fixes])
 
     except Exception as e:
         return f"Generation Error: {str(e)}"
@@ -533,7 +702,10 @@ def prepare_brain_configuration(api_keys: Dict[str, str], requested_models: List
     """Helper to build the list of models for Brain Mode based on available keys"""
     models_to_query = []
 
+<<<<<<< HEAD
 >>>>>>> origin/analytics-monitoring-17353357073288903889
+=======
+>>>>>>> 9a44f3f (Ethics: [bias fixes])
     # Default strategy: Use available keys (simplified)
     # In a real app, 'requested_models' would come from user config
 
@@ -549,9 +721,12 @@ def prepare_brain_configuration(api_keys: Dict[str, str], requested_models: List
     return models_to_query
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> origin/analytics-monitoring-17353357073288903889
+=======
+>>>>>>> 9a44f3f (Ethics: [bias fixes])
 def handle_openai_compatible_provider(
     client: Any,
     model_name: str,
@@ -560,10 +735,14 @@ def handle_openai_compatible_provider(
     max_tokens: int,
     top_p: float,
 <<<<<<< HEAD
+<<<<<<< HEAD
     enable_streaming: bool,
 =======
     enable_streaming: bool
 >>>>>>> origin/analytics-monitoring-17353357073288903889
+=======
+    enable_streaming: bool
+>>>>>>> 9a44f3f (Ethics: [bias fixes])
 ) -> str:
     @retry_with_backoff(retries=2)
     def _create_completion(stream_mode):
@@ -574,6 +753,7 @@ def handle_openai_compatible_provider(
             max_tokens=max_tokens,
             top_p=top_p,
 <<<<<<< HEAD
+<<<<<<< HEAD
             stream=stream_mode,
         )
 
@@ -583,10 +763,16 @@ def handle_openai_compatible_provider(
 
     start_time = time.time()
 >>>>>>> origin/analytics-monitoring-17353357073288903889
+=======
+            stream=stream_mode
+        )
+
+>>>>>>> 9a44f3f (Ethics: [bias fixes])
     if enable_streaming:
         try:
             stream = _create_completion(True)
         except Exception as e:
+<<<<<<< HEAD
 <<<<<<< HEAD
             return f"Error: {str(e)}"
 
@@ -599,21 +785,30 @@ def handle_openai_compatible_provider(
 
         collected_chunks = []
 >>>>>>> origin/analytics-monitoring-17353357073288903889
+=======
+            return f"Error: {str(e)}"
+
+        collected_chunks = []
+>>>>>>> 9a44f3f (Ethics: [bias fixes])
         def _iter_chunks():
             for chunk in stream:
                 piece = chunk.choices[0].delta.content or ""
                 collected_chunks.append(piece)
                 yield piece
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> origin/analytics-monitoring-17353357073288903889
+=======
+>>>>>>> 9a44f3f (Ethics: [bias fixes])
         # Stream to Streamlit (best-effort)
         try:
             st.write_stream(_iter_chunks())
         except Exception:
             pass
         response_text = "".join(collected_chunks)
+<<<<<<< HEAD
 <<<<<<< HEAD
         return (
             response_text
@@ -624,10 +819,14 @@ def handle_openai_compatible_provider(
         log_api_call("openai_compatible", model_name, time.time() - start_time, True)
         return response_text if response_text else "I apologize, but I couldn't generate a response."
 >>>>>>> origin/analytics-monitoring-17353357073288903889
+=======
+        return response_text if response_text else "I apologize, but I couldn't generate a response."
+>>>>>>> 9a44f3f (Ethics: [bias fixes])
     else:
         try:
             response = _create_completion(False)
         except Exception as e:
+<<<<<<< HEAD
 <<<<<<< HEAD
             return f"Error: {str(e)}"
 
@@ -642,6 +841,11 @@ def handle_openai_compatible_provider(
 
         response_text = getattr(response.choices[0].message, 'content', None) or response.choices[0].message['content']
 >>>>>>> origin/analytics-monitoring-17353357073288903889
+=======
+            return f"Error: {str(e)}"
+
+        response_text = getattr(response.choices[0].message, 'content', None) or response.choices[0].message['content']
+>>>>>>> 9a44f3f (Ethics: [bias fixes])
         if not response_text:
             response_text = "I apologize, but I couldn't generate a response."
         try:
@@ -649,13 +853,17 @@ def handle_openai_compatible_provider(
         except Exception:
             pass
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
         log_api_call("openai_compatible", model_name, time.time() - start_time, True)
 >>>>>>> origin/analytics-monitoring-17353357073288903889
+=======
+>>>>>>> 9a44f3f (Ethics: [bias fixes])
         return response_text
 
 
 # --- Internet search integration ---
+<<<<<<< HEAD
 <<<<<<< HEAD
 def perform_internet_search(
     query: str,
@@ -668,15 +876,21 @@ def perform_internet_search(
 =======
 def perform_internet_search(query: str, enable_search: bool = True, max_results: int = 5, search_type: str = "Web", time_range: str = "Anytime", domain: str = None) -> tuple[List[Dict], str]:
 >>>>>>> origin/analytics-monitoring-17353357073288903889
+=======
+def perform_internet_search(query: str, enable_search: bool = True, max_results: int = 5, search_type: str = "Web", time_range: str = "Anytime", domain: str = None) -> tuple[List[Dict], str]:
+>>>>>>> 9a44f3f (Ethics: [bias fixes])
     if not enable_search:
         return [], ""
     try:
         search_engine = get_internet_search_engine()
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> origin/analytics-monitoring-17353357073288903889
+=======
+>>>>>>> 9a44f3f (Ethics: [bias fixes])
         if search_type == "News":
              # News search generally supports time range implicitly by recency,
              # but standard DDG news api might handle max_results.
@@ -690,9 +904,12 @@ def perform_internet_search(query: str, enable_search: bool = True, max_results:
         if results:
             from ui.internet_search import create_search_context
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> origin/analytics-monitoring-17353357073288903889
+=======
+>>>>>>> 9a44f3f (Ethics: [bias fixes])
             context = create_search_context(results, query)
             logger.info(f"Search completed with {len(results)} results")
             return results, context
@@ -707,9 +924,12 @@ def augment_prompt_with_search(prompt: str, search_results: List[Dict]) -> str:
         return prompt
     from ui.internet_search import create_search_context
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> origin/analytics-monitoring-17353357073288903889
+=======
+>>>>>>> 9a44f3f (Ethics: [bias fixes])
     context = create_search_context(search_results, prompt)
     augmented = f"""{prompt}
 
@@ -721,6 +941,7 @@ Please use the above search results to provide a current and accurate answer."""
 
 
 # --- Multimodal helpers ---
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
 # Performance Optimization: Cached Implementations
@@ -824,13 +1045,21 @@ def process_images_for_context(images: List) -> List[Dict]:
                 info = getattr(img, "info", {}) or {}
                 caption = info.get("description") or info.get("caption")
 =======
+=======
+def process_images_for_context(images: List) -> List[Dict]:
+    results = []
+    try:
+>>>>>>> 9a44f3f (Ethics: [bias fixes])
         from PIL import Image
         for i, img in enumerate(images, 1):
             caption = None
             try:
                 info = getattr(img, 'info', {}) or {}
                 caption = info.get('description') or info.get('caption')
+<<<<<<< HEAD
 >>>>>>> origin/analytics-monitoring-17353357073288903889
+=======
+>>>>>>> 9a44f3f (Ethics: [bias fixes])
             except Exception:
                 caption = None
             if not caption:
@@ -848,9 +1077,12 @@ def transcribe_audio_file(file_like) -> str:
     try:
         import speech_recognition as sr
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> origin/analytics-monitoring-17353357073288903889
+=======
+>>>>>>> 9a44f3f (Ethics: [bias fixes])
         recognizer = sr.Recognizer()
         with sr.AudioFile(file_like) as source:
             audio = recognizer.record(source)
@@ -869,6 +1101,7 @@ def extract_video_frame_thumbnails(file_like, max_frames: int = 3) -> List[str]:
     thumbnails: List[str] = []
     try:
 <<<<<<< HEAD
+<<<<<<< HEAD
         import base64
         import importlib
         import tempfile
@@ -879,6 +1112,8 @@ def extract_video_frame_thumbnails(file_like, max_frames: int = 3) -> List[str]:
 
         with tempfile.NamedTemporaryFile(suffix=".mp4", delete=True) as tmp:
 =======
+=======
+>>>>>>> 9a44f3f (Ethics: [bias fixes])
         import importlib
         moviepy = importlib.import_module("moviepy.editor")
         VideoFileClip = getattr(moviepy, "VideoFileClip")
@@ -888,7 +1123,10 @@ def extract_video_frame_thumbnails(file_like, max_frames: int = 3) -> List[str]:
         from PIL import Image
 
         with tempfile.NamedTemporaryFile(suffix='.mp4', delete=True) as tmp:
+<<<<<<< HEAD
 >>>>>>> origin/analytics-monitoring-17353357073288903889
+=======
+>>>>>>> 9a44f3f (Ethics: [bias fixes])
             tmp.write(file_like.read())
             tmp.flush()
             clip = VideoFileClip(tmp.name)
@@ -900,12 +1138,17 @@ def extract_video_frame_thumbnails(file_like, max_frames: int = 3) -> List[str]:
                 buf = BytesIO()
                 img.thumbnail((320, 320))
 <<<<<<< HEAD
+<<<<<<< HEAD
                 img.save(buf, format="PNG")
                 b64 = base64.b64encode(buf.getvalue()).decode("utf-8")
 =======
                 img.save(buf, format='PNG')
                 b64 = base64.b64encode(buf.getvalue()).decode('utf-8')
 >>>>>>> origin/analytics-monitoring-17353357073288903889
+=======
+                img.save(buf, format='PNG')
+                b64 = base64.b64encode(buf.getvalue()).decode('utf-8')
+>>>>>>> 9a44f3f (Ethics: [bias fixes])
                 thumbnails.append(f"data:image/png;base64,{b64}")
             try:
                 clip.reader.close()
@@ -918,26 +1161,37 @@ def extract_video_frame_thumbnails(file_like, max_frames: int = 3) -> List[str]:
 
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 >>>>>>> origin/analytics-monitoring-17353357073288903889
+=======
+
+>>>>>>> 9a44f3f (Ethics: [bias fixes])
 # Consolidated BLIP Logic is now at the bottom of the file
 # Removed duplicate definition to fix linter error
 
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 >>>>>>> origin/analytics-monitoring-17353357073288903889
+=======
+
+>>>>>>> 9a44f3f (Ethics: [bias fixes])
 def generate_blip_caption(image) -> Optional[str]:
     try:
         processor, model, device = get_blip_model()
         inputs = processor(images=image, return_tensors="pt").to(device)
         import torch
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> origin/analytics-monitoring-17353357073288903889
+=======
+>>>>>>> 9a44f3f (Ethics: [bias fixes])
         with torch.no_grad():
             output_ids = model.generate(**inputs, max_new_tokens=50)
         caption = processor.decode(output_ids[0], skip_special_tokens=True)
@@ -947,6 +1201,7 @@ def generate_blip_caption(image) -> Optional[str]:
         return None
 
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 def call_hosted_caption_api(
     image, api_url: str, api_key: Optional[str] = None
@@ -968,6 +1223,8 @@ def call_hosted_caption_api(
         data = resp.json()
         return data.get("caption") or data.get("text")
 =======
+=======
+>>>>>>> 9a44f3f (Ethics: [bias fixes])
 def call_hosted_caption_api(image, api_url: str, api_key: Optional[str] = None) -> Optional[str]:
     try:
         import requests
@@ -983,12 +1240,16 @@ def call_hosted_caption_api(image, api_url: str, api_key: Optional[str] = None) 
         resp.raise_for_status()
         data = resp.json()
         return data.get('caption') or data.get('text')
+<<<<<<< HEAD
 >>>>>>> origin/analytics-monitoring-17353357073288903889
+=======
+>>>>>>> 9a44f3f (Ethics: [bias fixes])
     except Exception as e:
         logger.info(f"Hosted caption API call failed: {e}")
         return None
 
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 def generate_image_captions(
     images: List,
@@ -999,6 +1260,9 @@ def generate_image_captions(
 =======
 def generate_image_captions(images: List, use_blip: bool = False, hosted_api_url: Optional[str] = None, hosted_api_key: Optional[str] = None) -> List[Dict]:
 >>>>>>> origin/analytics-monitoring-17353357073288903889
+=======
+def generate_image_captions(images: List, use_blip: bool = False, hosted_api_url: Optional[str] = None, hosted_api_key: Optional[str] = None) -> List[Dict]:
+>>>>>>> 9a44f3f (Ethics: [bias fixes])
     if not images:
         return []
     results = []
@@ -1017,10 +1281,14 @@ def generate_image_captions(images: List, use_blip: bool = False, hosted_api_url
         if not caption:
             fallback = process_images_for_context([img])[0]
 <<<<<<< HEAD
+<<<<<<< HEAD
             caption = fallback.get("caption")
 =======
             caption = fallback.get('caption')
 >>>>>>> origin/analytics-monitoring-17353357073288903889
+=======
+            caption = fallback.get('caption')
+>>>>>>> 9a44f3f (Ethics: [bias fixes])
         results.append({"name": f"image_{i}", "caption": caption})
     return results
 
@@ -1037,17 +1305,24 @@ def preload_blip_model(timeout: int = 120) -> bool:
 @st.cache_resource(show_spinner=False)
 def _load_blip_resources():
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     from transformers import BlipProcessor, BlipForConditionalGeneration
 >>>>>>> origin/analytics-monitoring-17353357073288903889
+=======
+    from transformers import BlipProcessor, BlipForConditionalGeneration
+>>>>>>> 9a44f3f (Ethics: [bias fixes])
     import torch
 
     model_id = "Salesforce/blip-image-captioning-base"
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> origin/analytics-monitoring-17353357073288903889
+=======
+>>>>>>> 9a44f3f (Ethics: [bias fixes])
     # helper to load with retry strategy
     def load_with_fallback(cls, model_id):
         # 1. Try local cache first
@@ -1061,13 +1336,17 @@ def _load_blip_resources():
     model = load_with_fallback(BlipForConditionalGeneration, model_id)
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> origin/analytics-monitoring-17353357073288903889
+=======
+>>>>>>> 9a44f3f (Ethics: [bias fixes])
     device = "cuda" if torch.cuda.is_available() else "cpu"
     model.to(device)
     return processor, model, device
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 
 def get_blip_model():
@@ -1078,11 +1357,16 @@ def preload_blip_model_with_progress(
     progress_callback: Optional[Callable[[int, str], None]] = None,
 ) -> bool:
 =======
+=======
+>>>>>>> 9a44f3f (Ethics: [bias fixes])
 def get_blip_model():
     return _load_blip_resources()
 
 def preload_blip_model_with_progress(progress_callback: Optional[Callable[[int, str], None]] = None) -> bool:
+<<<<<<< HEAD
 >>>>>>> origin/analytics-monitoring-17353357073288903889
+=======
+>>>>>>> 9a44f3f (Ethics: [bias fixes])
     """
     Simulated progress loader that actually just triggers the cached resource load.
     Since st.cache_resource handles the singleton, we just call it.
@@ -1092,6 +1376,7 @@ def preload_blip_model_with_progress(progress_callback: Optional[Callable[[int, 
             progress_callback(10, "Checking local cache...")
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 
         # We'll use a thread/process safe check by just calling the cached function
         # Streamlit's cache will handle the heavy lifting.
@@ -1102,6 +1387,11 @@ def preload_blip_model_with_progress(progress_callback: Optional[Callable[[int, 
         # Streamlit's cache will handle the heavy lifting.
 
 >>>>>>> origin/analytics-monitoring-17353357073288903889
+=======
+        # We'll use a thread/process safe check by just calling the cached function
+        # Streamlit's cache will handle the heavy lifting.
+
+>>>>>>> 9a44f3f (Ethics: [bias fixes])
         if progress_callback:
              progress_callback(30, "Loading BLIP model items...")
 
@@ -1109,15 +1399,19 @@ def preload_blip_model_with_progress(progress_callback: Optional[Callable[[int, 
         _load_blip_resources()
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> origin/analytics-monitoring-17353357073288903889
+=======
+>>>>>>> 9a44f3f (Ethics: [bias fixes])
         if progress_callback:
             progress_callback(100, "BLIP model ready")
         return True
     except Exception as e:
         logger.error(f"BLIP load failed: {e}")
         if progress_callback:
+<<<<<<< HEAD
 <<<<<<< HEAD
             progress_callback(0, f"Failed: {str(e)}")
         return False
@@ -1745,3 +2039,7 @@ def preload_blip_model_with_progress(progress_callback: Optional[Callable[[int, 
         return False
 
 >>>>>>> 3e83144 (AI Review: Fix ui/chat_utils.py syntax and asyncio crash in ui/chat.py)
+=======
+             progress_callback(0, f"Failed: {str(e)}")
+        return False
+>>>>>>> 9a44f3f (Ethics: [bias fixes])
