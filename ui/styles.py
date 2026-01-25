@@ -350,5 +350,22 @@ def load_css():
         opacity: 0.5;
     }
     ::-webkit-scrollbar-thumb:hover { background: var(--text-primary); }
+
+    /* --- Mobile Optimizations --- */
+    @media (max-width: 768px) {
+        .chat-header-container {
+            flex-direction: column;
+            align-items: flex-start !important;
+            gap: 1rem;
+        }
+        .header-title {
+            font-size: 1.5rem !important;
+        }
+        .status-container {
+             justify-content: flex-start !important;
+             text-align: left !important;
+             margin-top: 0.5rem;
+        }
+    }
     </style>
     """

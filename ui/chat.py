@@ -32,10 +32,10 @@ def show_chat_page():
     c_head1, c_head2 = st.columns([3, 1])
     with c_head1:
         st.markdown("""
-        <div style="display: flex; align-items: center; gap: 1rem;">
-            <div style="font-size: 2rem;">🤖</div>
+        <div class="chat-header-container" style="display: flex; align-items: center; gap: 1rem;">
+            <div style="font-size: 2rem;" role="img" aria-label="Robot Icon">🤖</div>
             <div>
-                <h2 style="margin: 0; font-weight: 700; color: white;">Multi-Provider Chat</h2>
+                <h2 class="header-title" style="margin: 0; font-weight: 700; color: white;">Multi-Provider Chat</h2>
                 <div style="display: flex; gap: 0.8rem; flex-wrap: wrap; margin-top: 0.25rem;">
                     <span class="subtle-text">GPT-4</span>
                     <span class="subtle-text">•</span>
@@ -54,14 +54,14 @@ def show_chat_page():
         inet_on = st.session_state.get('enable_internet_search', False)
         
         status_html = f"""
-        <div style="text-align: right;">
-            <div class="status-badge {'active' if brain_on else ''}" style="display:inline-flex; width:auto; font-size:0.8rem; padding: 2px 8px;">
+        <div class="status-container" style="text-align: right;">
+            <div class="status-badge {'active' if brain_on else ''}" title="{'Brain Mode Active' if brain_on else 'Standard Mode'}" style="display:inline-flex; width:auto; font-size:0.8rem; padding: 2px 8px;">
                 {'🧠 Brain' if brain_on else '🤖 Std'}
             </div>
-             <div class="status-badge {'active' if inet_on else ''}" style="display:inline-flex; width:auto; font-size:0.8rem; padding: 2px 8px; margin-left:4px;">
+             <div class="status-badge {'active' if inet_on else ''}" title="{'Internet Search Enabled' if inet_on else 'Internet Search Disabled'}" style="display:inline-flex; width:auto; font-size:0.8rem; padding: 2px 8px; margin-left:4px;">
                 {'🌐 Web' if inet_on else '📱 Off'}
             </div>
-            <div style="margin-top: 4px; font-weight: 600; font-size: 0.9rem; color: var(--accent-primary);">
+            <div style="margin-top: 4px; font-weight: 600; font-size: 0.9rem; color: var(--accent-primary);" title="Selected Provider: {provider}">
                  🔌 {provider}
             </div>
         </div>
@@ -379,7 +379,7 @@ def show_chat_page():
             )
         except Exception as e:
             # Don't block chat if DB fails
-            print(f"DB Save Error: {e}")
+            st.toast(f"Database error: {e}", icon="⚠️")
 
         with st.chat_message("user"):
             if uploaded_images:
@@ -504,16 +504,17 @@ def show_chat_page():
                 
                 sys_prompt = st.session_state.get('system_instruction', "")
                 
-                response_text = generate_standard_response(
-                    provider=provider,
-                    model_name=model_name,
-                    api_keys=api_key_map,
-                    prompt=final_prompt,
-                    chat_history=st.session_state.messages,
-                    system_instruction=sys_prompt,
-                    config=config,
-                    images=uploaded_images
-                )
+                with st.spinner("Generating response..."):
+                    response_text = generate_standard_response(
+                        provider=provider,
+                        model_name=model_name,
+                        api_keys=api_key_map,
+                        prompt=final_prompt,
+                        chat_history=st.session_state.messages,
+                        system_instruction=sys_prompt,
+                        config=config,
+                        images=uploaded_images
+                    )
             
             end_time = time.time()
             st.session_state.messages.append({
@@ -532,7 +533,7 @@ def show_chat_page():
                         "provider": provider, "model": model_name, "response_time": end_time - start_time
                      })
             except Exception as e:
-                 print(f"DB Save Assistant Error: {e}")
+                 st.toast(f"Database error: {e}", icon="⚠️")
             
             if st.session_state.get('voice_mode') and st.session_state.get('auto_speak'):
                 pass
