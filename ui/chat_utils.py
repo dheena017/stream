@@ -7202,6 +7202,7 @@ def preload_blip_model_with_progress(progress_callback: Optional[Callable[[int, 
              progress_callback(0, f"Failed: {str(e)}")
         return False
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> origin/code-review-fix-dead-code-security-warning-7379667601375496538
 =======
 
@@ -7226,3 +7227,5 @@ def preload_blip_model_with_progress(progress_callback: Optional[Callable[[int, 
              progress_callback(0, f"Failed: {str(e)}")
         return False
 >>>>>>> origin/security-hardening-9145044555925710481
+=======
+>>>>>>> origin/daily-improvements-logging-fixes-11957186496511969448
