@@ -1,26 +1,26 @@
-streamlit
-google-genai
-google-auth
-google-auth-oauthlib
-google-auth-httplib2
-openai
-anthropic
-together
-Pillow
-PyPDF2
-SpeechRecognition
-gTTS
-moviepy
-duckduckgo-search
-beautifulsoup4
-requests
-aiohttp
-google-generativeai
+streamlit==1.53.1
+google-genai==1.60.0
+google-auth==2.47.0
+google-auth-oauthlib==1.2.4
+google-auth-httplib2==0.3.0
+openai==2.15.0
+anthropic==0.76.0
+together==1.5.35
+Pillow==11.3.0
+PyPDF2==3.0.1
+SpeechRecognition==3.14.5
+gTTS==2.5.4
+moviepy==2.2.1
+duckduckgo-search==8.1.1
+beautifulsoup4==4.14.3
+requests==2.32.5
+aiohttp==3.13.3
+google-generativeai==0.8.6
 
 # Optional (for advanced multimodal/image captioning)
-transformers
-torch
-torchvision
+transformers==4.57.6
+torch==2.10.0
+# torchvision
 
 # Testing
-pytest
+pytest==9.0.2
