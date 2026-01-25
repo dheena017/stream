@@ -17,8 +17,6 @@ from ui.analytics import log_api_call, log_error
 
 logger = logging.getLogger(__name__)
 
-# BLIP cache holds (processor, model, device)
-BLIP_CACHE: Optional[Tuple[Any, Any, Any]] = None
 
 
 # --- Cached clients / resources ---
@@ -723,6 +721,99 @@ Please use the above search results to provide a current and accurate answer."""
 
 
 # --- Multimodal helpers ---
+<<<<<<< HEAD
+=======
+# Performance Optimization: Cached Implementations
+@st.cache_data(show_spinner=False)
+def _cached_transcribe_audio_bytes(audio_bytes: bytes) -> str:
+    try:
+        import speech_recognition as sr
+        from io import BytesIO
+        recognizer = sr.Recognizer()
+        with sr.AudioFile(BytesIO(audio_bytes)) as source:
+            audio = recognizer.record(source)
+        try:
+            return recognizer.recognize_google(audio)
+        except Exception as e:
+            logger.warning(f"Speech recognition failed: {e}")
+            return "[Transcription failed or not available]"
+    except Exception:
+        logger.info("speech_recognition not installed or failed")
+        return "[Transcription unavailable]"
+
+@st.cache_data(show_spinner=False)
+def _cached_extract_video_frame_thumbnails_bytes(video_bytes: bytes, max_frames: int = 3) -> List[str]:
+    thumbnails: List[str] = []
+    try:
+        import importlib
+        moviepy = importlib.import_module("moviepy.editor")
+        VideoFileClip = getattr(moviepy, "VideoFileClip")
+        import tempfile
+        from io import BytesIO
+        import base64
+        from PIL import Image
+
+        with tempfile.NamedTemporaryFile(suffix='.mp4', delete=False) as tmp:
+            tmp.write(video_bytes)
+            tmp_name = tmp.name
+
+        try:
+            clip = VideoFileClip(tmp_name)
+            duration = clip.duration or 0
+            times = [(i + 1) * duration / (max_frames + 1) for i in range(max_frames)]
+            for t in times:
+                frame = clip.get_frame(t)
+                img = Image.fromarray(frame)
+                buf = BytesIO()
+                img.thumbnail((320, 320))
+                img.save(buf, format='PNG')
+                b64 = base64.b64encode(buf.getvalue()).decode('utf-8')
+                thumbnails.append(f"data:image/png;base64,{b64}")
+            try:
+                clip.reader.close()
+            except Exception:
+                pass
+            clip.audio = None
+        finally:
+            import os
+            try:
+                os.unlink(tmp_name)
+            except Exception:
+                pass
+    except Exception as e:
+        logger.info(f"moviepy error: {e}")
+    return thumbnails
+
+@st.cache_data(show_spinner=False)
+def _cached_generate_blip_caption_bytes(image_bytes: bytes) -> Optional[str]:
+    try:
+        from io import BytesIO
+        from PIL import Image
+        image = Image.open(BytesIO(image_bytes))
+
+        processor, model, device = get_blip_model()
+        inputs = processor(images=image, return_tensors="pt").to(device)
+        import torch
+        with torch.no_grad():
+            output_ids = model.generate(**inputs, max_new_tokens=50)
+        caption = processor.decode(output_ids[0], skip_special_tokens=True)
+        return caption
+    except Exception as e:
+        logger.info(f"BLIP captioning unavailable: {e}")
+        return None
+
+@st.cache_data(ttl=300, show_spinner=False)
+def _cached_search_web(query: str, max_results: int, time_range: str, domain: Optional[str]) -> List[Dict]:
+    engine = get_internet_search_engine()
+    return engine.search(query, max_results=max_results, time_range=time_range, domain=domain)
+
+@st.cache_data(ttl=300, show_spinner=False)
+def _cached_search_news(query: str, max_results: int) -> List[Dict]:
+    engine = get_internet_search_engine()
+    return engine.search_news(query, max_results=max_results)
+
+
+>>>>>>> b00b3c0 (Performance: Fix CI timeout and refine caching)
 def process_images_for_context(images: List) -> List[Dict]:
     results = []
     try:
