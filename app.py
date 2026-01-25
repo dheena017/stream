@@ -10,6 +10,13 @@ import time
 import logging
 from datetime import datetime
 
+# --- LOGGER SETUP ---
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
+
 # Import UI Modules
 import ui.styles
 from ui.auth import show_login_page
@@ -20,19 +27,14 @@ from ui.chat import show_chat_page
 from ui.database import init_db
 
 # Initialize DB on startup
-init_db()
+try:
+    init_db()
+except Exception as e:
+    logger.error(f"Database initialization failed: {e}")
 
 # Import Brain
 from brain_learning import LearningBrain
 from multimodal_voice_integration import MultimodalVoiceIntegrator
-
-# --- LOGGER SETUP ---
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger(__name__)
-
 
 def initialize_page_config():
     """Configure Streamlit page settings and metadata."""
@@ -81,11 +83,11 @@ def initialize_auth_state():
         "username": None,
         "current_page": "dashboard"
     }
-    
+
     for key, value in defaults.items():
         if key not in st.session_state:
             st.session_state[key] = value
-    
+
     logger.info(f"Auth state initialized - User: {st.session_state.username}")
 
 
@@ -96,11 +98,11 @@ def initialize_session_tracking():
         "total_sessions": 1,
         "user_joined_date": datetime.now().strftime('%Y-%m-%d')
     }
-    
+
     for key, value in tracking_defaults.items():
         if key not in st.session_state:
             st.session_state[key] = value
-    
+
     logger.debug("Session tracking initialized")
 
 
@@ -119,7 +121,7 @@ def initialize_brain_state():
         learning_brain, multimodal_voice = initialize_brain_components()
         st.session_state.learning_brain = learning_brain
         st.session_state.multimodal_voice_integrator = multimodal_voice
-    
+
     logger.debug("Brain state initialized")
 
 
@@ -132,11 +134,11 @@ def initialize_chat_state():
         "search_result_count": 5,
         "enable_advanced_captioning": False
     }
-    
+
     for key, value in chat_defaults.items():
         if key not in st.session_state:
             st.session_state[key] = value
-    
+
     logger.debug("Chat state initialized")
 
 
@@ -163,34 +165,49 @@ def handle_page_routing():
         "profile": show_profile_page,
         "chat": show_chat_page
     }
-    
+
     current_page = st.session_state.current_page
     page_handler = page_router.get(current_page, show_chat_page)
-    
+
     logger.info(f"Routing to page: {current_page}")
     page_handler()
 
 
 def main():
     """Main application entry point."""
-    # Setup
-    initialize_page_config()
-    initialize_theme()
-    configure_environment()
-    
-    # Initialize all states
-    initialize_all_states()
-    
-    # Authentication check
-    handle_authentication()
-    
-    # Render sidebar for authenticated users
-    render_sidebar()
-    
-    # Route to appropriate page
-    handle_page_routing()
-    
-    logger.info("Application render completed")
+    try:
+        # Setup
+        initialize_page_config()
+
+        try:
+            initialize_theme()
+        except Exception as e:
+            logger.error(f"Theme initialization failed: {e}")
+
+        configure_environment()
+
+        # Initialize all states
+        try:
+            initialize_all_states()
+        except Exception as e:
+             logger.error(f"State initialization failed: {e}")
+             st.error("Application state initialization failed. Please refresh.")
+             st.stop()
+
+        # Authentication check
+        handle_authentication()
+
+        # Render sidebar for authenticated users
+        render_sidebar()
+
+        # Route to appropriate page
+        handle_page_routing()
+
+        logger.info("Application render completed")
+
+    except Exception as e:
+        logger.critical(f"Critical application error: {e}")
+        st.error(f"An unexpected error occurred: {e}")
 
 
 if __name__ == "__main__":
