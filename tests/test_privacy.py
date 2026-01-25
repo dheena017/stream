@@ -1,6 +1,4 @@
 import pytest
-<<<<<<< HEAD
-<<<<<<< HEAD
 import os
 import json
 import sqlite3
