@@ -4,6 +4,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import json
 import os
 from datetime import datetime
@@ -583,6 +584,8 @@ def render_sidebar():
 >>>>>>> origin/ui-ux-improvements-11896252316584290961
 =======
 >>>>>>> origin/feedback-integration-7692380356929291134
+=======
+>>>>>>> origin/jules-3174636693196525980-404a41f2
 
 import streamlit as st
 import os
@@ -596,6 +599,7 @@ from ui.auth import load_user_credentials, save_user_credentials, hash_password
 from ui.config import MODEL_OPTIONS, MODEL_PRICING, MODEL_CAPABILITIES, PROVIDER_ICONS, PROVIDER_LABELS
 from brain_learning import LearningBrain
 from multimodal_voice_integration import MultimodalVoiceIntegrator
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -616,6 +620,8 @@ from ui.config import MODEL_DETAILS, MODEL_PRICING, PROVIDER_ICONS
 >>>>>>> origin/ui-ux-improvements-11896252316584290961
 =======
 >>>>>>> origin/feedback-integration-7692380356929291134
+=======
+>>>>>>> origin/jules-3174636693196525980-404a41f2
 
 def render_sidebar():
     """Render the application sidebar and handle settings"""
@@ -646,6 +652,7 @@ def render_sidebar():
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         st.divider()
 
         # 2. User Info (Compact)
@@ -662,10 +669,13 @@ def render_sidebar():
 >>>>>>> origin/ui-ux-improvements-11896252316584290961
 =======
 >>>>>>> origin/feedback-integration-7692380356929291134
+=======
+>>>>>>> origin/jules-3174636693196525980-404a41f2
         st.divider()
 
         # 2. User Info (Compact)
         user_info = st.session_state.get('user_info', {})
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 >>>>>>> origin/feedback-integration-17764393616523020931
@@ -673,6 +683,8 @@ def render_sidebar():
 >>>>>>> origin/ui-ux-improvements-11896252316584290961
 =======
 >>>>>>> origin/feedback-integration-7692380356929291134
+=======
+>>>>>>> origin/jules-3174636693196525980-404a41f2
         username = st.session_state.get('username', 'Guest')
         auth_type = '🔐 Google' if 'google_oauth_token' in st.session_state else '🔐 Login'
 
@@ -696,6 +708,7 @@ def render_sidebar():
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
             from ui.database import get_user_conversations, create_new_conversation, get_conversation_messages
 =======
             from ui.database import get_conversation_messages, get_user_conversations
@@ -709,6 +722,9 @@ def render_sidebar():
 =======
             from ui.database import get_user_conversations, create_new_conversation, get_conversation_messages
 >>>>>>> origin/feedback-integration-7692380356929291134
+=======
+            from ui.database import get_user_conversations, create_new_conversation, get_conversation_messages
+>>>>>>> origin/jules-3174636693196525980-404a41f2
 
             c_hist1, c_hist2 = st.columns([0.2, 0.8])
             with c_hist1:
@@ -716,11 +732,19 @@ def render_sidebar():
             with c_hist2:
                 if st.button("➕ New Chat", use_container_width=True, type="primary"):
                      st.session_state.messages = []
+<<<<<<< HEAD
+=======
+                     st.session_state.chat_history_offset = 0
+>>>>>>> origin/jules-3174636693196525980-404a41f2
                      # Create immediately or wait for first message?
                      # Better to wait for first message to avoid empty entries,
                      # BUT to support "switching", we just clear the ID so a new one is made on first send.
                      if 'conversation_id' in st.session_state:
                         del st.session_state['conversation_id']
+<<<<<<< HEAD
+=======
+                     st.session_state.current_page = "chat"
+>>>>>>> origin/jules-3174636693196525980-404a41f2
                      st.rerun()
 
             conversations = get_user_conversations(username)
@@ -731,7 +755,13 @@ def render_sidebar():
                     type_ = "primary" if st.session_state.get("conversation_id") == c_id else "secondary"
                     if st.button(f"{c_title}", key=f"hist_{c_id}", use_container_width=True, type=type_):
                         st.session_state.conversation_id = c_id
+<<<<<<< HEAD
                         st.session_state.messages = get_conversation_messages(c_id)
+=======
+                        st.session_state.messages = get_conversation_messages(c_id, limit=50)
+                        st.session_state.chat_history_offset = 50
+                        st.session_state.current_page = "chat"
+>>>>>>> origin/jules-3174636693196525980-404a41f2
                         st.rerun()
 
                 if len(conversations) > 5:
@@ -739,7 +769,13 @@ def render_sidebar():
                          for c_id, c_title, c_date in conversations[5:15]:
                             if st.button(f"{c_title}", key=f"hist_old_{c_id}", use_container_width=True):
                                 st.session_state.conversation_id = c_id
+<<<<<<< HEAD
                                 st.session_state.messages = get_conversation_messages(c_id)
+=======
+                                st.session_state.messages = get_conversation_messages(c_id, limit=50)
+                                st.session_state.chat_history_offset = 50
+                                st.session_state.current_page = "chat"
+>>>>>>> origin/jules-3174636693196525980-404a41f2
                                 st.rerun()
 
         except Exception as e:
@@ -750,6 +786,7 @@ def render_sidebar():
         # 3. Model Selection
         st.markdown("### 🤖 Model Selection")
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
         # Provider Filter (Horizontal Radio for cleaner look)
@@ -766,6 +803,10 @@ def render_sidebar():
         # Provider Filter (Horizontal Radio for cleaner look)
         providers = ["All", "Google", "OpenAI", "Anthropic", "Together", "xAI", "DeepSeek"]
 >>>>>>> origin/feedback-integration-7692380356929291134
+=======
+        # Provider Filter (Horizontal Radio for cleaner look)
+        providers = ["All", "Google", "OpenAI", "Anthropic", "Together", "xAI", "DeepSeek"]
+>>>>>>> origin/jules-3174636693196525980-404a41f2
         selected_provider_filter = st.radio(
             "Provider Filter",
             providers,
@@ -779,6 +820,7 @@ def render_sidebar():
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         from ui.config import MODEL_DETAILS
 =======
 >>>>>>> origin/code-quality-refactor-17423438479402428749
@@ -788,6 +830,9 @@ def render_sidebar():
 =======
         from ui.config import MODEL_DETAILS
 >>>>>>> origin/feedback-integration-7692380356929291134
+=======
+        from ui.config import MODEL_DETAILS
+>>>>>>> origin/jules-3174636693196525980-404a41f2
 
         provider_map = {
             "Google": "google",
@@ -795,6 +840,7 @@ def render_sidebar():
             "Anthropic": "anthropic",
             "Together": "together",
             "xAI": "xai",
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -809,6 +855,9 @@ def render_sidebar():
 =======
             "DeepSeek": "deepseek"
 >>>>>>> origin/feedback-integration-7692380356929291134
+=======
+            "DeepSeek": "deepseek"
+>>>>>>> origin/jules-3174636693196525980-404a41f2
         }
 
         filter_key = provider_map.get(selected_provider_filter)
@@ -863,6 +912,7 @@ def render_sidebar():
         pricing = MODEL_PRICING.get(model_id, (0, 0))
 
         with st.container():
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
         with st.container(border=True):
@@ -946,6 +996,8 @@ def render_sidebar():
 >>>>>>> origin/ui-ux-improvements-11896252316584290961
 =======
 >>>>>>> origin/feedback-integration-7692380356929291134
+=======
+>>>>>>> origin/jules-3174636693196525980-404a41f2
             # Description
             st.caption(model_info.get('description', 'No description available.'))
 
@@ -962,6 +1014,7 @@ def render_sidebar():
             with c_info2:
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                  st.markdown(f"**Cost:** `${pricing[0]} / ${pricing[1]}`")
 =======
                     st.markdown(f"**Cost:** `${pricing[0]} / ${pricing[1]}`")
@@ -969,6 +1022,9 @@ def render_sidebar():
 =======
                  st.markdown(f"**Cost:** `${pricing[0]} / ${pricing[1]}`")
 >>>>>>> origin/feedback-integration-7692380356929291134
+=======
+                 st.markdown(f"**Cost:** `${pricing[0]} / ${pricing[1]}`")
+>>>>>>> origin/jules-3174636693196525980-404a41f2
 
             st.caption(f"*Cost per 1M tokens (In/Out)*")
 
@@ -987,6 +1043,7 @@ def render_sidebar():
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
             st.session_state.groq_api_key = os.getenv("GROQ_API_KEY", "")
 =======
 >>>>>>> origin/code-quality-refactor-17423438479402428749
@@ -996,6 +1053,8 @@ def render_sidebar():
 >>>>>>> origin/ui-ux-improvements-11896252316584290961
 =======
 >>>>>>> origin/feedback-integration-7692380356929291134
+=======
+>>>>>>> origin/jules-3174636693196525980-404a41f2
             st.session_state.api_keys_initialized = True
 
         configured_keys = sum([
@@ -1004,6 +1063,7 @@ def render_sidebar():
             bool(st.session_state.anthropic_api_key),
             bool(st.session_state.together_api_key),
             bool(st.session_state.xai_api_key),
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1020,10 +1080,13 @@ def render_sidebar():
 >>>>>>> origin/ui-ux-improvements-11896252316584290961
 =======
 >>>>>>> origin/feedback-integration-7692380356929291134
+=======
+>>>>>>> origin/jules-3174636693196525980-404a41f2
             bool(st.session_state.deepseek_api_key)
         ])
 
         with st.expander(f"🔑 API Keys ({configured_keys}/6)", expanded=False):
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1034,6 +1097,8 @@ def render_sidebar():
 >>>>>>> origin/ui-ux-improvements-11896252316584290961
 =======
 >>>>>>> origin/feedback-integration-7692380356929291134
+=======
+>>>>>>> origin/jules-3174636693196525980-404a41f2
             show_keys = st.checkbox("Show Keys", value=False)
             key_type = "default" if show_keys else "password"
 
@@ -1047,6 +1112,7 @@ def render_sidebar():
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
             st.session_state.groq_api_key = st.text_input("Groq API Key", value=st.session_state.groq_api_key, type=key_type)
 =======
 >>>>>>> origin/code-quality-refactor-17423438479402428749
@@ -1056,6 +1122,8 @@ def render_sidebar():
 >>>>>>> origin/ui-ux-improvements-11896252316584290961
 =======
 >>>>>>> origin/feedback-integration-7692380356929291134
+=======
+>>>>>>> origin/jules-3174636693196525980-404a41f2
 
         st.divider()
 
@@ -1089,6 +1157,7 @@ def render_sidebar():
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                     groq = st.checkbox("Groq", value=False, disabled=not bool(st.session_state.groq_api_key))
 =======
 >>>>>>> api-integrations-groq-3434217061461873316
@@ -1100,10 +1169,13 @@ def render_sidebar():
 >>>>>>> origin/ui-ux-improvements-11896252316584290961
 =======
 >>>>>>> origin/feedback-integration-7692380356929291134
+=======
+>>>>>>> origin/jules-3174636693196525980-404a41f2
                 with c2:
                     anthropic = st.checkbox("Claude", value=False, disabled=not bool(st.session_state.anthropic_api_key))
                     together = st.checkbox("Llama", value=False, disabled=not bool(st.session_state.together_api_key))
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1136,6 +1208,11 @@ def render_sidebar():
                 st.session_state.brain_consult_models = {
                     "google": google, "openai": openai, "anthropic": anthropic, "together": together
 >>>>>>> origin/feedback-integration-7692380356929291134
+=======
+                # Logic to store which models to consult (could be stored in session state)
+                st.session_state.brain_consult_models = {
+                    "google": google, "openai": openai, "anthropic": anthropic, "together": together
+>>>>>>> origin/jules-3174636693196525980-404a41f2
                 }
 
         st.divider()
@@ -1188,6 +1265,7 @@ def render_sidebar():
                 msgs = st.session_state.get('messages', [])
                 text = "\n".join([f"{m['role']}: {m['content']}" for m in msgs])
                 st.download_button("TxT", text, "chat.txt")
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1277,3 +1355,5 @@ def render_sidebar():
 >>>>>>> origin/feature-chat-export-regen-2510491870086228569
 =======
 >>>>>>> origin/scalability-optimizations-5191153255901361581
+=======
+>>>>>>> origin/jules-3174636693196525980-404a41f2

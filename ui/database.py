@@ -3,6 +3,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import json
 import logging
 import sqlite3
@@ -363,6 +364,8 @@ from typing import Dict, List, Tuple
 =======
 =======
 >>>>>>> origin/feedback-integration-7692380356929291134
+=======
+>>>>>>> origin/jules-3174636693196525980-404a41f2
 import sqlite3
 import json
 import logging
@@ -370,13 +373,17 @@ from datetime import datetime
 import uuid
 from typing import List, Dict, Optional, Tuple
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> origin/engagement-features-3224553925721226807
 =======
 >>>>>>> origin/feedback-integration-7692380356929291134
+=======
+>>>>>>> origin/jules-3174636693196525980-404a41f2
 
 DB_FILE = "chat_history.db"
 logger = logging.getLogger(__name__)
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -387,6 +394,8 @@ logger = logging.getLogger(__name__)
 >>>>>>> origin/engagement-features-3224553925721226807
 =======
 >>>>>>> origin/feedback-integration-7692380356929291134
+=======
+>>>>>>> origin/jules-3174636693196525980-404a41f2
 def init_db():
     try:
         conn = sqlite3.connect(DB_FILE)
@@ -400,6 +409,7 @@ def init_db():
         c.execute('''CREATE TABLE IF NOT EXISTS messages
                      (id INTEGER PRIMARY KEY AUTOINCREMENT, conversation_id TEXT,
                       role TEXT, content TEXT, meta_json TEXT, timestamp TIMESTAMP)''')
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -436,11 +446,18 @@ def init_db():
                      (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id TEXT,
                       category TEXT, rating INTEGER, comment TEXT, timestamp TIMESTAMP)''')
 >>>>>>> origin/feedback-integration-7692380356929291134
+=======
+
+        # Performance index for looking up messages by conversation
+        c.execute('CREATE INDEX IF NOT EXISTS idx_messages_conversation_id ON messages (conversation_id)')
+
+>>>>>>> origin/jules-3174636693196525980-404a41f2
         conn.commit()
         conn.close()
     except Exception as e:
         logger.error(f"Database init error: {e}")
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
@@ -506,6 +523,8 @@ def get_leaderboard(limit: int = 5) -> List[Dict]:
 >>>>>>> origin/engagement-features-3224553925721226807
 =======
 >>>>>>> origin/feedback-integration-7692380356929291134
+=======
+>>>>>>> origin/jules-3174636693196525980-404a41f2
 def create_new_conversation(user_id: str, title: str = "New Chat") -> str:
     conversation_id = str(uuid.uuid4())
     save_conversation_metadata(conversation_id, user_id, title)
@@ -529,6 +548,7 @@ def save_message(conversation_id: str, role: str, content: str, meta: Dict = Non
     c = conn.cursor()
     now = datetime.now()
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -559,6 +579,11 @@ def save_message(conversation_id: str, role: str, content: str, meta: Dict = Non
     c.execute("INSERT INTO messages (conversation_id, role, content, meta_json, timestamp) VALUES (?, ?, ?, ?, ?)",
               (conversation_id, role, content, json.dumps(meta), now))
 >>>>>>> origin/feedback-integration-7692380356929291134
+=======
+    # Ensure raw content is saved, meta handles images/files references
+    c.execute("INSERT INTO messages (conversation_id, role, content, meta_json, timestamp) VALUES (?, ?, ?, ?, ?)",
+              (conversation_id, role, content, json.dumps(meta), now))
+>>>>>>> origin/jules-3174636693196525980-404a41f2
 
     # Update conversation timestamp
     c.execute("UPDATE conversations SET updated_at = ? WHERE id = ?", (now, conversation_id))
@@ -574,15 +599,36 @@ def get_user_conversations(user_id: str) -> List[Tuple]:
     conn.close()
     return rows
 
+<<<<<<< HEAD
 def get_conversation_messages(conversation_id: str) -> List[Dict]:
     conn = sqlite3.connect(DB_FILE)
     c = conn.cursor()
     c.execute("SELECT role, content, meta_json, timestamp FROM messages WHERE conversation_id = ? ORDER BY id ASC", (conversation_id,))
     rows = c.fetchall()
+=======
+def get_conversation_messages(conversation_id: str, limit: int = None, offset: int = 0) -> List[Dict]:
+    conn = sqlite3.connect(DB_FILE)
+    c = conn.cursor()
+
+    if limit is not None:
+        # Fetch latest N messages (descending ID) to support pagination
+        # We need to reverse them later to return chronological order
+        query = "SELECT role, content, meta_json, timestamp FROM messages WHERE conversation_id = ? ORDER BY id DESC LIMIT ? OFFSET ?"
+        c.execute(query, (conversation_id, limit, offset))
+        rows = c.fetchall()
+        # Reverse rows to restore chronological order (ASC)
+        rows = rows[::-1]
+    else:
+        # Default behavior: fetch all, chronological
+        c.execute("SELECT role, content, meta_json, timestamp FROM messages WHERE conversation_id = ? ORDER BY id ASC", (conversation_id,))
+        rows = c.fetchall()
+
+>>>>>>> origin/jules-3174636693196525980-404a41f2
     conn.close()
 
     messages = []
     for r in rows:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -606,6 +652,8 @@ def get_conversation_messages(conversation_id: str) -> List[Dict]:
 >>>>>>> origin/engagement-features-3224553925721226807
 =======
 >>>>>>> origin/feedback-integration-7692380356929291134
+=======
+>>>>>>> origin/jules-3174636693196525980-404a41f2
         msg = {
             "role": r[0],
             "content": r[1],
@@ -617,6 +665,7 @@ def get_conversation_messages(conversation_id: str) -> List[Dict]:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> origin/engagement-features-5881933724913241534
 =======
 >>>>>>> origin/code-quality-refactor-17423438479402428749
@@ -624,6 +673,8 @@ def get_conversation_messages(conversation_id: str) -> List[Dict]:
 >>>>>>> origin/engagement-features-3224553925721226807
 =======
 >>>>>>> origin/feedback-integration-7692380356929291134
+=======
+>>>>>>> origin/jules-3174636693196525980-404a41f2
                 msg.update(meta)
             except: pass
         messages.append(msg)
@@ -643,6 +694,7 @@ def update_conversation_title(conversation_id: str, title: str):
     c.execute("UPDATE conversations SET title = ? WHERE id = ?", (title, conversation_id))
     conn.commit()
     conn.close()
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -852,3 +904,5 @@ def save_feedback(user_id: str, category: str, rating: int, comment: str):
     conn.commit()
     conn.close()
 >>>>>>> origin/feedback-integration-7692380356929291134
+=======
+>>>>>>> origin/jules-3174636693196525980-404a41f2

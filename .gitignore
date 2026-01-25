@@ -53,6 +53,7 @@ logs/
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 *.db
 =======
 
@@ -187,3 +188,8 @@ users.json
 backup.key
 backups/
 >>>>>>> origin/backup-automation-4231149804985086977
+=======
+
+# Database
+*.db
+>>>>>>> origin/jules-3174636693196525980-404a41f2
