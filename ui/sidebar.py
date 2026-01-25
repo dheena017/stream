@@ -6,6 +6,13 @@ from typing import Any, Dict
 import pandas as pd
 import streamlit as st
 
+<<<<<<< HEAD
+=======
+from ui.common import logout, get_session_cost
+from ui.auth import load_user_credentials, save_user_credentials, hash_password
+from ui.config import MODEL_OPTIONS, MODEL_PRICING, MODEL_CAPABILITIES, PROVIDER_ICONS, PROVIDER_LABELS
+from ui.chat_utils import serialize_messages
+>>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
 from brain_learning import LearningBrain
 from multimodal_voice_integration import MultimodalVoiceIntegrator
 from ui.chat_utils import serialize_messages
@@ -402,12 +409,45 @@ def render_sidebar():
         st.markdown("### 💬 Chat Controls")
         c1, c2 = st.columns(2)
         with c1:
+<<<<<<< HEAD
             if st.button("🗑️ Clear", width="stretch", help="Clear current conversation"):
                 st.session_state.messages = []
                 st.rerun()
         with c2:
             with st.popover("💾 Export", use_container_width=True):
                 st.caption("Download Conversation")
+=======
+            if st.button("🗑️ Clear", use_container_width=True):
+                st.session_state.messages = []
+                st.rerun()
+        with c2:
+            # Use popover for export options
+            with st.popover("💾 Export", use_container_width=True):
+                msgs = st.session_state.get('messages', [])
+
+                # TXT Export
+                txt_data = "\n\n".join([f"[{m.get('timestamp', '')}] {m['role'].upper()}: {m['content']}" for m in msgs])
+                st.download_button(
+                    "📄 Download as .txt",
+                    data=txt_data,
+                    file_name=f"chat_export_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt",
+                    mime="text/plain",
+                    use_container_width=True
+                )
+
+                # JSON Export
+                try:
+                    json_data = serialize_messages(msgs)
+                    st.download_button(
+                        "﹛﹜ Download as .json",
+                        data=json_data,
+                        file_name=f"chat_export_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json",
+                        mime="application/json",
+                        use_container_width=True
+                    )
+                except Exception as e:
+                    st.error(f"JSON export failed: {e}")
+>>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
 
                 # Prepare data
                 msgs = st.session_state.get('messages', [])
