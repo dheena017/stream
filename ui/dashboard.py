@@ -1,6 +1,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import json
 import platform
 import sys
@@ -589,6 +590,9 @@ Python: {platform.python_version()}
 =======
 
 >>>>>>> origin/engagement-features-5881933724913241534
+=======
+
+>>>>>>> origin/engagement-features-3224553925721226807
 import streamlit as st
 import time
 import json
@@ -597,6 +601,7 @@ import platform
 from datetime import datetime
 import pandas as pd
 from ui.common import logout
+<<<<<<< HEAD
 <<<<<<< HEAD
 from ui.analytics import get_recent_errors, get_analytics_summary
 =======
@@ -613,11 +618,16 @@ from datetime import datetime
 
 import streamlit as st
 >>>>>>> origin/code-quality-refactor-17423438479402428749
+=======
+from ui.engagement import EngagementManager
+from ui.database import get_user_stats, get_leaderboard
+>>>>>>> origin/engagement-features-3224553925721226807
 
 def show_dashboard():
     """Display user dashboard with stats and activity"""
 
     # Modern gradient header for dashboard
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     # Modern gradient header for dashboard
@@ -626,6 +636,8 @@ def show_dashboard():
 =======
     # Modern gradient header for dashboard
 >>>>>>> origin/code-quality-refactor-17423438479402428749
+=======
+>>>>>>> origin/engagement-features-3224553925721226807
     st.markdown("""
     <div class="main-header">
         <div style="font-size: 3rem;">📊</div>
@@ -648,12 +660,15 @@ def show_dashboard():
     # Welcome card
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     # Welcome card
 =======
 >>>>>>> origin/engagement-features-5881933724913241534
 =======
     # Welcome card
 >>>>>>> origin/code-quality-refactor-17423438479402428749
+=======
+>>>>>>> origin/engagement-features-3224553925721226807
     st.markdown(f"""
     <div class="glass-panel" style="margin-bottom: 2rem;">
         <h3 style="margin: 0 0 0.5rem 0; color: var(--text-primary);">Welcome back, {user_name}! 👋</h3>
@@ -661,6 +676,7 @@ def show_dashboard():
     </div>
     """, unsafe_allow_html=True)
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
@@ -732,6 +748,59 @@ def show_dashboard():
 >>>>>>> origin/engagement-features-5881933724913241534
 =======
 >>>>>>> origin/code-quality-refactor-17423438479402428749
+=======
+    # Gamification Section
+    engagement = EngagementManager()
+    user_stats = get_user_stats(st.session_state.username)
+
+    st.markdown("""
+    <div style="margin-bottom: 1rem;">
+        <h3 style="display: flex; align-items: center; gap: 0.5rem;">
+            <span>🏆</span> My Progress
+        </h3>
+    </div>
+    """, unsafe_allow_html=True)
+
+    g_col1, g_col2 = st.columns([2, 1])
+
+    with g_col1:
+        # Level and XP
+        level = user_stats.get('level', 1)
+        xp = user_stats.get('xp', 0)
+        progress = engagement.get_next_level_progress(xp)
+
+        st.markdown(f"**Level {level}** • {xp} XP")
+        st.progress(progress)
+
+        # Badges
+        badges = engagement.get_user_badges(st.session_state.username)
+        if badges:
+            st.markdown("**Earned Badges:**")
+            # Use a container for badges
+            badge_html = "<div style='display: flex; gap: 10px; flex-wrap: wrap;'>"
+            for badge in badges:
+                badge_html += f"<div title='{badge['name']}: {badge['description']}' style='font-size: 2rem; cursor: help;'>{badge['icon']}</div>"
+            badge_html += "</div>"
+            st.markdown(badge_html, unsafe_allow_html=True)
+        else:
+            st.caption("Start chatting to earn badges!")
+
+    with g_col2:
+        # Mini Leaderboard
+        st.markdown("**🏆 Top Users**")
+        leaderboard = get_leaderboard(5)
+        if leaderboard:
+            for i, user in enumerate(leaderboard):
+                is_me = user['user_id'] == st.session_state.username
+                style = "font-weight: bold; color: var(--accent-primary);" if is_me else ""
+                display_name = user['user_id'].split('@')[0] # Simple display name
+                st.markdown(f"<div style='{style}'>{i+1}. {display_name} (Lvl {user['level']})</div>", unsafe_allow_html=True)
+        else:
+            st.caption("No data yet.")
+
+    st.markdown("<div style='height: 1.5rem;'></div>", unsafe_allow_html=True)
+
+>>>>>>> origin/engagement-features-3224553925721226807
     # Activity metrics with modern cards
     col1, col2, col3, col4 = st.columns(4)
 
@@ -775,6 +844,7 @@ def show_dashboard():
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     # Leaderboard Section
     with st.expander("🏆 Leaderboard", expanded=False):
@@ -800,6 +870,8 @@ def show_dashboard():
 >>>>>>> origin/engagement-features-5881933724913241534
 =======
 >>>>>>> origin/code-quality-refactor-17423438479402428749
+=======
+>>>>>>> origin/engagement-features-3224553925721226807
     # Enhanced Quick actions with descriptions
     st.markdown("""
     <h3 style="display: flex; align-items: center; gap: 0.5rem;">
@@ -1129,6 +1201,7 @@ def show_dashboard():
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         # --- Analytics / System Health ---
         st.markdown("---")
         st.markdown("### 🩺 System Health")
@@ -1163,6 +1236,8 @@ def show_dashboard():
 >>>>>>> origin/engagement-features-5881933724913241534
 =======
 >>>>>>> origin/code-quality-refactor-17423438479402428749
+=======
+>>>>>>> origin/engagement-features-3224553925721226807
         st.markdown("---")
         st.markdown("### 📝 Quick Debug Info")
 
@@ -1195,8 +1270,11 @@ Python: {platform.python_version()}
             st.code(session_info)
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> origin/analytics-monitoring-17353357073288903889
 =======
 >>>>>>> origin/engagement-features-5881933724913241534
 =======
 >>>>>>> origin/code-quality-refactor-17423438479402428749
+=======
+>>>>>>> origin/engagement-features-3224553925721226807

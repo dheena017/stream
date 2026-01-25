@@ -1,6 +1,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import json
 import logging
 import sqlite3
@@ -312,14 +313,25 @@ import uuid
 from datetime import datetime
 from typing import Dict, List, Tuple
 >>>>>>> origin/code-quality-refactor-17423438479402428749
+=======
+import sqlite3
+import json
+import logging
+from datetime import datetime
+import uuid
+from typing import List, Dict, Optional, Tuple
+>>>>>>> origin/engagement-features-3224553925721226807
 
 DB_FILE = "chat_history.db"
 logger = logging.getLogger(__name__)
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> origin/engagement-features-5881933724913241534
 =======
 >>>>>>> origin/code-quality-refactor-17423438479402428749
+=======
+>>>>>>> origin/engagement-features-3224553925721226807
 def init_db():
     try:
         conn = sqlite3.connect(DB_FILE)
@@ -333,6 +345,7 @@ def init_db():
         c.execute('''CREATE TABLE IF NOT EXISTS messages
                      (id INTEGER PRIMARY KEY AUTOINCREMENT, conversation_id TEXT,
                       role TEXT, content TEXT, meta_json TEXT, timestamp TIMESTAMP)''')
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
@@ -351,11 +364,82 @@ def init_db():
 >>>>>>> origin/engagement-features-5881933724913241534
 =======
 >>>>>>> origin/code-quality-refactor-17423438479402428749
+=======
+
+        # user_stats: user_id, xp, level, achievements_json, total_messages, last_active
+        c.execute('''CREATE TABLE IF NOT EXISTS user_stats
+                     (user_id TEXT PRIMARY KEY, xp INTEGER DEFAULT 0, level INTEGER DEFAULT 1,
+                      achievements_json TEXT DEFAULT '[]', total_messages INTEGER DEFAULT 0,
+                      last_active TIMESTAMP)''')
+
+>>>>>>> origin/engagement-features-3224553925721226807
         conn.commit()
         conn.close()
     except Exception as e:
         logger.error(f"Database init error: {e}")
 
+<<<<<<< HEAD
+=======
+def get_user_stats(user_id: str) -> Dict:
+    """Get user stats, initialize if not exists"""
+    conn = sqlite3.connect(DB_FILE)
+    c = conn.cursor()
+    c.execute("SELECT xp, level, achievements_json, total_messages, last_active FROM user_stats WHERE user_id = ?", (user_id,))
+    row = c.fetchone()
+
+    if not row:
+        now = datetime.now()
+        c.execute("INSERT INTO user_stats (user_id, xp, level, achievements_json, total_messages, last_active) VALUES (?, 0, 1, '[]', 0, ?)",
+                  (user_id, now))
+        conn.commit()
+        stats = {
+            "xp": 0, "level": 1, "achievements": [],
+            "total_messages": 0, "last_active": now
+        }
+    else:
+        stats = {
+            "xp": row[0],
+            "level": row[1],
+            "achievements": json.loads(row[2]),
+            "total_messages": row[3],
+            "last_active": row[4]
+        }
+
+    conn.close()
+    return stats
+
+def update_user_stats(user_id: str, stats: Dict):
+    """Update user stats"""
+    conn = sqlite3.connect(DB_FILE)
+    c = conn.cursor()
+    now = datetime.now()
+    c.execute("""UPDATE user_stats
+                 SET xp = ?, level = ?, achievements_json = ?, total_messages = ?, last_active = ?
+                 WHERE user_id = ?""",
+              (stats['xp'], stats['level'], json.dumps(stats['achievements']),
+               stats['total_messages'], now, user_id))
+    conn.commit()
+    conn.close()
+
+def get_leaderboard(limit: int = 5) -> List[Dict]:
+    """Get top users by XP"""
+    conn = sqlite3.connect(DB_FILE)
+    c = conn.cursor()
+    c.execute("SELECT user_id, xp, level, total_messages FROM user_stats ORDER BY xp DESC LIMIT ?", (limit,))
+    rows = c.fetchall()
+    conn.close()
+
+    leaderboard = []
+    for r in rows:
+        leaderboard.append({
+            "user_id": r[0],
+            "xp": r[1],
+            "level": r[2],
+            "total_messages": r[3]
+        })
+    return leaderboard
+
+>>>>>>> origin/engagement-features-3224553925721226807
 def create_new_conversation(user_id: str, title: str = "New Chat") -> str:
     conversation_id = str(uuid.uuid4())
     save_conversation_metadata(conversation_id, user_id, title)
@@ -381,6 +465,7 @@ def save_message(conversation_id: str, role: str, content: str, meta: Dict = Non
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     # Encrypt content and meta
     encrypted_content = EncryptionManager.encrypt(content)
     encrypted_meta = EncryptionManager.encrypt(json.dumps(meta))
@@ -397,6 +482,11 @@ def save_message(conversation_id: str, role: str, content: str, meta: Dict = Non
     c.execute("INSERT INTO messages (conversation_id, role, content, meta_json, timestamp) VALUES (?, ?, ?, ?, ?)",
               (conversation_id, role, content, json.dumps(meta), now))
 >>>>>>> origin/code-quality-refactor-17423438479402428749
+=======
+    # Ensure raw content is saved, meta handles images/files references
+    c.execute("INSERT INTO messages (conversation_id, role, content, meta_json, timestamp) VALUES (?, ?, ?, ?, ?)",
+              (conversation_id, role, content, json.dumps(meta), now))
+>>>>>>> origin/engagement-features-3224553925721226807
 
     # Update conversation timestamp
     c.execute("UPDATE conversations SET updated_at = ? WHERE id = ?", (now, conversation_id))
@@ -423,6 +513,7 @@ def get_conversation_messages(conversation_id: str) -> List[Dict]:
     for r in rows:
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         # Decrypt content and meta
         decrypted_content = EncryptionManager.decrypt(r[1])
         decrypted_meta_json = EncryptionManager.decrypt(r[2]) if r[2] else "{}"
@@ -438,6 +529,8 @@ def get_conversation_messages(conversation_id: str) -> List[Dict]:
 =======
 =======
 >>>>>>> origin/code-quality-refactor-17423438479402428749
+=======
+>>>>>>> origin/engagement-features-3224553925721226807
         msg = {
             "role": r[0],
             "content": r[1],
@@ -447,9 +540,12 @@ def get_conversation_messages(conversation_id: str) -> List[Dict]:
             try:
                 meta = json.loads(r[2])
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> origin/engagement-features-5881933724913241534
 =======
 >>>>>>> origin/code-quality-refactor-17423438479402428749
+=======
+>>>>>>> origin/engagement-features-3224553925721226807
                 msg.update(meta)
             except: pass
         messages.append(msg)
@@ -469,6 +565,7 @@ def update_conversation_title(conversation_id: str, title: str):
     c.execute("UPDATE conversations SET title = ? WHERE id = ?", (title, conversation_id))
     conn.commit()
     conn.close()
+<<<<<<< HEAD
 <<<<<<< HEAD
 
 <<<<<<< HEAD
@@ -647,3 +744,5 @@ def save_feedback(user_id: str, rating: int, comment: str, message_id: str = Non
 >>>>>>> origin/engagement-features-5881933724913241534
 =======
 >>>>>>> origin/code-quality-refactor-17423438479402428749
+=======
+>>>>>>> origin/engagement-features-3224553925721226807
