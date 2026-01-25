@@ -5,8 +5,6 @@ from typing import List, Dict, Optional, Any, Callable, Tuple
 
 logger = logging.getLogger(__name__)
 
-# BLIP cache holds (processor, model, device)
-BLIP_CACHE: Optional[Tuple[Any, Any, Any]] = None
 
 
 # --- Cached clients / resources ---
@@ -410,10 +408,12 @@ def _cached_extract_video_frame_thumbnails_bytes(video_bytes: bytes, max_frames:
         import base64
         from PIL import Image
 
-        with tempfile.NamedTemporaryFile(suffix='.mp4', delete=True) as tmp:
+        with tempfile.NamedTemporaryFile(suffix='.mp4', delete=False) as tmp:
             tmp.write(video_bytes)
-            tmp.flush()
-            clip = VideoFileClip(tmp.name)
+            tmp_name = tmp.name
+
+        try:
+            clip = VideoFileClip(tmp_name)
             duration = clip.duration or 0
             times = [(i + 1) * duration / (max_frames + 1) for i in range(max_frames)]
             for t in times:
@@ -429,6 +429,12 @@ def _cached_extract_video_frame_thumbnails_bytes(video_bytes: bytes, max_frames:
             except Exception:
                 pass
             clip.audio = None
+        finally:
+            import os
+            try:
+                os.unlink(tmp_name)
+            except Exception:
+                pass
     except Exception as e:
         logger.info(f"moviepy error: {e}")
     return thumbnails
