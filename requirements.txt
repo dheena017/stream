@@ -34,6 +34,7 @@ pytest
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 loguru
 =======
 cryptography
@@ -110,3 +111,6 @@ pytest==8.4.2
 =======
 pytest-mock
 >>>>>>> origin/testing-improvements-12652221572839124303
+=======
+loguru
+>>>>>>> origin/analytics-monitoring-16051435839535532537
