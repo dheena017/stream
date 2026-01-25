@@ -17,6 +17,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 >>>>>>> origin/code-quality-refactor-17423438479402428749
@@ -53,10 +54,13 @@ logger = logging.getLogger(__name__)
 >>>>>>> origin/ethics-bias-fixes-185826756388721926
 =======
 >>>>>>> origin/api-integrations-groq-12473300930587894354
+=======
+>>>>>>> origin/resilience-error-handling-2881412147853959551
 
 import streamlit as st
 import logging
 from typing import List, Dict, Optional, Any, Callable, Tuple
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -127,11 +131,14 @@ from typing import List, Dict, Optional, Any, Callable, Tuple
 >>>>>>> origin/ethics-bias-fixes-185826756388721926
 =======
 >>>>>>> origin/api-integrations-groq-12473300930587894354
+=======
+>>>>>>> origin/resilience-error-handling-2881412147853959551
 
 logger = logging.getLogger(__name__)
 
 # BLIP cache holds (processor, model, device)
 BLIP_CACHE: Optional[Tuple[Any, Any, Any]] = None
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -205,12 +212,15 @@ def safe_run_async(coro):
 >>>>>>> origin/ethics-bias-fixes-185826756388721926
 =======
 >>>>>>> origin/api-integrations-groq-12473300930587894354
+=======
+>>>>>>> origin/resilience-error-handling-2881412147853959551
 
 
 # --- Cached clients / resources ---
 @st.cache_resource
 def get_internet_search_engine():
     from ui.internet_search import InternetSearchEngine
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -263,12 +273,15 @@ def get_internet_search_engine():
 >>>>>>> origin/ethics-bias-fixes-185826756388721926
 =======
 >>>>>>> origin/api-integrations-groq-12473300930587894354
+=======
+>>>>>>> origin/resilience-error-handling-2881412147853959551
     return InternetSearchEngine()
 
 
 @st.cache_resource
 def get_openai_client(api_key: str, base_url: Optional[str] = None):
     from openai import OpenAI
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -343,11 +356,15 @@ def get_openai_client(api_key: str, base_url: Optional[str] = None):
 =======
     return OpenAI(api_key=api_key, base_url=base_url) if base_url else OpenAI(api_key=api_key)
 >>>>>>> origin/api-integrations-groq-12473300930587894354
+=======
+    return OpenAI(api_key=api_key, base_url=base_url) if base_url else OpenAI(api_key=api_key)
+>>>>>>> origin/resilience-error-handling-2881412147853959551
 
 
 @st.cache_resource
 def get_anthropic_client(api_key: str):
     from anthropic import Anthropic
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -398,6 +415,8 @@ def get_anthropic_client(api_key: str):
 >>>>>>> origin/ethics-bias-fixes-185826756388721926
 =======
 >>>>>>> origin/api-integrations-groq-12473300930587894354
+=======
+>>>>>>> origin/resilience-error-handling-2881412147853959551
     return Anthropic(api_key=api_key)
 
 
@@ -405,6 +424,7 @@ def get_anthropic_client(api_key: str):
 def get_google_client(api_key: str):
     # Import dynamically to avoid hard dependency if not used
     import google.generativeai as genai
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -510,12 +530,18 @@ def build_conversation_history(
     return genai
 
 >>>>>>> origin/api-integrations-groq-12473300930587894354
+=======
+    genai.configure(api_key=api_key)
+    return genai
+
+>>>>>>> origin/resilience-error-handling-2881412147853959551
 # --- Conversation helpers ---
 def build_conversation_history(messages: List[Dict], exclude_last: bool = True, max_messages: int = 20, max_chars: int = 50000) -> List[Dict]:
     history = messages[:-1] if exclude_last and len(messages) > 0 else messages
     if not history:
         return []
     formatted = [{"role": msg["role"], "content": msg["content"]} for msg in history if "role" in msg and "content" in msg]
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -565,6 +591,8 @@ def build_conversation_history(messages: List[Dict], exclude_last: bool = True, 
 >>>>>>> origin/ethics-bias-fixes-185826756388721926
 =======
 >>>>>>> origin/api-integrations-groq-12473300930587894354
+=======
+>>>>>>> origin/resilience-error-handling-2881412147853959551
     total_chars = sum(len(m.get("content", "")) for m in formatted)
     if len(formatted) > max_messages or total_chars > max_chars:
         older = formatted[:-max_messages] if len(formatted) > max_messages else []
@@ -574,6 +602,7 @@ def build_conversation_history(messages: List[Dict], exclude_last: bool = True, 
             for msg in older[-10:]:
                 content = msg.get("content", "")
                 preview = content[:200] + "..." if len(content) > 200 else content
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -665,12 +694,17 @@ def build_conversation_history(messages: List[Dict], exclude_last: bool = True, 
                 older_summary_parts.append(f"{msg.get('role', 'unknown').upper()}: {preview}")
             summary_text = "[Earlier conversation summary]\n" + "\n".join(older_summary_parts)
 >>>>>>> origin/api-integrations-groq-12473300930587894354
+=======
+                older_summary_parts.append(f"{msg.get('role', 'unknown').upper()}: {preview}")
+            summary_text = "[Earlier conversation summary]\n" + "\n".join(older_summary_parts)
+>>>>>>> origin/resilience-error-handling-2881412147853959551
             return [{"role": "system", "content": summary_text}] + recent
         else:
             return recent
     return formatted
 
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -744,6 +778,9 @@ def create_openai_messages(conversation_history: List[Dict], current_prompt: str
 =======
 def create_openai_messages(conversation_history: List[Dict], current_prompt: str, system_instruction: Optional[str] = None) -> List[Dict]:
 >>>>>>> origin/api-integrations-groq-12473300930587894354
+=======
+def create_openai_messages(conversation_history: List[Dict], current_prompt: str, system_instruction: Optional[str] = None) -> List[Dict]:
+>>>>>>> origin/resilience-error-handling-2881412147853959551
     messages = []
     if system_instruction:
         messages.append({"role": "system", "content": system_instruction})
@@ -753,6 +790,7 @@ def create_openai_messages(conversation_history: List[Dict], current_prompt: str
 
 
 # --- Resilience Helpers ---
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -849,6 +887,13 @@ import functools
 
 >>>>>>> origin/api-integrations-groq-12473300930587894354
 def retry_with_backoff(retries=3, backoff_in_seconds=1):
+=======
+import time
+import functools
+import random
+
+def retry_with_backoff(retries=3, backoff_in_seconds=1, exceptions=(Exception,)):
+>>>>>>> origin/resilience-error-handling-2881412147853959551
     def decorator(func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
@@ -856,6 +901,7 @@ def retry_with_backoff(retries=3, backoff_in_seconds=1):
             while True:
                 try:
                     return func(*args, **kwargs)
+<<<<<<< HEAD
                 except Exception as e:
                     if x == retries:
 <<<<<<< HEAD
@@ -949,11 +995,22 @@ def retry_with_backoff(retries=3, backoff_in_seconds=1):
                         raise e
                     sleep = (backoff_in_seconds * 2 ** x)
 >>>>>>> origin/api-integrations-groq-12473300930587894354
+=======
+                except exceptions as e:
+                    if x == retries:
+                        logger.warning(f"Max retries ({retries}) reached for {func.__name__}. Error: {e}")
+                        raise e
+
+                    # Exponential backoff with jitter
+                    sleep = (backoff_in_seconds * 2 ** x) + random.uniform(0, 1)
+                    logger.info(f"Retrying {func.__name__} in {sleep:.2f}s due to error: {e}")
+>>>>>>> origin/resilience-error-handling-2881412147853959551
                     time.sleep(sleep)
                     x += 1
         return wrapper
     return decorator
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1028,11 +1085,46 @@ def run_async_safely(coro):
 >>>>>>> origin/ethics-bias-fixes-185826756388721926
 =======
 >>>>>>> origin/api-integrations-groq-12473300930587894354
+=======
+class CircuitBreaker:
+    def __init__(self, failure_threshold=3, recovery_timeout=60):
+        self.failure_threshold = failure_threshold
+        self.recovery_timeout = recovery_timeout
+        self.failures = {}  # {provider: count}
+        self.last_failure_time = {} # {provider: timestamp}
+        self.state = {} # {provider: "CLOSED" | "OPEN" | "HALF_OPEN"}
+
+    def record_failure(self, provider):
+        self.failures[provider] = self.failures.get(provider, 0) + 1
+        self.last_failure_time[provider] = time.time()
+        if self.failures[provider] >= self.failure_threshold:
+            self.state[provider] = "OPEN"
+            logger.warning(f"Circuit breaker OPEN for {provider}")
+
+    def record_success(self, provider):
+        self.failures[provider] = 0
+        self.state[provider] = "CLOSED"
+
+    def is_open(self, provider):
+        if self.state.get(provider) == "OPEN":
+            elapsed = time.time() - self.last_failure_time.get(provider, 0)
+            if elapsed > self.recovery_timeout:
+                self.state[provider] = "HALF_OPEN"
+                logger.info(f"Circuit breaker HALF_OPEN for {provider}")
+                return False
+            return True
+        return False
+
+# Global circuit breaker instance
+CIRCUIT_BREAKER = CircuitBreaker()
+
+>>>>>>> origin/resilience-error-handling-2881412147853959551
 # --- Provider Handlers ---
 def handle_google_provider(
     api_key: str,
     model_name: str,
     prompt: str,
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1052,11 +1144,14 @@ def handle_google_provider(
 >>>>>>> origin/ethics-bias-fixes-185826756388721926
 =======
 >>>>>>> origin/api-integrations-groq-12473300930587894354
+=======
+>>>>>>> origin/resilience-error-handling-2881412147853959551
     system_instruction: Optional[str] = None,
     temperature: float = 0.7,
     max_tokens: int = 2048,
     top_p: float = 0.95,
     images: List = None,
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1199,6 +1294,17 @@ def handle_google_provider(
         import google.generativeai as genai
         # Configure the global instance
 >>>>>>> origin/api-integrations-groq-12473300930587894354
+=======
+    enable_streaming: bool = False
+) -> str:
+    if CIRCUIT_BREAKER.is_open("google"):
+        return "⚠️ Google service is temporarily unavailable due to repeated failures."
+
+    try:
+        if not api_key: return "Please provide a Google API Key."
+        import google.generativeai as genai
+        # Configure the global instance
+>>>>>>> origin/resilience-error-handling-2881412147853959551
         genai.configure(api_key=api_key)
 
         # Mapping config specifically for GenerativeModel
@@ -1207,6 +1313,7 @@ def handle_google_provider(
             max_output_tokens=max_tokens,
             top_p=top_p
         )
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1233,11 +1340,15 @@ def handle_google_provider(
 =======
 
 >>>>>>> origin/api-integrations-groq-12473300930587894354
+=======
+
+>>>>>>> origin/resilience-error-handling-2881412147853959551
         # Initialize model
         # system_instruction is supported in newer versions as init argument or via specific methods
         # For broader compatibility, passing via constructor if supported, else prepending to prompt might be needed
         # But latest SDK supports 'system_instruction' in GenerativeModel constructor
         try:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1306,11 +1417,15 @@ def handle_google_provider(
 =======
             model = genai.GenerativeModel(model_name=model_name, system_instruction=system_instruction)
 >>>>>>> origin/api-integrations-groq-12473300930587894354
+=======
+            model = genai.GenerativeModel(model_name=model_name, system_instruction=system_instruction)
+>>>>>>> origin/resilience-error-handling-2881412147853959551
         except TypeError:
             # Fallback for older SDK versions that don't support system_instruction in init
             model = genai.GenerativeModel(model_name=model_name)
             if system_instruction:
                 prompt = f"{system_instruction}\n\n{prompt}"
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1336,10 +1451,14 @@ def handle_google_provider(
 =======
 
 >>>>>>> origin/api-integrations-groq-12473300930587894354
+=======
+
+>>>>>>> origin/resilience-error-handling-2881412147853959551
         contents = []
         if images:
             from io import BytesIO
             import base64
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1407,12 +1526,15 @@ def handle_google_provider(
 >>>>>>> origin/ethics-bias-fixes-185826756388721926
 =======
 >>>>>>> origin/api-integrations-groq-12473300930587894354
+=======
+>>>>>>> origin/resilience-error-handling-2881412147853959551
             for img in images:
                 # Gemai SDK can take PIL images directly in 'contents'
                 contents.append(img)
 
         contents.append(prompt)
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1512,12 +1634,15 @@ def handle_google_provider(
 >>>>>>> origin/ethics-bias-fixes-185826756388721926
 =======
 >>>>>>> origin/api-integrations-groq-12473300930587894354
+=======
+>>>>>>> origin/resilience-error-handling-2881412147853959551
         @retry_with_backoff(retries=2)
         def _generate():
             # For gemini, we can pass stream=True/False to generate_content
             return model.generate_content(
                 contents,
                 generation_config=generation_config,
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
                 safety_settings=safety_settings,
@@ -1535,10 +1660,16 @@ def handle_google_provider(
             )
 
 >>>>>>> origin/api-integrations-groq-12473300930587894354
+=======
+                stream=enable_streaming
+            )
+
+>>>>>>> origin/resilience-error-handling-2881412147853959551
         response = _generate()
 
         if enable_streaming:
             collected_text = []
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1588,11 +1719,14 @@ def handle_google_provider(
 >>>>>>> origin/ethics-bias-fixes-185826756388721926
 =======
 >>>>>>> origin/api-integrations-groq-12473300930587894354
+=======
+>>>>>>> origin/resilience-error-handling-2881412147853959551
             def _stream_gen():
                 for chunk in response:
                     if chunk.text:
                         collected_text.append(chunk.text)
                         yield chunk.text
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1622,10 +1756,14 @@ def handle_google_provider(
 =======
 
 >>>>>>> origin/api-integrations-groq-12473300930587894354
+=======
+
+>>>>>>> origin/resilience-error-handling-2881412147853959551
             try:
                 st.write_stream(_stream_gen())
             except Exception as e:
                 logger.warning(f"Google streaming visualization failed: {e}")
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1788,6 +1926,21 @@ def handle_google_provider(
         return f"Error connecting to Google Gemini: {str(e)}"
 
 >>>>>>> origin/api-integrations-groq-12473300930587894354
+=======
+
+            final_text = "".join(collected_text)
+            CIRCUIT_BREAKER.record_success("google")
+            return final_text
+        else:
+             CIRCUIT_BREAKER.record_success("google")
+             return response.text
+
+    except Exception as e:
+        CIRCUIT_BREAKER.record_failure("google")
+        logger.error(f"Google provider error: {e}")
+        return f"Error connecting to Google Gemini: {str(e)}"
+
+>>>>>>> origin/resilience-error-handling-2881412147853959551
 def handle_anthropic_provider(
     api_key: str,
     model_name: str,
@@ -1795,6 +1948,7 @@ def handle_anthropic_provider(
     system_instruction: Optional[str] = None,
     temperature: float = 0.7,
     max_tokens: int = 2048,
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1910,6 +2064,15 @@ def handle_anthropic_provider(
 >>>>>>> origin/ethics-bias-fixes-185826756388721926
 =======
 >>>>>>> origin/api-integrations-groq-12473300930587894354
+=======
+    enable_streaming: bool = False
+) -> str:
+    if CIRCUIT_BREAKER.is_open("anthropic"):
+        return "⚠️ Anthropic service is temporarily unavailable due to repeated failures."
+
+    try:
+        if not api_key: return "Please provide an Anthropic API Key."
+>>>>>>> origin/resilience-error-handling-2881412147853959551
         from anthropic import Anthropic
         client = Anthropic(api_key=api_key)
 
@@ -1918,6 +2081,7 @@ def handle_anthropic_provider(
              "messages": messages,
              "max_tokens": max_tokens,
              "temperature": temperature,
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1967,6 +2131,8 @@ def handle_anthropic_provider(
 >>>>>>> origin/ethics-bias-fixes-185826756388721926
 =======
 >>>>>>> origin/api-integrations-groq-12473300930587894354
+=======
+>>>>>>> origin/resilience-error-handling-2881412147853959551
         }
         if system_instruction:
              kwargs["system"] = system_instruction
@@ -1978,6 +2144,7 @@ def handle_anthropic_provider(
             else:
                 return client.messages.create(stream=False, **kwargs)
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -2025,11 +2192,16 @@ def handle_anthropic_provider(
         response = _create_message()
 
 >>>>>>> origin/api-integrations-groq-12473300930587894354
+=======
+        response = _create_message()
+
+>>>>>>> origin/resilience-error-handling-2881412147853959551
         if enable_streaming:
             collected_text = []
             def _stream_gen():
                 for event in response:
                     if event.type == 'content_block_delta':
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -2082,10 +2254,13 @@ def handle_anthropic_provider(
 >>>>>>> origin/ethics-bias-fixes-185826756388721926
 =======
 >>>>>>> origin/api-integrations-groq-12473300930587894354
+=======
+>>>>>>> origin/resilience-error-handling-2881412147853959551
                         text = event.delta.text
                         collected_text.append(text)
                         yield text
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -2105,10 +2280,13 @@ def handle_anthropic_provider(
 >>>>>>> origin/ethics-bias-fixes-185826756388721926
 =======
 >>>>>>> origin/api-integrations-groq-12473300930587894354
+=======
+>>>>>>> origin/resilience-error-handling-2881412147853959551
             try:
                 st.write_stream(_stream_gen())
             except Exception:
                 pass
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -2260,6 +2438,21 @@ def handle_anthropic_provider(
          logger.error(f"Anthropic provider error: {e}")
          return f"Error connecting to Anthropic Claude: {str(e)}"
 >>>>>>> origin/api-integrations-groq-12473300930587894354
+=======
+
+            final_text = "".join(collected_text)
+            CIRCUIT_BREAKER.record_success("anthropic")
+            return final_text
+        else:
+            text = response.content[0].text
+            CIRCUIT_BREAKER.record_success("anthropic")
+            return text
+
+    except Exception as e:
+         CIRCUIT_BREAKER.record_failure("anthropic")
+         logger.error(f"Anthropic provider error: {e}")
+         return f"Error connecting to Anthropic Claude: {str(e)}"
+>>>>>>> origin/resilience-error-handling-2881412147853959551
 
 def generate_standard_response(
     provider: str,
@@ -2269,6 +2462,7 @@ def generate_standard_response(
     chat_history: List[Dict],
     system_instruction: str = "",
     config: Dict[str, Any] = {},
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -2901,10 +3095,99 @@ def prepare_brain_configuration(api_keys: Dict[str, str], requested_models: List
 >>>>>>> origin/ethics-bias-fixes-185826756388721926
 =======
 >>>>>>> origin/api-integrations-groq-12473300930587894354
+=======
+    images: List = None
+) -> str:
+    """Unified dispatcher for standard mode chat generation with fallback logic"""
+
+    fallback_models = {
+         "openai": "gpt-4o-mini",
+         "google": "gemini-1.5-flash",
+         "anthropic": "claude-3-5-haiku-20241022",
+         "deepseek": "deepseek-chat",
+         "xai": "grok-beta",
+         "together": "meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo"
+    }
+
+    # Determine fallback order: requested first, then others with API keys
+    available_providers = [p for p, k in api_keys.items() if k]
+    fallback_order = [provider] + [p for p in available_providers if p != provider]
+    supported_providers = ["google", "openai", "anthropic", "together", "xai", "deepseek"]
+    fallback_order = [p for p in fallback_order if p in supported_providers]
+
+    # Remove duplicates while preserving order
+    seen = set()
+    fallback_order = [x for x in fallback_order if not (x in seen or seen.add(x))]
+
+    last_error = "No providers available."
+
+    for current_provider in fallback_order:
+        api_key = api_keys.get(current_provider)
+        if not api_key: continue
+
+        # Determine model to use
+        use_model = model_name
+        if current_provider != provider:
+            use_model = fallback_models.get(current_provider, model_name)
+
+        try:
+            logger.info(f"Attempting generation with {current_provider} (model: {use_model})...")
+
+            temp = config.get('temperature', 0.7)
+            max_tok = config.get('max_tokens', 2048)
+            top_p = config.get('top_p', 0.95)
+            stream = config.get('enable_streaming', False)
+
+            response = None
+            if current_provider == "google":
+                response = handle_google_provider(
+                    api_key, use_model, prompt, system_instruction,
+                    temp, max_tok, top_p, images, enable_streaming=stream
+                )
+            elif current_provider in ["openai", "together", "xai", "deepseek"]:
+                base_urls = {
+                    "together": "https://api.together.xyz/v1",
+                    "xai": "https://api.x.ai/v1",
+                    "deepseek": "https://api.deepseek.com"
+                }
+                client = get_openai_client(api_key, base_urls.get(current_provider))
+                msgs = create_openai_messages(build_conversation_history(chat_history), prompt, system_instruction)
+                response = handle_openai_compatible_provider(
+                    client, use_model, msgs, temp, max_tok, top_p, stream, provider_name=current_provider
+                )
+            elif current_provider == "anthropic":
+                msgs = [{"role": "user", "content": prompt}]
+                response = handle_anthropic_provider(
+                    api_key, use_model, msgs, system_instruction,
+                    temp, max_tok, enable_streaming=stream
+                )
+            else:
+                 response = "Provider not supported."
+
+            # Check for error indicators
+            if response and any(str(response).startswith(err) for err in ["Error", "❌", "⚠️", "Provider not supported"]):
+                logger.warning(f"Provider {current_provider} returned error: {response}")
+                last_error = response
+                continue
+
+            # Success
+            if current_provider != provider:
+                return f"*[Fallback to {current_provider}]* {response}"
+            return response
+
+        except Exception as e:
+            logger.error(f"Provider {current_provider} exception: {e}")
+            last_error = f"Exception: {str(e)}"
+            continue
+
+    return f"All providers failed. Last error: {last_error}"
+
+>>>>>>> origin/resilience-error-handling-2881412147853959551
 def prepare_brain_configuration(api_keys: Dict[str, str], requested_models: List[str] = None) -> List[Dict[str, Any]]:
     """Helper to build the list of models for Brain Mode based on available keys"""
     models_to_query = []
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -2924,6 +3207,8 @@ def prepare_brain_configuration(api_keys: Dict[str, str], requested_models: List
 >>>>>>> origin/ethics-bias-fixes-185826756388721926
 =======
 >>>>>>> origin/api-integrations-groq-12473300930587894354
+=======
+>>>>>>> origin/resilience-error-handling-2881412147853959551
     # Default strategy: Use available keys (simplified)
     # In a real app, 'requested_models' would come from user config
 
@@ -2936,6 +3221,7 @@ def prepare_brain_configuration(api_keys: Dict[str, str], requested_models: List
     if api_keys.get('anthropic'):
          models_to_query.append({"provider": "anthropic", "model": "claude-3-5-haiku-20241022", "api_key": api_keys['anthropic']})
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -3023,6 +3309,10 @@ def prepare_brain_configuration(api_keys: Dict[str, str], requested_models: List
     return models_to_query
 
 >>>>>>> origin/api-integrations-groq-12473300930587894354
+=======
+    return models_to_query
+
+>>>>>>> origin/resilience-error-handling-2881412147853959551
 def handle_openai_compatible_provider(
     client: Any,
     model_name: str,
@@ -3030,6 +3320,7 @@ def handle_openai_compatible_provider(
     temperature: float,
     max_tokens: int,
     top_p: float,
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -3100,6 +3391,14 @@ def handle_openai_compatible_provider(
     enable_streaming: bool
 >>>>>>> origin/api-integrations-groq-12473300930587894354
 ) -> str:
+=======
+    enable_streaming: bool,
+    provider_name: str = "openai"
+) -> str:
+    if CIRCUIT_BREAKER.is_open(provider_name):
+        return f"⚠️ {provider_name} service is temporarily unavailable due to repeated failures."
+
+>>>>>>> origin/resilience-error-handling-2881412147853959551
     @retry_with_backoff(retries=2)
     def _create_completion(stream_mode):
         return client.chat.completions.create(
@@ -3108,6 +3407,7 @@ def handle_openai_compatible_provider(
             temperature=temperature,
             max_tokens=max_tokens,
             top_p=top_p,
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -3214,10 +3514,16 @@ def handle_openai_compatible_provider(
         )
 
 >>>>>>> origin/api-integrations-groq-12473300930587894354
+=======
+            stream=stream_mode
+        )
+
+>>>>>>> origin/resilience-error-handling-2881412147853959551
     if enable_streaming:
         try:
             stream = _create_completion(True)
         except Exception as e:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -3326,11 +3632,18 @@ def handle_openai_compatible_provider(
 
         collected_chunks = []
 >>>>>>> origin/api-integrations-groq-12473300930587894354
+=======
+            CIRCUIT_BREAKER.record_failure(provider_name)
+            return f"Error connecting to {provider_name}: {str(e)}"
+
+        collected_chunks = []
+>>>>>>> origin/resilience-error-handling-2881412147853959551
         def _iter_chunks():
             for chunk in stream:
                 piece = chunk.choices[0].delta.content or ""
                 collected_chunks.append(piece)
                 yield piece
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -3383,11 +3696,14 @@ def handle_openai_compatible_provider(
 >>>>>>> origin/ethics-bias-fixes-185826756388721926
 =======
 >>>>>>> origin/api-integrations-groq-12473300930587894354
+=======
+>>>>>>> origin/resilience-error-handling-2881412147853959551
         # Stream to Streamlit (best-effort)
         try:
             st.write_stream(_iter_chunks())
         except Exception:
             pass
+<<<<<<< HEAD
         response_text = "".join(collected_chunks)
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -3463,10 +3779,17 @@ def handle_openai_compatible_provider(
 =======
         return response_text if response_text else "I apologize, but I couldn't generate a response."
 >>>>>>> origin/api-integrations-groq-12473300930587894354
+=======
+
+        response_text = "".join(collected_chunks)
+        CIRCUIT_BREAKER.record_success(provider_name)
+        return response_text if response_text else "I apologize, but I couldn't generate a response."
+>>>>>>> origin/resilience-error-handling-2881412147853959551
     else:
         try:
             response = _create_completion(False)
         except Exception as e:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -3635,10 +3958,22 @@ def handle_openai_compatible_provider(
 >>>>>>> origin/ethics-bias-fixes-185826756388721926
 =======
 >>>>>>> origin/api-integrations-groq-12473300930587894354
+=======
+            CIRCUIT_BREAKER.record_failure(provider_name)
+            return f"Error connecting to {provider_name}: {str(e)}"
+
+        response_text = getattr(response.choices[0].message, 'content', None) or response.choices[0].message['content']
+        if not response_text:
+            response_text = "I apologize, but I couldn't generate a response."
+
+        CIRCUIT_BREAKER.record_success(provider_name)
+
+>>>>>>> origin/resilience-error-handling-2881412147853959551
         return response_text
 
 
 # --- Internet search integration ---
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -3716,10 +4051,14 @@ def perform_internet_search(query: str, enable_search: bool = True, max_results:
 =======
 def perform_internet_search(query: str, enable_search: bool = True, max_results: int = 5, search_type: str = "Web", time_range: str = "Anytime", domain: str = None) -> tuple[List[Dict], str]:
 >>>>>>> origin/api-integrations-groq-12473300930587894354
+=======
+def perform_internet_search(query: str, enable_search: bool = True, max_results: int = 5, search_type: str = "Web", time_range: str = "Anytime", domain: str = None) -> tuple[List[Dict], str]:
+>>>>>>> origin/resilience-error-handling-2881412147853959551
     if not enable_search:
         return [], ""
     try:
         search_engine = get_internet_search_engine()
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -3749,6 +4088,9 @@ def perform_internet_search(query: str, enable_search: bool = True, max_results:
 =======
 
 >>>>>>> origin/api-integrations-groq-12473300930587894354
+=======
+
+>>>>>>> origin/resilience-error-handling-2881412147853959551
         if search_type == "News":
              # News search generally supports time range implicitly by recency,
              # but standard DDG news api might handle max_results.
@@ -3757,6 +4099,7 @@ def perform_internet_search(query: str, enable_search: bool = True, max_results:
              results = search_engine.search_news(query, max_results=max_results)
         else:
              # Standard Web Search with filters
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -3798,10 +4141,13 @@ def perform_internet_search(query: str, enable_search: bool = True, max_results:
 >>>>>>> origin/ethics-bias-fixes-185826756388721926
 =======
 >>>>>>> origin/api-integrations-groq-12473300930587894354
+=======
+>>>>>>> origin/resilience-error-handling-2881412147853959551
              results = search_engine.search(query, max_results=max_results, time_range=time_range, domain=domain)
 
         if results:
             from ui.internet_search import create_search_context
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -3854,6 +4200,8 @@ def perform_internet_search(query: str, enable_search: bool = True, max_results:
 >>>>>>> origin/ethics-bias-fixes-185826756388721926
 =======
 >>>>>>> origin/api-integrations-groq-12473300930587894354
+=======
+>>>>>>> origin/resilience-error-handling-2881412147853959551
             context = create_search_context(results, query)
             logger.info(f"Search completed with {len(results)} results")
             return results, context
@@ -3884,6 +4232,7 @@ def augment_prompt_with_search(prompt: str, search_results: List[Dict]) -> str:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> origin/analytics-monitoring-17353357073288903889
@@ -3919,6 +4268,8 @@ def augment_prompt_with_search(prompt: str, search_results: List[Dict]) -> str:
 >>>>>>> origin/ethics-bias-fixes-185826756388721926
 =======
 >>>>>>> origin/api-integrations-groq-12473300930587894354
+=======
+>>>>>>> origin/resilience-error-handling-2881412147853959551
     context = create_search_context(search_results, prompt)
     augmented = f"""{prompt}
 
@@ -3930,6 +4281,7 @@ Please use the above search results to provide a current and accurate answer."""
 
 
 # --- Multimodal helpers ---
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -4102,10 +4454,13 @@ def process_images_for_context(images: List) -> List[Dict]:
 >>>>>>> origin/ethics-bias-fixes-185826756388721926
 =======
 >>>>>>> origin/api-integrations-groq-12473300930587894354
+=======
+>>>>>>> origin/resilience-error-handling-2881412147853959551
 def process_images_for_context(images: List) -> List[Dict]:
     results = []
     try:
         from PIL import Image
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -4131,11 +4486,14 @@ def process_images_for_context(images: List) -> List[Dict]:
 >>>>>>> origin/ethics-bias-fixes-185826756388721926
 =======
 >>>>>>> origin/api-integrations-groq-12473300930587894354
+=======
+>>>>>>> origin/resilience-error-handling-2881412147853959551
         for i, img in enumerate(images, 1):
             caption = None
             try:
                 info = getattr(img, 'info', {}) or {}
                 caption = info.get('description') or info.get('caption')
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -4185,6 +4543,8 @@ def process_images_for_context(images: List) -> List[Dict]:
 >>>>>>> origin/ethics-bias-fixes-185826756388721926
 =======
 >>>>>>> origin/api-integrations-groq-12473300930587894354
+=======
+>>>>>>> origin/resilience-error-handling-2881412147853959551
             except Exception:
                 caption = None
             if not caption:
@@ -4197,6 +4557,7 @@ def process_images_for_context(images: List) -> List[Dict]:
         logger.error(f"process_images_for_context error: {e}")
     return results
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -4234,10 +4595,13 @@ def process_images_for_context(images: List) -> List[Dict]:
 >>>>>>> origin/ethics-bias-fixes-185826756388721926
 =======
 >>>>>>> origin/api-integrations-groq-12473300930587894354
+=======
+>>>>>>> origin/resilience-error-handling-2881412147853959551
 
 def transcribe_audio_file(file_like) -> str:
     try:
         import speech_recognition as sr
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -4347,6 +4711,10 @@ def transcribe_audio_file(audio_bytes: bytes) -> str:
         recognizer = sr.Recognizer()
         with sr.AudioFile(file_like) as source:
 >>>>>>> origin/api-integrations-groq-12473300930587894354
+=======
+        recognizer = sr.Recognizer()
+        with sr.AudioFile(file_like) as source:
+>>>>>>> origin/resilience-error-handling-2881412147853959551
             audio = recognizer.record(source)
         try:
             text = recognizer.recognize_google(audio)
@@ -4359,6 +4727,7 @@ def transcribe_audio_file(audio_bytes: bytes) -> str:
         return "[Transcription unavailable - install speech_recognition]"
 
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -4462,6 +4831,11 @@ def extract_video_frame_thumbnails(file_like, max_frames: int = 3) -> List[str]:
     thumbnails: List[str] = []
     try:
 >>>>>>> origin/api-integrations-groq-12473300930587894354
+=======
+def extract_video_frame_thumbnails(file_like, max_frames: int = 3) -> List[str]:
+    thumbnails: List[str] = []
+    try:
+>>>>>>> origin/resilience-error-handling-2881412147853959551
         import importlib
         moviepy = importlib.import_module("moviepy.editor")
         VideoFileClip = getattr(moviepy, "VideoFileClip")
@@ -4471,6 +4845,7 @@ def extract_video_frame_thumbnails(file_like, max_frames: int = 3) -> List[str]:
         from PIL import Image
 
         with tempfile.NamedTemporaryFile(suffix='.mp4', delete=True) as tmp:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -4534,6 +4909,9 @@ def extract_video_frame_thumbnails(file_like, max_frames: int = 3) -> List[str]:
 =======
             tmp.write(file_like.read())
 >>>>>>> origin/api-integrations-groq-12473300930587894354
+=======
+            tmp.write(file_like.read())
+>>>>>>> origin/resilience-error-handling-2881412147853959551
             tmp.flush()
             clip = VideoFileClip(tmp.name)
             duration = clip.duration or 0
@@ -4543,6 +4921,7 @@ def extract_video_frame_thumbnails(file_like, max_frames: int = 3) -> List[str]:
                 img = Image.fromarray(frame)
                 buf = BytesIO()
                 img.thumbnail((320, 320))
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -4630,6 +5009,10 @@ def extract_video_frame_thumbnails(file_like, max_frames: int = 3) -> List[str]:
                 img.save(buf, format='PNG')
                 b64 = base64.b64encode(buf.getvalue()).decode('utf-8')
 >>>>>>> origin/api-integrations-groq-12473300930587894354
+=======
+                img.save(buf, format='PNG')
+                b64 = base64.b64encode(buf.getvalue()).decode('utf-8')
+>>>>>>> origin/resilience-error-handling-2881412147853959551
                 thumbnails.append(f"data:image/png;base64,{b64}")
             try:
                 clip.reader.close()
@@ -4646,6 +5029,7 @@ def extract_video_frame_thumbnails(file_like, max_frames: int = 3) -> List[str]:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> origin/analytics-monitoring-16051435839535532537
 =======
@@ -4654,6 +5038,8 @@ def extract_video_frame_thumbnails(file_like, max_frames: int = 3) -> List[str]:
 >>>>>>> origin/ethics-bias-fixes-185826756388721926
 =======
 >>>>>>> origin/api-integrations-groq-12473300930587894354
+=======
+>>>>>>> origin/resilience-error-handling-2881412147853959551
 
 # Consolidated BLIP Logic is now at the bottom of the file
 # Removed duplicate definition to fix linter error
@@ -4661,6 +5047,7 @@ def extract_video_frame_thumbnails(file_like, max_frames: int = 3) -> List[str]:
 
 
 def generate_blip_caption(image) -> Optional[str]:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -4683,10 +5070,13 @@ def generate_blip_caption(image) -> Optional[str]:
 >>>>>>> origin/ethics-bias-fixes-185826756388721926
 =======
 >>>>>>> origin/api-integrations-groq-12473300930587894354
+=======
+>>>>>>> origin/resilience-error-handling-2881412147853959551
     try:
         processor, model, device = get_blip_model()
         inputs = processor(images=image, return_tensors="pt").to(device)
         import torch
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -4739,6 +5129,8 @@ def generate_blip_caption(image) -> Optional[str]:
 >>>>>>> origin/ethics-bias-fixes-185826756388721926
 =======
 >>>>>>> origin/api-integrations-groq-12473300930587894354
+=======
+>>>>>>> origin/resilience-error-handling-2881412147853959551
         with torch.no_grad():
             output_ids = model.generate(**inputs, max_new_tokens=50)
         caption = processor.decode(output_ids[0], skip_special_tokens=True)
@@ -4748,6 +5140,7 @@ def generate_blip_caption(image) -> Optional[str]:
         return None
 
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -4817,6 +5210,8 @@ def call_hosted_caption_api(
 >>>>>>> origin/ethics-bias-fixes-185826756388721926
 =======
 >>>>>>> origin/api-integrations-groq-12473300930587894354
+=======
+>>>>>>> origin/resilience-error-handling-2881412147853959551
 def call_hosted_caption_api(image, api_url: str, api_key: Optional[str] = None) -> Optional[str]:
     try:
         import requests
@@ -4832,6 +5227,7 @@ def call_hosted_caption_api(image, api_url: str, api_key: Optional[str] = None) 
         resp.raise_for_status()
         data = resp.json()
         return data.get('caption') or data.get('text')
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -4881,11 +5277,14 @@ def call_hosted_caption_api(image, api_url: str, api_key: Optional[str] = None) 
 >>>>>>> origin/ethics-bias-fixes-185826756388721926
 =======
 >>>>>>> origin/api-integrations-groq-12473300930587894354
+=======
+>>>>>>> origin/resilience-error-handling-2881412147853959551
     except Exception as e:
         logger.info(f"Hosted caption API call failed: {e}")
         return None
 
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -4960,6 +5359,9 @@ def generate_image_captions(images: List, use_blip: bool = False, hosted_api_url
 =======
 def generate_image_captions(images: List, use_blip: bool = False, hosted_api_url: Optional[str] = None, hosted_api_key: Optional[str] = None) -> List[Dict]:
 >>>>>>> origin/api-integrations-groq-12473300930587894354
+=======
+def generate_image_captions(images: List, use_blip: bool = False, hosted_api_url: Optional[str] = None, hosted_api_key: Optional[str] = None) -> List[Dict]:
+>>>>>>> origin/resilience-error-handling-2881412147853959551
     if not images:
         return []
     results = []
@@ -4977,6 +5379,7 @@ def generate_image_captions(images: List, use_blip: bool = False, hosted_api_url
                 logger.info(f"BLIP caption failed for image {i}: {e}")
         if not caption:
             fallback = process_images_for_context([img])[0]
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -5046,6 +5449,9 @@ def generate_image_captions(images: List, use_blip: bool = False, hosted_api_url
 =======
             caption = fallback.get('caption')
 >>>>>>> origin/api-integrations-groq-12473300930587894354
+=======
+            caption = fallback.get('caption')
+>>>>>>> origin/resilience-error-handling-2881412147853959551
         results.append({"name": f"image_{i}", "caption": caption})
     return results
 
@@ -5061,6 +5467,7 @@ def preload_blip_model(timeout: int = 120) -> bool:
 
 @st.cache_resource(show_spinner=False)
 def _load_blip_resources():
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -5125,11 +5532,14 @@ def _load_blip_resources():
 >>>>>>> origin/ethics-bias-fixes-185826756388721926
 =======
 >>>>>>> origin/api-integrations-groq-12473300930587894354
+=======
+>>>>>>> origin/resilience-error-handling-2881412147853959551
     from transformers import BlipProcessor, BlipForConditionalGeneration
     import torch
 
     model_id = "Salesforce/blip-image-captioning-base"
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -5149,6 +5559,8 @@ def _load_blip_resources():
 >>>>>>> origin/ethics-bias-fixes-185826756388721926
 =======
 >>>>>>> origin/api-integrations-groq-12473300930587894354
+=======
+>>>>>>> origin/resilience-error-handling-2881412147853959551
     # helper to load with retry strategy
     def load_with_fallback(cls, model_id):
         # 1. Try local cache first
@@ -5160,6 +5572,7 @@ def _load_blip_resources():
 
     processor = load_with_fallback(BlipProcessor, model_id)
     model = load_with_fallback(BlipForConditionalGeneration, model_id)
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -5189,10 +5602,14 @@ def _load_blip_resources():
 =======
 
 >>>>>>> origin/api-integrations-groq-12473300930587894354
+=======
+
+>>>>>>> origin/resilience-error-handling-2881412147853959551
     device = "cuda" if torch.cuda.is_available() else "cpu"
     model.to(device)
     return processor, model, device
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -5251,10 +5668,13 @@ def preload_blip_model_with_progress(
 >>>>>>> origin/ethics-bias-fixes-185826756388721926
 =======
 >>>>>>> origin/api-integrations-groq-12473300930587894354
+=======
+>>>>>>> origin/resilience-error-handling-2881412147853959551
 def get_blip_model():
     return _load_blip_resources()
 
 def preload_blip_model_with_progress(progress_callback: Optional[Callable[[int, str], None]] = None) -> bool:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -5304,6 +5724,8 @@ def preload_blip_model_with_progress(progress_callback: Optional[Callable[[int, 
 >>>>>>> origin/ethics-bias-fixes-185826756388721926
 =======
 >>>>>>> origin/api-integrations-groq-12473300930587894354
+=======
+>>>>>>> origin/resilience-error-handling-2881412147853959551
     """
     Simulated progress loader that actually just triggers the cached resource load.
     Since st.cache_resource handles the singleton, we just call it.
@@ -5318,6 +5740,7 @@ def preload_blip_model_with_progress(progress_callback: Optional[Callable[[int, 
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         
         # We'll use a thread/process safe check by just calling the cached function
         # Streamlit's cache will handle the heavy lifting.
@@ -5335,10 +5758,13 @@ def preload_blip_model_with_progress(progress_callback: Optional[Callable[[int, 
 >>>>>>> origin/ethics-bias-fixes-185826756388721926
 =======
 >>>>>>> origin/api-integrations-groq-12473300930587894354
+=======
+>>>>>>> origin/resilience-error-handling-2881412147853959551
 
         # We'll use a thread/process safe check by just calling the cached function
         # Streamlit's cache will handle the heavy lifting.
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -5358,6 +5784,8 @@ def preload_blip_model_with_progress(progress_callback: Optional[Callable[[int, 
 >>>>>>> origin/ethics-bias-fixes-185826756388721926
 =======
 >>>>>>> origin/api-integrations-groq-12473300930587894354
+=======
+>>>>>>> origin/resilience-error-handling-2881412147853959551
         if progress_callback:
              progress_callback(30, "Loading BLIP model items...")
 
@@ -5370,6 +5798,7 @@ def preload_blip_model_with_progress(progress_callback: Optional[Callable[[int, 
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         
 =======
 
@@ -5392,12 +5821,16 @@ def preload_blip_model_with_progress(progress_callback: Optional[Callable[[int, 
 =======
 
 >>>>>>> origin/api-integrations-groq-12473300930587894354
+=======
+
+>>>>>>> origin/resilience-error-handling-2881412147853959551
         if progress_callback:
             progress_callback(100, "BLIP model ready")
         return True
     except Exception as e:
         logger.error(f"BLIP load failed: {e}")
         if progress_callback:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -6078,3 +6511,7 @@ def preload_blip_model_with_progress(progress_callback: Optional[Callable[[int, 
 =======
         return thumbnails
 >>>>>>> origin/api-integrations-groq-12473300930587894354
+=======
+             progress_callback(0, f"Failed: {str(e)}")
+        return False
+>>>>>>> origin/resilience-error-handling-2881412147853959551
