@@ -12,6 +12,7 @@ from datetime import datetime
 
 # Import UI Modules
 import ui.styles
+import ui.monitoring
 from ui.auth import show_login_page
 from ui.profile import show_profile_page
 from ui.dashboard import show_dashboard
@@ -71,6 +72,7 @@ def initialize_theme():
 def configure_environment():
     """Configure environment variables for optimal performance."""
     os.environ.setdefault("GRPC_DNS_RESOLVER", "native")
+    ui.monitoring.ensure_log_dir()
     logger.debug("Environment configured")
 
 

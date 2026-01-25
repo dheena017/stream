@@ -289,6 +289,43 @@ def show_dashboard():
                 with cols[i]:
                     st.metric(topic_info['topic'], topic_info['count'])
     
+    # System Monitoring
+    st.divider()
+    with st.expander("📉 System Monitoring", expanded=False):
+        st.markdown("### 🔍 Real-time Metrics")
+        from ui.monitoring import get_metrics_df
+        df_metrics = get_metrics_df()
+
+        if not df_metrics.empty:
+            # Parse timestamps
+            df_metrics['timestamp'] = pd.to_datetime(df_metrics['timestamp'])
+
+            # Response Times
+            resp_df = df_metrics[df_metrics['type'] == 'response_time'].copy()
+            if not resp_df.empty:
+                resp_df['duration'] = resp_df['data'].apply(lambda x: x.get('duration', 0))
+                resp_df['model'] = resp_df['data'].apply(lambda x: x.get('model', 'unknown'))
+
+                avg_time = resp_df['duration'].mean()
+                st.metric("Average Response Time", f"{avg_time:.2f}s")
+
+                st.line_chart(resp_df.set_index('timestamp')['duration'])
+
+            # Usage
+            usage_df = df_metrics[df_metrics['type'] == 'usage'].copy()
+            if not usage_df.empty:
+                usage_df['model'] = usage_df['data'].apply(lambda x: x.get('model', 'unknown'))
+                st.markdown("#### Model Usage")
+                st.bar_chart(usage_df['model'].value_counts())
+
+            # Errors
+            err_df = df_metrics[df_metrics['type'] == 'error'].copy()
+            if not err_df.empty:
+                st.error(f"Total Errors: {len(err_df)}")
+                st.dataframe(err_df[['timestamp', 'data']])
+        else:
+            st.info("No monitoring data available yet.")
+
     # Recent activity
     st.divider()
     st.markdown("### 📝 Recent Activity")
