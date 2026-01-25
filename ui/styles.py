@@ -355,6 +355,7 @@ def load_css():
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     /* --- Header & Status --- */
     .chat-header-container {
         display: flex;
@@ -459,6 +460,52 @@ def load_css():
     .stMarkdown, p, span, div {
         text-rendering: optimizeLegibility;
 >>>>>>> origin/accessibility-improvements-8538246568398497801
+=======
+    /* --- Mobile Optimization --- */
+    .header-status-container {
+        text-align: right;
+    }
+
+    @media (max-width: 768px) {
+        .main-header {
+            padding: 1rem !important;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        h1 { font-size: 1.8rem !important; }
+        h2 { font-size: 1.5rem !important; }
+        h3 { font-size: 1.2rem !important; }
+
+        .stButton > button {
+            min-height: 44px; /* Touch target size */
+            padding-top: 0.5rem !important;
+            padding-bottom: 0.5rem !important;
+        }
+
+        /* Adjust status bar alignment on mobile */
+        .header-status-container {
+            text-align: left !important;
+            margin-top: 0.5rem;
+        }
+
+        /* Sidebar adjustments */
+        [data-testid="stSidebar"] .stButton > button {
+            padding-left: 0.5rem !important;
+        }
+
+        /* Chat message padding */
+        .stChatMessage {
+            padding: 1rem !important;
+        }
+
+        /* Hide scrollbars for cleaner mobile look */
+        ::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+>>>>>>> origin/mobile-optimizations-6398649563128325227
     }
     </style>
     """

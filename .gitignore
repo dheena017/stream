@@ -40,6 +40,7 @@ logs/
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 *.db
 =======
 
@@ -117,3 +118,12 @@ backups/
 backups/
 backup.key
 >>>>>>> origin/backup-automation-2982499736536864191
+=======
+
+# Local databases & Sensitive info
+*.db
+chat_history.db
+users.json
+logs/
+*.jsonl
+>>>>>>> origin/mobile-optimizations-6398649563128325227
