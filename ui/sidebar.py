@@ -30,8 +30,10 @@ def render_sidebar():
 
         # Navigation
         st.markdown("### 📍 Navigation")
-        col_nav1, col_nav2, col_nav3 = st.columns(3)
+        col_nav1, col_nav2 = st.columns(2)
+
         with col_nav1:
+<<<<<<< HEAD
             if st.button(
                 "📊 Dash",
                 width="stretch",
@@ -42,9 +44,17 @@ def render_sidebar():
                 ),
                 help="Go to Dashboard",
             ):
+=======
+            if st.button("📊 Dash", key="nav_dash", use_container_width=True, type="primary" if st.session_state.current_page == "dashboard" else "secondary", help="Go to Dashboard"):
+>>>>>>> 89c4a85 (Feedback: [integrations])
                 st.session_state.current_page = "dashboard"
                 st.rerun()
+            if st.button("👤 Profile", key="nav_profile", use_container_width=True, type="primary" if st.session_state.current_page == "profile" else "secondary", help="Go to Profile"):
+                st.session_state.current_page = "profile"
+                st.rerun()
+
         with col_nav2:
+<<<<<<< HEAD
             if st.button(
                 "💬 Chat",
                 width="stretch",
@@ -69,6 +79,13 @@ def render_sidebar():
                 help="Go to Profile",
             ):
                 st.session_state.current_page = "profile"
+=======
+            if st.button("💬 Chat", key="nav_chat", use_container_width=True, type="primary" if st.session_state.current_page == "chat" else "secondary", help="Go to Chat"):
+                st.session_state.current_page = "chat"
+                st.rerun()
+            if st.button("📣 Feedback", key="nav_feedback", use_container_width=True, type="primary" if st.session_state.current_page == "feedback" else "secondary", help="Give Feedback"):
+                st.session_state.current_page = "feedback"
+>>>>>>> 89c4a85 (Feedback: [integrations])
                 st.rerun()
 
 

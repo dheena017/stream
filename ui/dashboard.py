@@ -262,9 +262,10 @@ def show_dashboard():
     sec_col1, sec_col2, sec_col3, sec_col4 = st.columns(4)
 
     with sec_col1:
-        if st.button("📊 Refresh Stats", width="stretch", key="refresh_stats_quick"):
+        if st.button("📣 Feedback", width="stretch", key="give_feedback_quick"):
+            st.session_state.current_page = "feedback"
             st.rerun()
-        st.caption("Update UI")
+        st.caption("Share thoughts")
 
     with sec_col2:
         if st.button("📥 Export Chat", width="stretch", key="export_chat_quick"):
