@@ -4707,6 +4707,7 @@ def show_chat_page():
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         <div class="chat-status-container">
             <div class="status-badge {'active' if brain_on else ''} chat-status-badge">
 =======
@@ -4714,6 +4715,13 @@ def show_chat_page():
 =======
         <div class="header-status-container">
 >>>>>>> origin/mobile-optimizations-6398649563128325227
+=======
+        <style>
+        .chat-status-container {{ text-align: right; }}
+        @media (max-width: 768px) {{ .chat-status-container {{ text-align: left; margin-top: 0.5rem; }} }}
+        </style>
+        <div class="chat-status-container">
+>>>>>>> origin/mobile-optimization-12966885757340563810
             <div class="status-badge {'active' if brain_on else ''}" style="display:inline-flex; width:auto; font-size:0.8rem; padding: 2px 8px;">
 >>>>>>> origin/mobile-optimizations-15403240101322836592
                 {'🧠 Brain' if brain_on else '🤖 Std'}

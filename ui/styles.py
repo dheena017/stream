@@ -353,6 +353,7 @@ def load_css():
         opacity: 0.5;
     }
     ::-webkit-scrollbar-thumb:hover { background: var(--text-primary); }
+<<<<<<< HEAD
 
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -509,6 +510,76 @@ def load_css():
         }
 >>>>>>> origin/mobile-optimizations-6398649563128325227
     }
+=======
+
+    /* --- Mobile Optimizations --- */
+    @media (max-width: 768px) {
+        /* Typography Scaling */
+        h1 { font-size: 1.5rem !important; }
+        h2 { font-size: 1.25rem !important; }
+        h3 { font-size: 1.1rem !important; }
+        p, .stMarkdown { font-size: 0.95rem !important; }
+
+        .welcome-title { font-size: 1.8rem !important; }
+        .welcome-subtitle { font-size: 1rem !important; }
+
+        /* Layout Adjustments */
+        .stApp { padding-top: 1rem; }
+        .main-header {
+            padding: 1rem !important;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+
+        /* Touch Targets & Buttons */
+        .stButton > button {
+            min-height: 48px !important; /* Touch target size */
+            padding: 0.5rem 1rem !important;
+            font-size: 1rem !important;
+        }
+
+        /* Input Fields - Prevent Zoom on iOS */
+        .stTextInput input, .stTextArea textarea, .stSelectbox div {
+            font-size: 16px !important;
+            min-height: 48px !important;
+        }
+
+        /* Force Column Stacking on Mobile */
+        [data-testid="column"] {
+            width: 100% !important;
+            flex: 1 1 auto !important;
+            min-width: 100% !important;
+        }
+
+        /* Exceptions for small button groups (e.g., Copy/Regen) if needed */
+        /* But generally stacking is safer for readability */
+
+        /* Sidebar Enhancements for Mobile */
+        [data-testid="stSidebar"] {
+             /* Streamlit handles sidebar width, but we can tweak internal padding */
+             padding-top: 1rem;
+        }
+
+        /* Improve Chat Message readability */
+        .stChatMessage {
+            padding: 0.75rem !important;
+            margin-bottom: 0.5rem !important;
+        }
+
+        /* Adjust Status Badges in Header */
+        .status-badge {
+            display: inline-flex;
+            margin: 0.25rem 0;
+            padding: 4px 10px !important;
+        }
+
+        /* Hide scrollbars on mobile for cleaner look */
+        ::-webkit-scrollbar {
+            display: none;
+        }
+    }
+>>>>>>> origin/mobile-optimization-12966885757340563810
     </style>
     """
 =======
