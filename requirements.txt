@@ -26,6 +26,7 @@ google-generativeai
 pytest
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 loguru
 =======
 cryptography
@@ -33,3 +34,6 @@ cryptography
 =======
 bcrypt
 >>>>>>> security-hardening-12270959347982184821
+=======
+cryptography
+>>>>>>> origin/privacy-compliance-updates-15433171418981572602

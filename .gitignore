@@ -36,6 +36,7 @@ logs/
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 *.db
 =======
 
@@ -83,3 +84,11 @@ logs/
 users.json
 secret.key
 >>>>>>> origin/accessibility-improvements-8538246568398497801
+=======
+
+# Sensitive Data
+secret.key
+*.db
+users.json
+logs/*.jsonl
+>>>>>>> origin/privacy-compliance-updates-15433171418981572602

@@ -40,8 +40,12 @@ def render_sidebar():
 
         # Navigation
         st.markdown("### 📍 Navigation")
+<<<<<<< HEAD
         col_nav1, col_nav2 = st.columns(2)
 
+=======
+        col_nav1, col_nav2, col_nav3, col_nav4 = st.columns(4)
+>>>>>>> origin/privacy-compliance-updates-15433171418981572602
         with col_nav1:
 <<<<<<< HEAD
             if st.button(
@@ -93,12 +97,20 @@ def render_sidebar():
             if st.button("💬 Chat", key="nav_chat", use_container_width=True, type="primary" if st.session_state.current_page == "chat" else "secondary", help="Go to Chat"):
                 st.session_state.current_page = "chat"
                 st.rerun()
+<<<<<<< HEAD
             if st.button("📣 Feedback", key="nav_feedback", use_container_width=True, type="primary" if st.session_state.current_page == "feedback" else "secondary", help="Give Feedback"):
                 st.session_state.current_page = "feedback"
 >>>>>>> 89c4a85 (Feedback: [integrations])
                 st.rerun()
 
 
+=======
+        with col_nav4:
+            if st.button("🔒 Privacy", width="stretch", type="primary" if st.session_state.current_page == "privacy" else "secondary", help="Privacy & Security"):
+                st.session_state.current_page = "privacy"
+                st.rerun()
+        
+>>>>>>> origin/privacy-compliance-updates-15433171418981572602
         st.divider()
 
         # 2. User Info (Compact)
