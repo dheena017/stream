@@ -2,6 +2,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import json
 import platform
 import sys
@@ -593,6 +594,9 @@ Python: {platform.python_version()}
 =======
 
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+
+>>>>>>> origin/feedback-integration-17764393616523020931
 import streamlit as st
 import time
 import json
@@ -601,6 +605,7 @@ import platform
 from datetime import datetime
 import pandas as pd
 from ui.common import logout
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 from ui.analytics import get_recent_errors, get_analytics_summary
@@ -622,11 +627,14 @@ import streamlit as st
 from ui.engagement import EngagementManager
 from ui.database import get_user_stats, get_leaderboard
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+>>>>>>> origin/feedback-integration-17764393616523020931
 
 def show_dashboard():
     """Display user dashboard with stats and activity"""
 
     # Modern gradient header for dashboard
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -638,6 +646,9 @@ def show_dashboard():
 >>>>>>> origin/code-quality-refactor-17423438479402428749
 =======
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+    # Modern gradient header for dashboard
+>>>>>>> origin/feedback-integration-17764393616523020931
     st.markdown("""
     <div class="main-header">
         <div style="font-size: 3rem;">📊</div>
@@ -661,6 +672,7 @@ def show_dashboard():
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     # Welcome card
 =======
 >>>>>>> origin/engagement-features-5881933724913241534
@@ -669,6 +681,9 @@ def show_dashboard():
 >>>>>>> origin/code-quality-refactor-17423438479402428749
 =======
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+    # Welcome card
+>>>>>>> origin/feedback-integration-17764393616523020931
     st.markdown(f"""
     <div class="glass-panel" style="margin-bottom: 2rem;">
         <h3 style="margin: 0 0 0.5rem 0; color: var(--text-primary);">Welcome back, {user_name}! 👋</h3>
@@ -676,6 +691,7 @@ def show_dashboard():
     </div>
     """, unsafe_allow_html=True)
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -801,6 +817,8 @@ def show_dashboard():
     st.markdown("<div style='height: 1.5rem;'></div>", unsafe_allow_html=True)
 
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+>>>>>>> origin/feedback-integration-17764393616523020931
     # Activity metrics with modern cards
     col1, col2, col3, col4 = st.columns(4)
 
@@ -845,6 +863,7 @@ def show_dashboard():
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     # Leaderboard Section
     with st.expander("🏆 Leaderboard", expanded=False):
@@ -872,6 +891,8 @@ def show_dashboard():
 >>>>>>> origin/code-quality-refactor-17423438479402428749
 =======
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+>>>>>>> origin/feedback-integration-17764393616523020931
     # Enhanced Quick actions with descriptions
     st.markdown("""
     <h3 style="display: flex; align-items: center; gap: 0.5rem;">
@@ -942,6 +963,24 @@ def show_dashboard():
             else:
                 st.warning("No chat history to export. Start a conversation first!")
 
+<<<<<<< HEAD
+=======
+
+    action_col5, action_col6 = st.columns(2)
+
+    with action_col5:
+        st.markdown("""
+        <div class="action-card">
+            <div class="action-title">📝 Provide Feedback</div>
+            <div class="action-desc">Help us improve by sharing your thoughts, reporting bugs, or suggesting features</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+        if st.button("▶️ Give Feedback", width="stretch", key="quick_feedback_btn"):
+            st.session_state.current_page = "feedback"
+            st.rerun()
+
+>>>>>>> origin/feedback-integration-17764393616523020931
     # Additional quick action shortcuts (enhanced)
     st.markdown("---")
     st.markdown("### ⚡ Additional Actions")
@@ -1202,6 +1241,7 @@ def show_dashboard():
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         # --- Analytics / System Health ---
         st.markdown("---")
         st.markdown("### 🩺 System Health")
@@ -1238,6 +1278,8 @@ def show_dashboard():
 >>>>>>> origin/code-quality-refactor-17423438479402428749
 =======
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+>>>>>>> origin/feedback-integration-17764393616523020931
         st.markdown("---")
         st.markdown("### 📝 Quick Debug Info")
 
@@ -1271,6 +1313,7 @@ Python: {platform.python_version()}
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> origin/analytics-monitoring-17353357073288903889
 =======
 >>>>>>> origin/engagement-features-5881933724913241534
@@ -1278,3 +1321,5 @@ Python: {platform.python_version()}
 >>>>>>> origin/code-quality-refactor-17423438479402428749
 =======
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+>>>>>>> origin/feedback-integration-17764393616523020931

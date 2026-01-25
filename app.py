@@ -463,7 +463,11 @@ from ui.dashboard import show_dashboard
 from ui.feedback import show_feedback_page
 from ui.sidebar import render_sidebar
 from ui.chat import show_chat_page
+<<<<<<< HEAD
 from ui.privacy import show_privacy_page
+=======
+from ui.feedback import show_feedback_page
+>>>>>>> origin/feedback-integration-17764393616523020931
 from ui.database import init_db
 
 # Initialize DB on startup
@@ -606,12 +610,17 @@ def handle_page_routing():
         "dashboard": show_dashboard,
         "profile": show_profile_page,
 <<<<<<< HEAD
+<<<<<<< HEAD
         "chat": show_chat_page,
         "feedback": show_feedback_page
 =======
         "chat": show_chat_page,
         "privacy": show_privacy_page
 >>>>>>> origin/privacy-compliance-updates-15433171418981572602
+=======
+        "chat": show_chat_page,
+        "feedback": show_feedback_page
+>>>>>>> origin/feedback-integration-17764393616523020931
     }
     
     current_page = st.session_state.current_page

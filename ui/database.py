@@ -35,6 +35,7 @@ def init_db():
                      (id INTEGER PRIMARY KEY AUTOINCREMENT, conversation_id TEXT, 
                       role TEXT, content TEXT, meta_json TEXT, timestamp TIMESTAMP)''')
 <<<<<<< HEAD
+<<<<<<< HEAD
 
         # Indexes for performance
         c.execute("CREATE INDEX IF NOT EXISTS idx_conversations_user_updated ON conversations(user_id, updated_at)")
@@ -46,6 +47,13 @@ def init_db():
                      (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id TEXT,
                       rating INTEGER, category TEXT, comment TEXT, created_at TIMESTAMP)''')
 >>>>>>> 89c4a85 (Feedback: [integrations])
+=======
+
+        # feedback: id, user_id, category, rating, comment, timestamp
+        c.execute('''CREATE TABLE IF NOT EXISTS feedback
+                     (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id TEXT,
+                      category TEXT, rating INTEGER, comment TEXT, timestamp TIMESTAMP)''')
+>>>>>>> origin/feedback-integration-17764393616523020931
         conn.commit()
         conn.close()
     except Exception as e:
@@ -249,6 +257,7 @@ def update_conversation_title(conversation_id: str, title: str):
     )
     conn.commit()
     conn.close()
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
 import sqlite3
@@ -746,3 +755,19 @@ def save_feedback(user_id: str, rating: int, comment: str, message_id: str = Non
 >>>>>>> origin/code-quality-refactor-17423438479402428749
 =======
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+
+def save_feedback(user_id: str, category: str, rating: int, comment: str) -> bool:
+    try:
+        conn = sqlite3.connect(DB_FILE)
+        c = conn.cursor()
+        now = datetime.now()
+        c.execute("INSERT INTO feedback (user_id, category, rating, comment, timestamp) VALUES (?, ?, ?, ?, ?)",
+                  (user_id, category, rating, comment, now))
+        conn.commit()
+        conn.close()
+        return True
+    except Exception as e:
+        logger.error(f"Error saving feedback: {e}")
+        return False
+>>>>>>> origin/feedback-integration-17764393616523020931
