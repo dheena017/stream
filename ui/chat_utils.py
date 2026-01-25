@@ -11,6 +11,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 >>>>>>> origin/code-quality-refactor-17423438479402428749
@@ -90,11 +91,21 @@ import asyncio
 import concurrent.futures
 from typing import List, Dict, Optional, Any, Callable, Tuple
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+import streamlit as st
+import logging
+import asyncio
+import time
+import functools
+from typing import List, Dict, Optional, Any, Callable, Tuple
+from concurrent.futures import ThreadPoolExecutor
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
 
 logger = logging.getLogger(__name__)
 
 # BLIP cache holds (processor, model, device)
 BLIP_CACHE: Optional[Tuple[Any, Any, Any]] = None
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -153,12 +164,15 @@ def safe_run_async(coro):
         # No event loop running, safe to use asyncio.run
         return asyncio.run(coro)
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
 
 
 # --- Cached clients / resources ---
 @st.cache_resource
 def get_internet_search_engine():
     from ui.internet_search import InternetSearchEngine
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -196,12 +210,15 @@ def get_internet_search_engine():
 >>>>>>> origin/monitoring-setup-15681340840960488850
 =======
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
     return InternetSearchEngine()
 
 
 @st.cache_resource
 def get_openai_client(api_key: str, base_url: Optional[str] = None):
     from openai import OpenAI
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -256,11 +273,15 @@ def get_openai_client(api_key: str, base_url: Optional[str] = None):
 =======
     return OpenAI(api_key=api_key, base_url=base_url) if base_url else OpenAI(api_key=api_key)
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+    return OpenAI(api_key=api_key, base_url=base_url) if base_url else OpenAI(api_key=api_key)
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
 
 
 @st.cache_resource
 def get_anthropic_client(api_key: str):
     from anthropic import Anthropic
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -296,6 +317,8 @@ def get_anthropic_client(api_key: str):
 >>>>>>> origin/monitoring-setup-15681340840960488850
 =======
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
     return Anthropic(api_key=api_key)
 
 
@@ -303,6 +326,7 @@ def get_anthropic_client(api_key: str):
 def get_google_client(api_key: str):
     # Import dynamically to avoid hard dependency if not used
     import google.generativeai as genai
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -378,12 +402,18 @@ def build_conversation_history(
     return genai
 
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+    genai.configure(api_key=api_key)
+    return genai
+
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
 # --- Conversation helpers ---
 def build_conversation_history(messages: List[Dict], exclude_last: bool = True, max_messages: int = 20, max_chars: int = 50000) -> List[Dict]:
     history = messages[:-1] if exclude_last and len(messages) > 0 else messages
     if not history:
         return []
     formatted = [{"role": msg["role"], "content": msg["content"]} for msg in history if "role" in msg and "content" in msg]
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -418,6 +448,8 @@ def build_conversation_history(messages: List[Dict], exclude_last: bool = True, 
 >>>>>>> origin/monitoring-setup-15681340840960488850
 =======
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
     total_chars = sum(len(m.get("content", "")) for m in formatted)
     if len(formatted) > max_messages or total_chars > max_chars:
         older = formatted[:-max_messages] if len(formatted) > max_messages else []
@@ -427,6 +459,7 @@ def build_conversation_history(messages: List[Dict], exclude_last: bool = True, 
             for msg in older[-10:]:
                 content = msg.get("content", "")
                 preview = content[:200] + "..." if len(content) > 200 else content
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -493,12 +526,17 @@ def build_conversation_history(messages: List[Dict], exclude_last: bool = True, 
                 older_summary_parts.append(f"{msg.get('role', 'unknown').upper()}: {preview}")
             summary_text = "[Earlier conversation summary]\n" + "\n".join(older_summary_parts)
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+                older_summary_parts.append(f"{msg.get('role', 'unknown').upper()}: {preview}")
+            summary_text = "[Earlier conversation summary]\n" + "\n".join(older_summary_parts)
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
             return [{"role": "system", "content": summary_text}] + recent
         else:
             return recent
     return formatted
 
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -552,6 +590,9 @@ def create_openai_messages(conversation_history: List[Dict], current_prompt: str
 =======
 def create_openai_messages(conversation_history: List[Dict], current_prompt: str, system_instruction: Optional[str] = None) -> List[Dict]:
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+def create_openai_messages(conversation_history: List[Dict], current_prompt: str, system_instruction: Optional[str] = None) -> List[Dict]:
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
     messages = []
     if system_instruction:
         messages.append({"role": "system", "content": system_instruction})
@@ -561,6 +602,7 @@ def create_openai_messages(conversation_history: List[Dict], current_prompt: str
 
 
 # --- Resilience Helpers ---
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -628,6 +670,9 @@ import time
 import functools
 
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
 def retry_with_backoff(retries=3, backoff_in_seconds=1):
     def decorator(func):
         @functools.wraps(func)
@@ -638,6 +683,7 @@ def retry_with_backoff(retries=3, backoff_in_seconds=1):
                     return func(*args, **kwargs)
                 except Exception as e:
                     if x == retries:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -704,11 +750,16 @@ def retry_with_backoff(retries=3, backoff_in_seconds=1):
                         raise e
                     sleep = (backoff_in_seconds * 2 ** x)
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+                        raise e
+                    sleep = (backoff_in_seconds * 2 ** x)
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
                     time.sleep(sleep)
                     x += 1
         return wrapper
     return decorator
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -747,20 +798,47 @@ def handle_google_provider(
 =======
 =======
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+
+def run_async_safely(coro):
+    """
+    Safely run an async coroutine in Streamlit.
+    Handles cases where an event loop is already running.
+    """
+    try:
+        # Check if there is a running loop
+        loop = asyncio.get_running_loop()
+    except RuntimeError:
+        loop = None
+
+    if loop and loop.is_running():
+        # If loop is running, offload to thread to get a fresh loop via asyncio.run
+        with ThreadPoolExecutor(max_workers=1) as executor:
+            future = executor.submit(asyncio.run, coro)
+            return future.result()
+    else:
+        return asyncio.run(coro)
+
+
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
 # --- Provider Handlers ---
 def handle_google_provider(
     api_key: str,
     model_name: str,
     prompt: str,
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> origin/monitoring-setup-15681340840960488850
 =======
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
     system_instruction: Optional[str] = None,
     temperature: float = 0.7,
     max_tokens: int = 2048,
     top_p: float = 0.95,
     images: List = None,
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -815,10 +893,13 @@ def handle_google_provider(
 >>>>>>> origin/monitoring-setup-15681340840960488850
 =======
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
     enable_streaming: bool = False
 ) -> str:
     try:
         if not api_key: return "Please provide a Google API Key."
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -863,6 +944,10 @@ def handle_google_provider(
         import google.generativeai as genai
         # Configure the global instance
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+        import google.generativeai as genai
+        # Configure the global instance
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
         genai.configure(api_key=api_key)
 
         # Mapping config specifically for GenerativeModel
@@ -871,6 +956,7 @@ def handle_google_provider(
             max_output_tokens=max_tokens,
             top_p=top_p
         )
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
         
@@ -996,6 +1082,20 @@ def handle_google_provider(
 =======
 =======
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+
+        # Initialize model
+        try:
+            model = genai.GenerativeModel(model_name=model_name, system_instruction=system_instruction)
+        except TypeError:
+            # Fallback for older SDK versions
+            model = genai.GenerativeModel(model_name=model_name)
+            if system_instruction:
+                prompt = f"{system_instruction}\n\n{prompt}"
+
+        contents = []
+        if images:
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
             for img in images:
                 # Gemai SDK can take PIL images directly in 'contents'
                 contents.append(img)
@@ -1003,18 +1103,24 @@ def handle_google_provider(
         contents.append(prompt)
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> origin/monitoring-setup-15681340840960488850
 =======
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
         @retry_with_backoff(retries=2)
         def _generate():
             # For gemini, we can pass stream=True/False to generate_content
+=======
+        @retry_with_backoff(retries=2)
+        def _generate():
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
             return model.generate_content(
                 contents,
                 generation_config=generation_config,
                 stream=enable_streaming
             )
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1056,10 +1162,13 @@ def handle_google_provider(
 >>>>>>> origin/monitoring-setup-15681340840960488850
 =======
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
         response = _generate()
 
         if enable_streaming:
             collected_text = []
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1094,11 +1203,14 @@ def handle_google_provider(
 >>>>>>> origin/monitoring-setup-15681340840960488850
 =======
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
             def _stream_gen():
                 for chunk in response:
                     if chunk.text:
                         collected_text.append(chunk.text)
                         yield chunk.text
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
             
@@ -1108,10 +1220,14 @@ def handle_google_provider(
 =======
 
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
             try:
                 st.write_stream(_stream_gen())
             except Exception as e:
                 logger.warning(f"Google streaming visualization failed: {e}")
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
             
@@ -1198,12 +1314,16 @@ def handle_google_provider(
 =======
 
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
             return "".join(collected_text)
         else:
              return response.text
 
     except Exception as e:
         logger.error(f"Google provider error: {e}")
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
         return f"Error: Google Gemini - {str(e)}"
@@ -1229,6 +1349,10 @@ def handle_google_provider(
         return f"Error connecting to Google Gemini: {str(e)}"
 
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+        return f"Error connecting to Google Gemini: {str(e)}"
+
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
 def handle_anthropic_provider(
     api_key: str,
     model_name: str,
@@ -1236,6 +1360,7 @@ def handle_anthropic_provider(
     system_instruction: Optional[str] = None,
     temperature: float = 0.7,
     max_tokens: int = 2048,
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1287,10 +1412,13 @@ def handle_anthropic_provider(
 >>>>>>> origin/monitoring-setup-15681340840960488850
 =======
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
     enable_streaming: bool = False
 ) -> str:
     try:
         if not api_key: return "Please provide an Anthropic API Key."
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1321,6 +1449,8 @@ def handle_anthropic_provider(
 >>>>>>> origin/monitoring-setup-15681340840960488850
 =======
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
         from anthropic import Anthropic
         client = Anthropic(api_key=api_key)
 
@@ -1329,6 +1459,7 @@ def handle_anthropic_provider(
              "messages": messages,
              "max_tokens": max_tokens,
              "temperature": temperature,
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1363,6 +1494,8 @@ def handle_anthropic_provider(
 >>>>>>> origin/monitoring-setup-15681340840960488850
 =======
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
         }
         if system_instruction:
              kwargs["system"] = system_instruction
@@ -1386,6 +1519,7 @@ def handle_anthropic_provider(
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         response = _create_message()
         
 =======
@@ -1396,11 +1530,16 @@ def handle_anthropic_provider(
         response = _create_message()
 
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+        response = _create_message()
+
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
         if enable_streaming:
             collected_text = []
             def _stream_gen():
                 for event in response:
                     if event.type == 'content_block_delta':
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1438,18 +1577,24 @@ def handle_anthropic_provider(
 =======
 =======
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
                         text = event.delta.text
                         collected_text.append(text)
                         yield text
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> origin/monitoring-setup-15681340840960488850
 =======
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
             try:
                 st.write_stream(_stream_gen())
             except Exception:
                 pass
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1484,11 +1629,14 @@ def handle_anthropic_provider(
 >>>>>>> origin/monitoring-setup-15681340840960488850
 =======
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
             return "".join(collected_text)
         else:
             return response.content[0].text
 
     except Exception as e:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1561,6 +1709,10 @@ def handle_anthropic_provider(
          logger.error(f"Anthropic provider error: {e}")
          return f"Error connecting to Anthropic Claude: {str(e)}"
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+         logger.error(f"Anthropic provider error: {e}")
+         return f"Error connecting to Anthropic Claude: {str(e)}"
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
 
 def generate_standard_response(
     provider: str,
@@ -1570,6 +1722,7 @@ def generate_standard_response(
     chat_history: List[Dict],
     system_instruction: str = "",
     config: Dict[str, Any] = {},
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1616,10 +1769,14 @@ def generate_standard_response(
 =======
     images: List = None
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+    images: List = None
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
 ) -> str:
     """Unified dispatcher for standard mode chat generation"""
     api_key = api_keys.get(provider)
     if not api_key:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1707,10 +1864,16 @@ def generate_standard_response(
 
     try:
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+        return f"❌ Missing API Key for {provider}. Please check sidebar settings."
+
+    try:
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
         temp = config.get('temperature', 0.7)
         max_tok = config.get('max_tokens', 2048)
         top_p = config.get('top_p', 0.95)
         stream = config.get('enable_streaming', False)
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1740,18 +1903,27 @@ def generate_standard_response(
         if provider == "google":
             return handle_google_provider(
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+
+        if provider == "google":
+            return handle_google_provider(
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
                 api_key, model_name, prompt, system_instruction,
                 temp, max_tok, top_p, images, enable_streaming=stream
             )
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> origin/monitoring-setup-15681340840960488850
 =======
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
         elif provider in ["openai", "together", "xai", "deepseek"]:
             base_urls = {
                 "together": "https://api.together.xyz/v1",
                 "xai": "https://api.x.ai/v1",
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1800,6 +1972,9 @@ def generate_standard_response(
 =======
                 "deepseek": "https://api.deepseek.com"
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+                "deepseek": "https://api.deepseek.com"
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
             }
             client = get_openai_client(api_key, base_urls.get(provider))
             msgs = create_openai_messages(build_conversation_history(chat_history), prompt, system_instruction)
@@ -1807,6 +1982,7 @@ def generate_standard_response(
 
         elif provider == "anthropic":
             # Anthropic expects just user/assistant messages
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1850,10 +2026,14 @@ def generate_standard_response(
 =======
             msgs = [{"role": "user", "content": prompt}] # Simplified for this call; ideally use full history if supported
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+            msgs = [{"role": "user", "content": prompt}] # Simplified for this call; ideally use full history if supported
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
             return handle_anthropic_provider(
                 api_key, model_name, msgs, system_instruction,
                 temp, max_tok, enable_streaming=stream
             )
+<<<<<<< HEAD
 <<<<<<< HEAD
             
         return "Provider not supported."
@@ -1930,11 +2110,15 @@ def prepare_brain_configuration(
 =======
 
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
         return "Provider not supported."
 
     except Exception as e:
         return f"Generation Error: {str(e)}"
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1982,14 +2166,19 @@ def prepare_brain_configuration(api_keys: Dict[str, str], requested_models: List
 
 =======
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
 def prepare_brain_configuration(api_keys: Dict[str, str], requested_models: List[str] = None) -> List[Dict[str, Any]]:
     """Helper to build the list of models for Brain Mode based on available keys"""
     models_to_query = []
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> origin/monitoring-setup-15681340840960488850
 =======
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
     # Default strategy: Use available keys (simplified)
     # In a real app, 'requested_models' would come from user config
 
@@ -2002,6 +2191,7 @@ def prepare_brain_configuration(api_keys: Dict[str, str], requested_models: List
     if api_keys.get('anthropic'):
          models_to_query.append({"provider": "anthropic", "model": "claude-3-5-haiku-20241022", "api_key": api_keys['anthropic']})
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -2061,6 +2251,10 @@ def prepare_brain_configuration(api_keys: Dict[str, str], requested_models: List
     return models_to_query
 
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+    return models_to_query
+
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
 def handle_openai_compatible_provider(
     client: Any,
     model_name: str,
@@ -2068,6 +2262,7 @@ def handle_openai_compatible_provider(
     temperature: float,
     max_tokens: int,
     top_p: float,
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -2117,6 +2312,9 @@ def handle_openai_compatible_provider(
 =======
     enable_streaming: bool
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+    enable_streaming: bool
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
 ) -> str:
     @retry_with_backoff(retries=2)
     def _create_completion(stream_mode):
@@ -2126,6 +2324,7 @@ def handle_openai_compatible_provider(
             temperature=temperature,
             max_tokens=max_tokens,
             top_p=top_p,
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -2202,10 +2401,16 @@ def handle_openai_compatible_provider(
         )
 
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+            stream=stream_mode
+        )
+
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
     if enable_streaming:
         try:
             stream = _create_completion(True)
         except Exception as e:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -2284,11 +2489,17 @@ def handle_openai_compatible_provider(
 
         collected_chunks = []
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+            return f"Error: {str(e)}"
+
+        collected_chunks = []
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
         def _iter_chunks():
             for chunk in stream:
                 piece = chunk.choices[0].delta.content or ""
                 collected_chunks.append(piece)
                 yield piece
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -2326,12 +2537,15 @@ def handle_openai_compatible_provider(
 >>>>>>> origin/monitoring-setup-15681340840960488850
 =======
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
         # Stream to Streamlit (best-effort)
         try:
             st.write_stream(_iter_chunks())
         except Exception:
             pass
         response_text = "".join(collected_chunks)
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -2386,10 +2600,14 @@ def handle_openai_compatible_provider(
 =======
         return response_text if response_text else "I apologize, but I couldn't generate a response."
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+        return response_text if response_text else "I apologize, but I couldn't generate a response."
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
     else:
         try:
             response = _create_completion(False)
         except Exception as e:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -2470,12 +2688,18 @@ def handle_openai_compatible_provider(
 
         response_text = getattr(response.choices[0].message, 'content', None) or response.choices[0].message['content']
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+            return f"Error: {str(e)}"
+
+        response_text = getattr(response.choices[0].message, 'content', None) or response.choices[0].message['content']
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
         if not response_text:
             response_text = "I apologize, but I couldn't generate a response."
         try:
             st.markdown(response_text)
         except Exception:
             pass
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -2513,10 +2737,13 @@ def handle_openai_compatible_provider(
 >>>>>>> origin/monitoring-setup-15681340840960488850
 =======
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
         return response_text
 
 
 # --- Internet search integration ---
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -2574,10 +2801,14 @@ def perform_internet_search(query: str, enable_search: bool = True, max_results:
 =======
 def perform_internet_search(query: str, enable_search: bool = True, max_results: int = 5, search_type: str = "Web", time_range: str = "Anytime", domain: str = None) -> tuple[List[Dict], str]:
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+def perform_internet_search(query: str, enable_search: bool = True, max_results: int = 5, search_type: str = "Web", time_range: str = "Anytime", domain: str = None) -> tuple[List[Dict], str]:
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
     if not enable_search:
         return [], ""
     try:
         search_engine = get_internet_search_engine()
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
         
@@ -2587,6 +2818,9 @@ def perform_internet_search(query: str, enable_search: bool = True, max_results:
 =======
 
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
         if search_type == "News":
              # News search generally supports time range implicitly by recency,
              # but standard DDG news api might handle max_results.
@@ -2595,6 +2829,7 @@ def perform_internet_search(query: str, enable_search: bool = True, max_results:
              results = search_engine.search_news(query, max_results=max_results)
         else:
              # Standard Web Search with filters
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -2621,10 +2856,13 @@ def perform_internet_search(query: str, enable_search: bool = True, max_results:
 >>>>>>> origin/monitoring-setup-15681340840960488850
 =======
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
              results = search_engine.search(query, max_results=max_results, time_range=time_range, domain=domain)
 
         if results:
             from ui.internet_search import create_search_context
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -2662,6 +2900,8 @@ def perform_internet_search(query: str, enable_search: bool = True, max_results:
 >>>>>>> origin/monitoring-setup-15681340840960488850
 =======
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
             context = create_search_context(results, query)
             logger.info(f"Search completed with {len(results)} results")
             return results, context
@@ -2687,6 +2927,7 @@ def augment_prompt_with_search(prompt: str, search_results: List[Dict]) -> str:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> origin/analytics-monitoring-17353357073288903889
@@ -2712,6 +2953,8 @@ def augment_prompt_with_search(prompt: str, search_results: List[Dict]) -> str:
 >>>>>>> origin/monitoring-setup-15681340840960488850
 =======
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
     context = create_search_context(search_results, prompt)
     augmented = f"""{prompt}
 
@@ -2723,6 +2966,7 @@ Please use the above search results to provide a current and accurate answer."""
 
 
 # --- Multimodal helpers ---
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -2880,10 +3124,13 @@ def process_images_for_context(images: List) -> List[Dict]:
 >>>>>>> origin/monitoring-setup-15681340840960488850
 =======
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
 def process_images_for_context(images: List) -> List[Dict]:
     results = []
     try:
         from PIL import Image
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -2894,11 +3141,14 @@ def process_images_for_context(images: List) -> List[Dict]:
 >>>>>>> origin/monitoring-setup-15681340840960488850
 =======
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
         for i, img in enumerate(images, 1):
             caption = None
             try:
                 info = getattr(img, 'info', {}) or {}
                 caption = info.get('description') or info.get('caption')
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -2933,6 +3183,8 @@ def process_images_for_context(images: List) -> List[Dict]:
 >>>>>>> origin/monitoring-setup-15681340840960488850
 =======
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
             except Exception:
                 caption = None
             if not caption:
@@ -2945,6 +3197,7 @@ def process_images_for_context(images: List) -> List[Dict]:
         logger.error(f"process_images_for_context error: {e}")
     return results
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -2967,10 +3220,13 @@ def process_images_for_context(images: List) -> List[Dict]:
 >>>>>>> origin/monitoring-setup-15681340840960488850
 =======
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
 
 def transcribe_audio_file(file_like) -> str:
     try:
         import speech_recognition as sr
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -3055,6 +3311,10 @@ def transcribe_audio_file(audio_bytes: bytes) -> str:
         recognizer = sr.Recognizer()
         with sr.AudioFile(file_like) as source:
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+        recognizer = sr.Recognizer()
+        with sr.AudioFile(file_like) as source:
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
             audio = recognizer.record(source)
         try:
             text = recognizer.recognize_google(audio)
@@ -3067,6 +3327,7 @@ def transcribe_audio_file(audio_bytes: bytes) -> str:
         return "[Transcription unavailable - install speech_recognition]"
 
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -3140,6 +3401,11 @@ def extract_video_frame_thumbnails(file_like, max_frames: int = 3) -> List[str]:
     thumbnails: List[str] = []
     try:
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+def extract_video_frame_thumbnails(file_like, max_frames: int = 3) -> List[str]:
+    thumbnails: List[str] = []
+    try:
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
         import importlib
         moviepy = importlib.import_module("moviepy.editor")
         VideoFileClip = getattr(moviepy, "VideoFileClip")
@@ -3149,6 +3415,7 @@ def extract_video_frame_thumbnails(file_like, max_frames: int = 3) -> List[str]:
         from PIL import Image
 
         with tempfile.NamedTemporaryFile(suffix='.mp4', delete=True) as tmp:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -3192,6 +3459,9 @@ def extract_video_frame_thumbnails(file_like, max_frames: int = 3) -> List[str]:
 =======
             tmp.write(file_like.read())
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+            tmp.write(file_like.read())
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
             tmp.flush()
             clip = VideoFileClip(tmp.name)
             duration = clip.duration or 0
@@ -3201,6 +3471,7 @@ def extract_video_frame_thumbnails(file_like, max_frames: int = 3) -> List[str]:
                 img = Image.fromarray(frame)
                 buf = BytesIO()
                 img.thumbnail((320, 320))
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -3263,6 +3534,10 @@ def extract_video_frame_thumbnails(file_like, max_frames: int = 3) -> List[str]:
                 img.save(buf, format='PNG')
                 b64 = base64.b64encode(buf.getvalue()).decode('utf-8')
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+                img.save(buf, format='PNG')
+                b64 = base64.b64encode(buf.getvalue()).decode('utf-8')
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
                 thumbnails.append(f"data:image/png;base64,{b64}")
             try:
                 clip.reader.close()
@@ -3274,6 +3549,7 @@ def extract_video_frame_thumbnails(file_like, max_frames: int = 3) -> List[str]:
     return thumbnails
 
 
+<<<<<<< HEAD
 
 # Consolidated BLIP Logic is now at the bottom of the file
 # Removed duplicate definition to fix linter error
@@ -3288,10 +3564,14 @@ def generate_blip_caption(image) -> Optional[str]:
 >>>>>>> origin/monitoring-setup-15681340840960488850
 =======
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+def generate_blip_caption(image) -> Optional[str]:
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
     try:
         processor, model, device = get_blip_model()
         inputs = processor(images=image, return_tensors="pt").to(device)
         import torch
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -3329,6 +3609,8 @@ def generate_blip_caption(image) -> Optional[str]:
 >>>>>>> origin/monitoring-setup-15681340840960488850
 =======
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
         with torch.no_grad():
             output_ids = model.generate(**inputs, max_new_tokens=50)
         caption = processor.decode(output_ids[0], skip_special_tokens=True)
@@ -3338,6 +3620,7 @@ def generate_blip_caption(image) -> Optional[str]:
         return None
 
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -3392,6 +3675,8 @@ def call_hosted_caption_api(
 >>>>>>> origin/monitoring-setup-15681340840960488850
 =======
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
 def call_hosted_caption_api(image, api_url: str, api_key: Optional[str] = None) -> Optional[str]:
     try:
         import requests
@@ -3407,6 +3692,7 @@ def call_hosted_caption_api(image, api_url: str, api_key: Optional[str] = None) 
         resp.raise_for_status()
         data = resp.json()
         return data.get('caption') or data.get('text')
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -3441,11 +3727,14 @@ def call_hosted_caption_api(image, api_url: str, api_key: Optional[str] = None) 
 >>>>>>> origin/monitoring-setup-15681340840960488850
 =======
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
     except Exception as e:
         logger.info(f"Hosted caption API call failed: {e}")
         return None
 
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -3500,6 +3789,9 @@ def generate_image_captions(images: List, use_blip: bool = False, hosted_api_url
 =======
 def generate_image_captions(images: List, use_blip: bool = False, hosted_api_url: Optional[str] = None, hosted_api_key: Optional[str] = None) -> List[Dict]:
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+def generate_image_captions(images: List, use_blip: bool = False, hosted_api_url: Optional[str] = None, hosted_api_key: Optional[str] = None) -> List[Dict]:
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
     if not images:
         return []
     results = []
@@ -3517,6 +3809,7 @@ def generate_image_captions(images: List, use_blip: bool = False, hosted_api_url
                 logger.info(f"BLIP caption failed for image {i}: {e}")
         if not caption:
             fallback = process_images_for_context([img])[0]
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -3566,6 +3859,9 @@ def generate_image_captions(images: List, use_blip: bool = False, hosted_api_url
 =======
             caption = fallback.get('caption')
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+            caption = fallback.get('caption')
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
         results.append({"name": f"image_{i}", "caption": caption})
     return results
 
@@ -3581,6 +3877,7 @@ def preload_blip_model(timeout: int = 120) -> bool:
 
 @st.cache_resource(show_spinner=False)
 def _load_blip_resources():
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -3630,15 +3927,20 @@ def _load_blip_resources():
 =======
 =======
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
     from transformers import BlipProcessor, BlipForConditionalGeneration
     import torch
 
     model_id = "Salesforce/blip-image-captioning-base"
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> origin/monitoring-setup-15681340840960488850
 =======
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
     # helper to load with retry strategy
     def load_with_fallback(cls, model_id):
         # 1. Try local cache first
@@ -3652,6 +3954,7 @@ def _load_blip_resources():
     model = load_with_fallback(BlipForConditionalGeneration, model_id)
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     
 =======
 
@@ -3659,10 +3962,14 @@ def _load_blip_resources():
 =======
 
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
     device = "cuda" if torch.cuda.is_available() else "cpu"
     model.to(device)
     return processor, model, device
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -3706,10 +4013,13 @@ def preload_blip_model_with_progress(
 >>>>>>> origin/monitoring-setup-15681340840960488850
 =======
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
 def get_blip_model():
     return _load_blip_resources()
 
 def preload_blip_model_with_progress(progress_callback: Optional[Callable[[int, str], None]] = None) -> bool:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -3744,6 +4054,8 @@ def preload_blip_model_with_progress(progress_callback: Optional[Callable[[int, 
 >>>>>>> origin/monitoring-setup-15681340840960488850
 =======
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
     """
     Simulated progress loader that actually just triggers the cached resource load.
     Since st.cache_resource handles the singleton, we just call it.
@@ -3753,6 +4065,7 @@ def preload_blip_model_with_progress(progress_callback: Optional[Callable[[int, 
             progress_callback(10, "Checking local cache...")
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         
         # We'll use a thread/process safe check by just calling the cached function
         # Streamlit's cache will handle the heavy lifting.
@@ -3760,14 +4073,19 @@ def preload_blip_model_with_progress(progress_callback: Optional[Callable[[int, 
 =======
 =======
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
 
         # We'll use a thread/process safe check by just calling the cached function
         # Streamlit's cache will handle the heavy lifting.
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> origin/monitoring-setup-15681340840960488850
 =======
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
         if progress_callback:
              progress_callback(30, "Loading BLIP model items...")
 
@@ -3775,6 +4093,7 @@ def preload_blip_model_with_progress(progress_callback: Optional[Callable[[int, 
         _load_blip_resources()
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         
 =======
 
@@ -3782,12 +4101,16 @@ def preload_blip_model_with_progress(progress_callback: Optional[Callable[[int, 
 =======
 
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
         if progress_callback:
             progress_callback(100, "BLIP model ready")
         return True
     except Exception as e:
         logger.error(f"BLIP load failed: {e}")
         if progress_callback:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -3846,3 +4169,7 @@ def serialize_messages(messages: List[Dict]) -> List[Dict]:
              progress_callback(0, f"Failed: {str(e)}")
         return False
 >>>>>>> origin/fix-syntax-error-and-asyncio-safety-16013430086854294306
+=======
+             progress_callback(0, f"Failed: {str(e)}")
+        return False
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949

@@ -7,6 +7,7 @@ import json
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 from ui.ethics import EthicsGuardian
 =======
 from typing import Any, Dict, List
@@ -64,6 +65,14 @@ import time
 from datetime import datetime
 from monitoring import get_monitor
 >>>>>>> origin/monitoring-setup-15681340840960488850
+=======
+import logging
+from datetime import datetime
+from typing import List, Dict, Any, Optional
+
+# Configure logger
+logger = logging.getLogger(__name__)
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
 
 
 class AIBrain:
@@ -110,7 +119,11 @@ class AIBrain:
             return [{"error": "DuckDuckGo search not available. Install: pip install duckduckgo-search"}]
 >>>>>>> origin/code-review-security-fixes-5343699314450815094
         except Exception as e:
+<<<<<<< HEAD
             logger.error(f"Search failed: {str(e)}")
+=======
+            logger.error(f"Internet search failed: {e}")
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
             return [{"error": f"Search failed: {str(e)}"}]
 <<<<<<< HEAD
 
@@ -150,7 +163,11 @@ class AIBrain:
             # Limit to first 2000 characters
             return text[:2000]
         except Exception as e:
+<<<<<<< HEAD
             logger.error(f"Failed to scrape webpage: {str(e)}")
+=======
+            logger.error(f"Webpage scraping failed: {e}")
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
             return f"Failed to scrape webpage: {str(e)}"
 
 =======
@@ -164,6 +181,7 @@ class AIBrain:
 
         # Search internet
         search_results = self.search_internet(query, num_results=3)
+<<<<<<< HEAD
 
         context = "\n\n--- INTERNET KNOWLEDGE ---\n"
 
@@ -177,6 +195,131 @@ class AIBrain:
             context += f"   Source: {result['url']}\n"
 
         return context
+=======
+        
+        context_parts = ["\n\n--- INTERNET KNOWLEDGE ---\n"]
+        
+        for i, result in enumerate(search_results, 1):
+            if 'error' in result:
+                context_parts.append(f"Search error: {result['error']}\n")
+                continue
+                
+            context_parts.append(f"\n{i}. {result['title']}\n")
+            context_parts.append(f"   {result['snippet']}\n")
+            context_parts.append(f"   Source: {result['url']}\n")
+        
+        return "".join(context_parts)
+    
+    async def _query_google(
+        self,
+        model_name: str,
+        prompt: str,
+        api_key: str
+    ) -> Dict[str, Any]:
+        """Helper to query Google models"""
+        try:
+            from google import genai
+            client = genai.Client(api_key=api_key)
+
+            # New SDK doesn't accept config dict directly
+            response = client.models.generate_content(
+                model=model_name,
+                contents=[{"role": "user", "parts": [{"text": prompt}]}]
+            )
+            return {
+                "provider": "google",
+                "model": model_name,
+                "response": response.text,
+                "success": True
+            }
+        except Exception as e:
+            logger.error(f"Google query failed: {e}")
+            return {
+                "provider": "google",
+                "model": model_name,
+                "response": f"Error: {str(e)}",
+                "success": False
+            }
+
+    async def _query_openai_compatible(
+        self,
+        provider: str,
+        model_name: str,
+        prompt: str,
+        api_key: str,
+        config: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Helper to query OpenAI-compatible models"""
+        try:
+            from openai import OpenAI
+            
+            base_urls = {
+                "together": "https://api.together.xyz/v1",
+                "xai": "https://api.x.ai/v1",
+                "deepseek": "https://api.deepseek.com"
+            }
+            
+            client = OpenAI(
+                api_key=api_key,
+                base_url=base_urls.get(provider)
+            )
+
+            response = client.chat.completions.create(
+                model=model_name,
+                messages=[{"role": "user", "content": prompt}],
+                temperature=config.get("temperature", 0.7),
+                max_tokens=config.get("max_output_tokens", 1024)
+            )
+
+            return {
+                "provider": provider,
+                "model": model_name,
+                "response": response.choices[0].message.content,
+                "success": True
+            }
+        except Exception as e:
+            logger.error(f"{provider} query failed: {e}")
+            return {
+                "provider": provider,
+                "model": model_name,
+                "response": f"Error: {str(e)}",
+                "success": False
+            }
+
+    async def _query_anthropic(
+        self,
+        model_name: str,
+        prompt: str,
+        api_key: str,
+        config: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Helper to query Anthropic models"""
+        try:
+            from anthropic import Anthropic
+            client = Anthropic(api_key=api_key)
+
+            response = client.messages.create(
+                model=model_name,
+                messages=[{"role": "user", "content": prompt}],
+                max_tokens=config.get("max_output_tokens", 1024),
+                temperature=config.get("temperature", 0.7)
+            )
+
+            return {
+                "provider": "anthropic",
+                "model": model_name,
+                "response": response.content[0].text,
+                "success": True
+            }
+        except Exception as e:
+            logger.error(f"Anthropic query failed: {e}")
+            return {
+                "provider": "anthropic",
+                "model": model_name,
+                "response": f"Error: {str(e)}",
+                "success": False
+            }
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
 
     async def query_model(
         self,
@@ -187,6 +330,7 @@ class AIBrain:
         config: Dict[str, Any],
     ) -> Dict[str, str]:
         """Query a single AI model"""
+<<<<<<< HEAD
 <<<<<<< HEAD
 
         # Ethics Check on Prompt
@@ -298,6 +442,34 @@ class AIBrain:
                 "model": model_name,
                 "response": f"Error: {str(e)}",
                 "success": False,
+=======
+        # Validate prompt is not empty
+        if not prompt or not prompt.strip():
+            return {
+                "provider": provider,
+                "model": model_name,
+                "response": "Error: Prompt cannot be empty",
+                "success": False
+            }
+
+        if provider == "google":
+            return await self._query_google(model_name, prompt, api_key)
+
+        elif provider in ["openai", "together", "xai", "deepseek"]:
+            return await self._query_openai_compatible(
+                provider, model_name, prompt, api_key, config
+            )
+
+        elif provider == "anthropic":
+            return await self._query_anthropic(model_name, prompt, api_key, config)
+
+        else:
+            return {
+                "provider": provider,
+                "model": model_name,
+                "response": f"Error: Unsupported provider {provider}",
+                "success": False
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
             }
 
     async def query_multiple_models(
@@ -321,6 +493,7 @@ class AIBrain:
     def synthesize_responses(
         self, query: str, model_responses: List[Dict[str, str]], internet_context: str
     ) -> str:
+<<<<<<< HEAD
         """Synthesize multiple AI responses and internet knowledge into a unified answer"""
 <<<<<<< HEAD
 =======
@@ -338,19 +511,41 @@ class AIBrain:
         # Add model responses
         synthesis += "## AI Model Responses\n\n"
 
+=======
+        """Synthesize multiple AI responses and internet knowledge"""
+        
+        parts = [f"# AI Brain Synthesis\n\n**Your Question:** {query}\n\n"]
+        
+        # Add internet context if available
+        if internet_context and internet_context.strip():
+            parts.append(f"## Internet Knowledge\n{internet_context}\n\n")
+        
+        # Add model responses
+        parts.append("## AI Model Responses\n\n")
+        
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
         successful_responses = [r for r in model_responses if r.get("success")]
 
         for i, response in enumerate(successful_responses, 1):
+<<<<<<< HEAD
             synthesis += (
                 f"### {i}. {response['provider'].upper()} - {response['model']}\n"
             )
             synthesis += f"{response['response']}\n\n"
 
+=======
+            parts.append(
+                f"### {i}. {response['provider'].upper()} - {response['model']}\n"
+            )
+            parts.append(f"{response['response']}\n\n")
+        
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
         # Add failed models if any
         failed_responses = [r for r in model_responses if not r.get("success")]
         if failed_responses:
-            synthesis += "\n## Failed Queries\n"
+            parts.append("\n## Failed Queries\n")
             for response in failed_responses:
+<<<<<<< HEAD
                 synthesis += f"- {response['provider']}/{response['model']}: {response['response']}\n"
 
         # Add summary
@@ -369,6 +564,23 @@ class AIBrain:
 
         return synthesis
 
+=======
+                parts.append(
+                    f"- {response['provider']}/{response['model']}: "
+                    f"{response['response']}\n"
+                )
+        
+        # Add summary
+        parts.append("\n---\n\n")
+        parts.append(f"**Total models consulted:** {len(model_responses)}\n")
+        parts.append(f"**Successful responses:** {len(successful_responses)}\n")
+        parts.append(
+            f"**Internet search:** {'✓ Enabled' if internet_context else '✗ Disabled'}\n"
+        )
+        
+        return "".join(parts)
+    
+>>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
     def add_to_memory(self, query: str, response: str):
         """Store conversation in memory"""
         self.conversation_memory.append(
