@@ -11,6 +11,20 @@ This project is a Streamlit-based multi-provider AI chat with multimodal (image/
 - Provide an endpoint that accepts multipart image uploads and returns JSON containing `caption` or `text` fields.
 - The app will prefer the hosted caption API if configured, then BLIP (if available), then fallback heuristics.
 
+## Documentation
+- [Hosted Caption Setup](docs/HOSTED_CAPTION_SETUP.md)
+- [Internet Search Guide](docs/INTERNET_SEARCH_GUIDE.md)
+- [Internet Search Quickstart](docs/INTERNET_SEARCH_QUICKSTART.md)
+- [Internet Search Summary](docs/INTERNET_SEARCH_SUMMARY.md)
+- [Internet Search Verification](docs/INTERNET_SEARCH_VERIFICATION.md)
+
+## Community
+- **Active Contributors**: 5+
+- **Latest Release**: v1.0.0
+- **Issues**: Check GitHub Issues for latest updates.
+
+We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for more details.
+
 ## Running locally
 Create and activate a virtual environment, then install dependencies:
 
