@@ -4672,6 +4672,7 @@ def show_chat_page():
 >>>>>>> origin/accessibility-improvements-8538246568398497801
             <div>
 <<<<<<< HEAD
+<<<<<<< HEAD
                 <h2 class="chat-title">Multi-Provider Chat</h2>
                 <div class="chat-subtitle">
 =======
@@ -4692,6 +4693,16 @@ def show_chat_page():
                     <span class="subtle-text">GPT-4 • Claude • Gemini</span>
 >>>>>>> origin/ui-ux-improvements-3860328367442600035
                 </div>
+=======
+                <h2 style="margin: 0; font-weight: 700; color: white;">Multi-Provider Chat</h2>
+                <ul style="display: flex; gap: 0.8rem; flex-wrap: wrap; margin-top: 0.25rem; list-style: none; padding: 0;">
+                    <li class="subtle-text">GPT-4</li>
+                    <li class="subtle-text" aria-hidden="true">•</li>
+                    <li class="subtle-text">Claude</li>
+                    <li class="subtle-text" aria-hidden="true">•</li>
+                    <li class="subtle-text">Gemini</li>
+                </ul>
+>>>>>>> origin/accessibility-improvements-11788990073009031255
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -4703,6 +4714,7 @@ def show_chat_page():
         inet_on = st.session_state.get('enable_internet_search', False)
         
         status_html = f"""
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -4722,6 +4734,9 @@ def show_chat_page():
         </style>
         <div class="chat-status-container">
 >>>>>>> origin/mobile-optimization-12966885757340563810
+=======
+        <div style="text-align: right;" role="status" aria-live="polite">
+>>>>>>> origin/accessibility-improvements-11788990073009031255
             <div class="status-badge {'active' if brain_on else ''}" style="display:inline-flex; width:auto; font-size:0.8rem; padding: 2px 8px;">
 >>>>>>> origin/mobile-optimizations-15403240101322836592
                 {'🧠 Brain' if brain_on else '🤖 Std'}

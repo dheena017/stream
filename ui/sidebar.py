@@ -32,6 +32,7 @@ def render_sidebar():
     with st.sidebar:
         # 1. Header & Theme
 <<<<<<< HEAD
+<<<<<<< HEAD
         st.markdown(
             """
         <div class="sidebar-header">
@@ -44,6 +45,12 @@ def render_sidebar():
             </h2>
 >>>>>>> origin/accessibility-improvements-8538246568398497801
         </div>
+=======
+        st.markdown("""
+        <header class="sidebar-header">
+            <h1 style="color: white; margin: 0; font-size: 1.4rem; font-weight: 800; letter-spacing: 0.5px;">⚙️ Control Panel</h1>
+        </header>
+>>>>>>> origin/accessibility-improvements-11788990073009031255
         """, unsafe_allow_html=True)
 
         # Navigation
