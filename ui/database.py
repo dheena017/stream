@@ -21,6 +21,10 @@ def init_db():
         c.execute('''CREATE TABLE IF NOT EXISTS messages
                      (id INTEGER PRIMARY KEY AUTOINCREMENT, conversation_id TEXT, 
                       role TEXT, content TEXT, meta_json TEXT, timestamp TIMESTAMP)''')
+
+        # Indexes for performance
+        c.execute("CREATE INDEX IF NOT EXISTS idx_conversations_user_updated ON conversations(user_id, updated_at)")
+
         conn.commit()
         conn.close()
     except Exception as e:
