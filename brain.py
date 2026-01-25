@@ -5,10 +5,14 @@ AI Brain Module - Combines multiple AI models and internet knowledge
 import asyncio
 import json
 <<<<<<< HEAD
+<<<<<<< HEAD
 from ui.ethics import EthicsGuardian
 =======
 from typing import Any, Dict, List
 >>>>>>> origin/code-quality-refactor-17423438479402428749
+=======
+import logging
+>>>>>>> origin/code-review-security-fixes-5343699314450815094
 from datetime import datetime
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -53,6 +57,8 @@ def _scrape_webpage_cached(url: str) -> str:
 import streamlit as st
 >>>>>>> origin/performance-optimizations-caching-2508816788705387048
 
+logger = logging.getLogger(__name__)
+
 
 class AIBrain:
     """
@@ -87,12 +93,18 @@ class AIBrain:
                     )
             return results
         except ImportError:
+<<<<<<< HEAD
             return [
                 {
                     "error": "DuckDuckGo search not available. Install: pip install duckduckgo-search"
                 }
             ]
+=======
+            logger.warning("DuckDuckGo search not available.")
+            return [{"error": "DuckDuckGo search not available. Install: pip install duckduckgo-search"}]
+>>>>>>> origin/code-review-security-fixes-5343699314450815094
         except Exception as e:
+            logger.error(f"Search failed: {str(e)}")
             return [{"error": f"Search failed: {str(e)}"}]
 <<<<<<< HEAD
 
@@ -132,6 +144,7 @@ class AIBrain:
             # Limit to first 2000 characters
             return text[:2000]
         except Exception as e:
+            logger.error(f"Failed to scrape webpage: {str(e)}")
             return f"Failed to scrape webpage: {str(e)}"
 
 =======

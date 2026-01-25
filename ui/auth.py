@@ -14,6 +14,9 @@ from google.oauth2 import id_token
 
 def hash_password(password: str) -> str:
     """Hash password using SHA-256"""
+    # WARNING: SHA-256 is fast and vulnerable to rainbow table attacks.
+    # In a production environment, use a salted hash (e.g., bcrypt, Argon2) or PBKDF2.
+    # We are keeping this for now to maintain backward compatibility with existing users.
     return hashlib.sha256(password.encode()).hexdigest()
 
 

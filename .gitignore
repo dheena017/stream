@@ -41,6 +41,7 @@ logs/
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 *.db
 =======
 
@@ -127,3 +128,12 @@ users.json
 logs/
 *.jsonl
 >>>>>>> origin/mobile-optimizations-6398649563128325227
+=======
+
+# Security
+users.json
+*.db
+*.jsonl
+backup.key
+backups/
+>>>>>>> origin/code-review-security-fixes-5343699314450815094
