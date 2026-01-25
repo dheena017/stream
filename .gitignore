@@ -42,6 +42,7 @@ logs/
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 *.db
 =======
 
@@ -137,3 +138,8 @@ users.json
 backup.key
 backups/
 >>>>>>> origin/code-review-security-fixes-5343699314450815094
+=======
+
+# Databases
+*.db
+>>>>>>> origin/feature-chat-export-regen-2510491870086228569

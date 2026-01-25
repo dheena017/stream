@@ -478,6 +478,7 @@ def render_sidebar():
                 st.session_state.messages = []
                 st.rerun()
         with c2:
+<<<<<<< HEAD
             with st.popover("💾 Export", use_container_width=True):
                 st.caption("Download Conversation")
 =======
@@ -1204,3 +1205,17 @@ def render_sidebar():
         with st.expander("🗣️ Give Feedback", expanded=False):
             render_feedback_form(key_suffix="sidebar")
 >>>>>>> origin/feedback-integration-7692380356929291134
+=======
+            # Prepare export data dynamically
+            msgs = st.session_state.get('messages', [])
+            export_text = "\n".join([f"{m.get('role', 'UNKNOWN').upper()}: {m.get('content', '')}" for m in msgs])
+
+            st.download_button(
+                label="💾 Save",
+                data=export_text,
+                file_name=f"chat_export_{datetime.now().strftime('%Y%m%d_%H%M')}.txt",
+                mime="text/plain",
+                use_container_width=True
+            )
+
+>>>>>>> origin/feature-chat-export-regen-2510491870086228569
