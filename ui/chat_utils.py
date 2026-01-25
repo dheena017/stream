@@ -2,6 +2,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import functools
 import logging
 import time
@@ -20,10 +21,13 @@ from ui.analytics import log_api_call, log_error
 logger = logging.getLogger(__name__)
 
 =======
+=======
+>>>>>>> 673954a (Resilience: [error handling])
 
 import streamlit as st
 import logging
 from typing import List, Dict, Optional, Any, Callable, Tuple
+<<<<<<< HEAD
 from ui.ethics import EthicsGuardian
 =======
 
@@ -32,21 +36,27 @@ import logging
 import json
 from typing import List, Dict, Optional, Any, Callable, Tuple
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
+=======
+>>>>>>> 673954a (Resilience: [error handling])
 
 logger = logging.getLogger(__name__)
 
 # BLIP cache holds (processor, model, device)
 BLIP_CACHE: Optional[Tuple[Any, Any, Any]] = None
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> 9a44f3f (Ethics: [bias fixes])
 =======
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
+=======
+>>>>>>> 673954a (Resilience: [error handling])
 
 
 # --- Cached clients / resources ---
 @st.cache_resource
 def get_internet_search_engine():
     from ui.internet_search import InternetSearchEngine
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -57,12 +67,15 @@ def get_internet_search_engine():
 >>>>>>> 9a44f3f (Ethics: [bias fixes])
 =======
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
+=======
+>>>>>>> 673954a (Resilience: [error handling])
     return InternetSearchEngine()
 
 
 @st.cache_resource
 def get_openai_client(api_key: str, base_url: Optional[str] = None):
     from openai import OpenAI
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -81,11 +94,15 @@ def get_openai_client(api_key: str, base_url: Optional[str] = None):
 =======
     return OpenAI(api_key=api_key, base_url=base_url) if base_url else OpenAI(api_key=api_key)
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
+=======
+    return OpenAI(api_key=api_key, base_url=base_url) if base_url else OpenAI(api_key=api_key)
+>>>>>>> 673954a (Resilience: [error handling])
 
 
 @st.cache_resource
 def get_anthropic_client(api_key: str):
     from anthropic import Anthropic
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -96,6 +113,8 @@ def get_anthropic_client(api_key: str):
 >>>>>>> 9a44f3f (Ethics: [bias fixes])
 =======
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
+=======
+>>>>>>> 673954a (Resilience: [error handling])
     return Anthropic(api_key=api_key)
 
 
@@ -103,6 +122,7 @@ def get_anthropic_client(api_key: str):
 def get_google_client(api_key: str):
     # Import dynamically to avoid hard dependency if not used
     import google.generativeai as genai
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -131,6 +151,8 @@ def build_conversation_history(
 >>>>>>> 9a44f3f (Ethics: [bias fixes])
 =======
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
+=======
+>>>>>>> 673954a (Resilience: [error handling])
     genai.configure(api_key=api_key)
     return genai
 
@@ -142,11 +164,14 @@ def build_conversation_history(messages: List[Dict], exclude_last: bool = True, 
     formatted = [{"role": msg["role"], "content": msg["content"]} for msg in history if "role" in msg and "content" in msg]
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> origin/analytics-monitoring-17353357073288903889
 =======
 >>>>>>> 9a44f3f (Ethics: [bias fixes])
 =======
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
+=======
+>>>>>>> 673954a (Resilience: [error handling])
     total_chars = sum(len(m.get("content", "")) for m in formatted)
     if len(formatted) > max_messages or total_chars > max_chars:
         older = formatted[:-max_messages] if len(formatted) > max_messages else []
@@ -156,6 +181,7 @@ def build_conversation_history(messages: List[Dict], exclude_last: bool = True, 
             for msg in older[-10:]:
                 content = msg.get("content", "")
                 preview = content[:200] + "..." if len(content) > 200 else content
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -177,12 +203,17 @@ def build_conversation_history(messages: List[Dict], exclude_last: bool = True, 
                 older_summary_parts.append(f"{msg.get('role', 'unknown').upper()}: {preview}")
             summary_text = "[Earlier conversation summary]\n" + "\n".join(older_summary_parts)
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
+=======
+                older_summary_parts.append(f"{msg.get('role', 'unknown').upper()}: {preview}")
+            summary_text = "[Earlier conversation summary]\n" + "\n".join(older_summary_parts)
+>>>>>>> 673954a (Resilience: [error handling])
             return [{"role": "system", "content": summary_text}] + recent
         else:
             return recent
     return formatted
 
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -200,6 +231,9 @@ def create_openai_messages(conversation_history: List[Dict], current_prompt: str
 =======
 def create_openai_messages(conversation_history: List[Dict], current_prompt: str, system_instruction: Optional[str] = None) -> List[Dict]:
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
+=======
+def create_openai_messages(conversation_history: List[Dict], current_prompt: str, system_instruction: Optional[str] = None) -> List[Dict]:
+>>>>>>> 673954a (Resilience: [error handling])
     messages = []
     if system_instruction:
         messages.append({"role": "system", "content": system_instruction})
@@ -209,6 +243,7 @@ def create_openai_messages(conversation_history: List[Dict], current_prompt: str
 
 
 # --- Resilience Helpers ---
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -227,6 +262,11 @@ import time
 import functools
 
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
+=======
+import time
+import functools
+
+>>>>>>> 673954a (Resilience: [error handling])
 def retry_with_backoff(retries=3, backoff_in_seconds=1):
     def decorator(func):
         @functools.wraps(func)
@@ -237,6 +277,7 @@ def retry_with_backoff(retries=3, backoff_in_seconds=1):
                     return func(*args, **kwargs)
                 except Exception as e:
                     if x == retries:
+<<<<<<< HEAD
                         raise e
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -256,6 +297,12 @@ def retry_with_backoff(retries=3, backoff_in_seconds=1):
 =======
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
                     sleep = (backoff_in_seconds * 2 ** x)
+=======
+                        logger.warning(f"Max retries ({retries}) reached for {func.__name__}. Error: {e}")
+                        raise e
+                    sleep = (backoff_in_seconds * 2 ** x)
+                    logger.warning(f"Retry {x+1}/{retries} for {func.__name__} after {sleep}s. Error: {e}")
+>>>>>>> 673954a (Resilience: [error handling])
                     time.sleep(sleep)
                     x += 1
         return wrapper
@@ -263,11 +310,14 @@ def retry_with_backoff(retries=3, backoff_in_seconds=1):
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> origin/analytics-monitoring-17353357073288903889
 =======
 >>>>>>> 9a44f3f (Ethics: [bias fixes])
 =======
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
+=======
+>>>>>>> 673954a (Resilience: [error handling])
 # --- Provider Handlers ---
 def handle_google_provider(
     api_key: str,
@@ -276,6 +326,7 @@ def handle_google_provider(
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     api_key: str,
     model_name: str,
     prompt: str,
@@ -285,11 +336,14 @@ def handle_google_provider(
 >>>>>>> 9a44f3f (Ethics: [bias fixes])
 =======
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
+=======
+>>>>>>> 673954a (Resilience: [error handling])
     system_instruction: Optional[str] = None,
     temperature: float = 0.7,
     max_tokens: int = 2048,
     top_p: float = 0.95,
     images: List = None,
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -323,6 +377,12 @@ def handle_google_provider(
 ) -> str:
     try:
         if not api_key: return "Please provide a Google API Key."
+=======
+    enable_streaming: bool = False
+) -> str:
+    try:
+        if not api_key: return "Error: Missing Google API Key."
+>>>>>>> 673954a (Resilience: [error handling])
         import google.generativeai as genai
         # Configure the global instance
         genai.configure(api_key=api_key)
@@ -336,16 +396,20 @@ def handle_google_provider(
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> origin/analytics-monitoring-17353357073288903889
 =======
 >>>>>>> 9a44f3f (Ethics: [bias fixes])
 =======
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
+=======
+>>>>>>> 673954a (Resilience: [error handling])
         # Initialize model
         # system_instruction is supported in newer versions as init argument or via specific methods
         # For broader compatibility, passing via constructor if supported, else prepending to prompt might be needed
         # But latest SDK supports 'system_instruction' in GenerativeModel constructor
         try:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -361,6 +425,9 @@ def handle_google_provider(
 =======
             model = genai.GenerativeModel(model_name=model_name, system_instruction=system_instruction)
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
+=======
+            model = genai.GenerativeModel(model_name=model_name, system_instruction=system_instruction)
+>>>>>>> 673954a (Resilience: [error handling])
         except TypeError:
             # Fallback for older SDK versions that don't support system_instruction in init
             model = genai.GenerativeModel(model_name=model_name)
@@ -370,6 +437,7 @@ def handle_google_provider(
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
         contents = []
         if images:
@@ -378,10 +446,13 @@ def handle_google_provider(
 >>>>>>> 9a44f3f (Ethics: [bias fixes])
 =======
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
+=======
+>>>>>>> 673954a (Resilience: [error handling])
         contents = []
         if images:
             from io import BytesIO
             import base64
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 >>>>>>> origin/analytics-monitoring-17353357073288903889
@@ -389,6 +460,8 @@ def handle_google_provider(
 >>>>>>> 9a44f3f (Ethics: [bias fixes])
 =======
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
+=======
+>>>>>>> 673954a (Resilience: [error handling])
             for img in images:
                 # Gemai SDK can take PIL images directly in 'contents'
                 contents.append(img)
@@ -396,6 +469,7 @@ def handle_google_provider(
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
         contents.append(prompt)
 
@@ -412,6 +486,10 @@ def handle_google_provider(
         contents.append(prompt)
 
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
+=======
+        contents.append(prompt)
+
+>>>>>>> 673954a (Resilience: [error handling])
         @retry_with_backoff(retries=2)
         def _generate():
             # For gemini, we can pass stream=True/False to generate_content
@@ -421,6 +499,7 @@ def handle_google_provider(
                 stream=enable_streaming
             )
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -436,10 +515,13 @@ def handle_google_provider(
 >>>>>>> 9a44f3f (Ethics: [bias fixes])
 =======
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
+=======
+>>>>>>> 673954a (Resilience: [error handling])
         response = _generate()
 
         if enable_streaming:
             collected_text = []
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 >>>>>>> origin/analytics-monitoring-17353357073288903889
@@ -447,6 +529,8 @@ def handle_google_provider(
 >>>>>>> 9a44f3f (Ethics: [bias fixes])
 =======
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
+=======
+>>>>>>> 673954a (Resilience: [error handling])
             def _stream_gen():
                 for chunk in response:
                     if chunk.text:
@@ -456,6 +540,7 @@ def handle_google_provider(
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> origin/analytics-monitoring-17353357073288903889
@@ -463,11 +548,14 @@ def handle_google_provider(
 >>>>>>> 9a44f3f (Ethics: [bias fixes])
 =======
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
+=======
+>>>>>>> 673954a (Resilience: [error handling])
             try:
                 st.write_stream(_stream_gen())
             except Exception as e:
                 logger.warning(f"Google streaming visualization failed: {e}")
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -512,6 +600,16 @@ def handle_google_provider(
 >>>>>>> 9a44f3f (Ethics: [bias fixes])
 =======
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
+=======
+            return "".join(collected_text)
+        else:
+             return response.text
+
+    except Exception as e:
+        logger.error(f"Google provider error: {e}")
+        return f"Error: Google Gemini - {str(e)}"
+
+>>>>>>> 673954a (Resilience: [error handling])
 def handle_anthropic_provider(
     api_key: str,
     model_name: str,
@@ -519,6 +617,7 @@ def handle_anthropic_provider(
     system_instruction: Optional[str] = None,
     temperature: float = 0.7,
     max_tokens: int = 2048,
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -549,6 +648,12 @@ def handle_anthropic_provider(
 ) -> str:
     try:
         if not api_key: return "Please provide an Anthropic API Key."
+=======
+    enable_streaming: bool = False
+) -> str:
+    try:
+        if not api_key: return "Error: Missing Anthropic API Key."
+>>>>>>> 673954a (Resilience: [error handling])
         from anthropic import Anthropic
         client = Anthropic(api_key=api_key)
 
@@ -559,11 +664,14 @@ def handle_anthropic_provider(
              "temperature": temperature,
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> origin/analytics-monitoring-17353357073288903889
 =======
 >>>>>>> 9a44f3f (Ethics: [bias fixes])
 =======
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
+=======
+>>>>>>> 673954a (Resilience: [error handling])
         }
         if system_instruction:
              kwargs["system"] = system_instruction
@@ -575,6 +683,7 @@ def handle_anthropic_provider(
             else:
                 return client.messages.create(stream=False, **kwargs)
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -593,6 +702,8 @@ def handle_anthropic_provider(
 >>>>>>> 9a44f3f (Ethics: [bias fixes])
 =======
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
+=======
+>>>>>>> 673954a (Resilience: [error handling])
         response = _create_message()
 
         if enable_streaming:
@@ -602,11 +713,14 @@ def handle_anthropic_provider(
                     if event.type == 'content_block_delta':
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> origin/analytics-monitoring-17353357073288903889
 =======
 >>>>>>> 9a44f3f (Ethics: [bias fixes])
 =======
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
+=======
+>>>>>>> 673954a (Resilience: [error handling])
                         text = event.delta.text
                         collected_text.append(text)
                         yield text
@@ -614,6 +728,7 @@ def handle_anthropic_provider(
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> origin/analytics-monitoring-17353357073288903889
@@ -621,6 +736,8 @@ def handle_anthropic_provider(
 >>>>>>> 9a44f3f (Ethics: [bias fixes])
 =======
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
+=======
+>>>>>>> 673954a (Resilience: [error handling])
             try:
                 st.write_stream(_stream_gen())
             except Exception:
@@ -628,15 +745,19 @@ def handle_anthropic_provider(
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 9a44f3f (Ethics: [bias fixes])
 =======
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
+=======
+>>>>>>> 673954a (Resilience: [error handling])
             return "".join(collected_text)
         else:
             return response.content[0].text
 
     except Exception as e:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
         logger.error(f"Anthropic provider error: {e}")
@@ -664,6 +785,10 @@ def handle_anthropic_provider(
          logger.error(f"Anthropic provider error: {e}")
          return f"Error connecting to Anthropic Claude: {str(e)}"
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
+=======
+         logger.error(f"Anthropic provider error: {e}")
+         return f"Error: Anthropic Claude - {str(e)}"
+>>>>>>> 673954a (Resilience: [error handling])
 
 def generate_standard_response(
     provider: str,
@@ -673,6 +798,7 @@ def generate_standard_response(
     chat_history: List[Dict],
     system_instruction: str = "",
     config: Dict[str, Any] = {},
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -686,10 +812,14 @@ def generate_standard_response(
 =======
     images: List = None
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
+=======
+    images: List = None
+>>>>>>> 673954a (Resilience: [error handling])
 ) -> str:
     """Unified dispatcher for standard mode chat generation"""
     api_key = api_keys.get(provider)
     if not api_key:
+<<<<<<< HEAD
         return f"❌ Missing API Key for {provider}. Please check sidebar settings."
 
 <<<<<<< HEAD
@@ -715,10 +845,16 @@ def generate_standard_response(
 =======
     try:
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
+=======
+        return f"Error: Missing API Key for {provider}. Please check sidebar settings."
+
+    try:
+>>>>>>> 673954a (Resilience: [error handling])
         temp = config.get('temperature', 0.7)
         max_tok = config.get('max_tokens', 2048)
         top_p = config.get('top_p', 0.95)
         stream = config.get('enable_streaming', False)
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 >>>>>>> origin/analytics-monitoring-17353357073288903889
@@ -737,10 +873,16 @@ def generate_standard_response(
         if provider == "google":
             return handle_google_provider(
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
+=======
+
+        if provider == "google":
+            return handle_google_provider(
+>>>>>>> 673954a (Resilience: [error handling])
                 api_key, model_name, prompt, system_instruction,
                 temp, max_tok, top_p, images, enable_streaming=stream
             )
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -751,10 +893,13 @@ def generate_standard_response(
 >>>>>>> 9a44f3f (Ethics: [bias fixes])
 =======
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
+=======
+>>>>>>> 673954a (Resilience: [error handling])
         elif provider in ["openai", "together", "xai", "deepseek"]:
             base_urls = {
                 "together": "https://api.together.xyz/v1",
                 "xai": "https://api.x.ai/v1",
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -765,6 +910,9 @@ def generate_standard_response(
 =======
                 "deepseek": "https://api.deepseek.com"
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
+=======
+                "deepseek": "https://api.deepseek.com"
+>>>>>>> 673954a (Resilience: [error handling])
             }
             client = get_openai_client(api_key, base_urls.get(provider))
             msgs = create_openai_messages(build_conversation_history(chat_history), prompt, system_instruction)
@@ -772,6 +920,7 @@ def generate_standard_response(
 
         elif provider == "anthropic":
             # Anthropic expects just user/assistant messages
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
             msgs = [
@@ -783,11 +932,15 @@ def generate_standard_response(
 =======
             msgs = [{"role": "user", "content": prompt}] # Simplified for this call; ideally use full history if supported
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
+=======
+            msgs = [{"role": "user", "content": prompt}] # Simplified for this call; ideally use full history if supported
+>>>>>>> 673954a (Resilience: [error handling])
             return handle_anthropic_provider(
                 api_key, model_name, msgs, system_instruction,
                 temp, max_tok, enable_streaming=stream
             )
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 
@@ -840,6 +993,12 @@ def prepare_brain_configuration(
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
     except Exception as e:
         return f"Generation Error: {str(e)}"
+=======
+        return "Error: Provider not supported."
+
+    except Exception as e:
+        return f"Error: {str(e)}"
+>>>>>>> 673954a (Resilience: [error handling])
 
 def prepare_brain_configuration(api_keys: Dict[str, str], requested_models: List[str] = None) -> List[Dict[str, Any]]:
     """Helper to build the list of models for Brain Mode based on available keys"""
@@ -847,11 +1006,14 @@ def prepare_brain_configuration(api_keys: Dict[str, str], requested_models: List
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> origin/analytics-monitoring-17353357073288903889
 =======
 >>>>>>> 9a44f3f (Ethics: [bias fixes])
 =======
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
+=======
+>>>>>>> 673954a (Resilience: [error handling])
     # Default strategy: Use available keys (simplified)
     # In a real app, 'requested_models' would come from user config
 
@@ -869,6 +1031,7 @@ def prepare_brain_configuration(api_keys: Dict[str, str], requested_models: List
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> origin/analytics-monitoring-17353357073288903889
@@ -876,6 +1039,8 @@ def prepare_brain_configuration(api_keys: Dict[str, str], requested_models: List
 >>>>>>> 9a44f3f (Ethics: [bias fixes])
 =======
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
+=======
+>>>>>>> 673954a (Resilience: [error handling])
 def handle_openai_compatible_provider(
     client: Any,
     model_name: str,
@@ -883,6 +1048,7 @@ def handle_openai_compatible_provider(
     temperature: float,
     max_tokens: int,
     top_p: float,
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -896,6 +1062,9 @@ def handle_openai_compatible_provider(
 =======
     enable_streaming: bool
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
+=======
+    enable_streaming: bool
+>>>>>>> 673954a (Resilience: [error handling])
 ) -> str:
     @retry_with_backoff(retries=2)
     def _create_completion(stream_mode):
@@ -905,6 +1074,7 @@ def handle_openai_compatible_provider(
             temperature=temperature,
             max_tokens=max_tokens,
             top_p=top_p,
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -927,10 +1097,16 @@ def handle_openai_compatible_provider(
         )
 
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
+=======
+            stream=stream_mode
+        )
+
+>>>>>>> 673954a (Resilience: [error handling])
     if enable_streaming:
         try:
             stream = _create_completion(True)
         except Exception as e:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -955,11 +1131,17 @@ def handle_openai_compatible_provider(
 
         collected_chunks = []
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
+=======
+            return f"Error: {str(e)}"
+
+        collected_chunks = []
+>>>>>>> 673954a (Resilience: [error handling])
         def _iter_chunks():
             for chunk in stream:
                 piece = chunk.choices[0].delta.content or ""
                 collected_chunks.append(piece)
                 yield piece
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -970,12 +1152,15 @@ def handle_openai_compatible_provider(
 >>>>>>> 9a44f3f (Ethics: [bias fixes])
 =======
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
+=======
+>>>>>>> 673954a (Resilience: [error handling])
         # Stream to Streamlit (best-effort)
         try:
             st.write_stream(_iter_chunks())
         except Exception:
             pass
         response_text = "".join(collected_chunks)
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -994,10 +1179,14 @@ def handle_openai_compatible_provider(
 =======
         return response_text if response_text else "I apologize, but I couldn't generate a response."
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
+=======
+        return response_text if response_text else "I apologize, but I couldn't generate a response."
+>>>>>>> 673954a (Resilience: [error handling])
     else:
         try:
             response = _create_completion(False)
         except Exception as e:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1024,12 +1213,18 @@ def handle_openai_compatible_provider(
 
         response_text = getattr(response.choices[0].message, 'content', None) or response.choices[0].message['content']
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
+=======
+            return f"Error: {str(e)}"
+
+        response_text = getattr(response.choices[0].message, 'content', None) or response.choices[0].message['content']
+>>>>>>> 673954a (Resilience: [error handling])
         if not response_text:
             response_text = "I apologize, but I couldn't generate a response."
         try:
             st.markdown(response_text)
         except Exception:
             pass
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1040,10 +1235,13 @@ def handle_openai_compatible_provider(
 >>>>>>> 9a44f3f (Ethics: [bias fixes])
 =======
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
+=======
+>>>>>>> 673954a (Resilience: [error handling])
         return response_text
 
 
 # --- Internet search integration ---
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1064,11 +1262,15 @@ def perform_internet_search(query: str, enable_search: bool = True, max_results:
 =======
 def perform_internet_search(query: str, enable_search: bool = True, max_results: int = 5, search_type: str = "Web", time_range: str = "Anytime", domain: str = None) -> tuple[List[Dict], str]:
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
+=======
+def perform_internet_search(query: str, enable_search: bool = True, max_results: int = 5, search_type: str = "Web", time_range: str = "Anytime", domain: str = None) -> tuple[List[Dict], str]:
+>>>>>>> 673954a (Resilience: [error handling])
     if not enable_search:
         return [], ""
     try:
         search_engine = get_internet_search_engine()
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1079,6 +1281,8 @@ def perform_internet_search(query: str, enable_search: bool = True, max_results:
 >>>>>>> 9a44f3f (Ethics: [bias fixes])
 =======
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
+=======
+>>>>>>> 673954a (Resilience: [error handling])
         if search_type == "News":
              # News search generally supports time range implicitly by recency,
              # but standard DDG news api might handle max_results.
@@ -1094,6 +1298,7 @@ def perform_internet_search(query: str, enable_search: bool = True, max_results:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> origin/analytics-monitoring-17353357073288903889
@@ -1101,6 +1306,8 @@ def perform_internet_search(query: str, enable_search: bool = True, max_results:
 >>>>>>> 9a44f3f (Ethics: [bias fixes])
 =======
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
+=======
+>>>>>>> 673954a (Resilience: [error handling])
             context = create_search_context(results, query)
             logger.info(f"Search completed with {len(results)} results")
             return results, context
@@ -1117,6 +1324,7 @@ def augment_prompt_with_search(prompt: str, search_results: List[Dict]) -> str:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> origin/analytics-monitoring-17353357073288903889
@@ -1124,6 +1332,8 @@ def augment_prompt_with_search(prompt: str, search_results: List[Dict]) -> str:
 >>>>>>> 9a44f3f (Ethics: [bias fixes])
 =======
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
+=======
+>>>>>>> 673954a (Resilience: [error handling])
     context = create_search_context(search_results, prompt)
     augmented = f"""{prompt}
 
@@ -1135,6 +1345,7 @@ Please use the above search results to provide a current and accurate answer."""
 
 
 # --- Multimodal helpers ---
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1250,6 +1461,11 @@ def process_images_for_context(images: List) -> List[Dict]:
     results = []
     try:
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
+=======
+def process_images_for_context(images: List) -> List[Dict]:
+    results = []
+    try:
+>>>>>>> 673954a (Resilience: [error handling])
         from PIL import Image
         for i, img in enumerate(images, 1):
             caption = None
@@ -1258,11 +1474,14 @@ def process_images_for_context(images: List) -> List[Dict]:
                 caption = info.get('description') or info.get('caption')
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> origin/analytics-monitoring-17353357073288903889
 =======
 >>>>>>> 9a44f3f (Ethics: [bias fixes])
 =======
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
+=======
+>>>>>>> 673954a (Resilience: [error handling])
             except Exception:
                 caption = None
             if not caption:
@@ -1282,6 +1501,7 @@ def transcribe_audio_file(file_like) -> str:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> origin/analytics-monitoring-17353357073288903889
@@ -1289,6 +1509,8 @@ def transcribe_audio_file(file_like) -> str:
 >>>>>>> 9a44f3f (Ethics: [bias fixes])
 =======
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
+=======
+>>>>>>> 673954a (Resilience: [error handling])
         recognizer = sr.Recognizer()
         with sr.AudioFile(file_like) as source:
             audio = recognizer.record(source)
@@ -1309,6 +1531,7 @@ def extract_video_frame_thumbnails(file_like, max_frames: int = 3) -> List[str]:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         import base64
         import importlib
         import tempfile
@@ -1323,6 +1546,8 @@ def extract_video_frame_thumbnails(file_like, max_frames: int = 3) -> List[str]:
 >>>>>>> 9a44f3f (Ethics: [bias fixes])
 =======
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
+=======
+>>>>>>> 673954a (Resilience: [error handling])
         import importlib
         moviepy = importlib.import_module("moviepy.editor")
         VideoFileClip = getattr(moviepy, "VideoFileClip")
@@ -1334,11 +1559,14 @@ def extract_video_frame_thumbnails(file_like, max_frames: int = 3) -> List[str]:
         with tempfile.NamedTemporaryFile(suffix='.mp4', delete=True) as tmp:
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> origin/analytics-monitoring-17353357073288903889
 =======
 >>>>>>> 9a44f3f (Ethics: [bias fixes])
 =======
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
+=======
+>>>>>>> 673954a (Resilience: [error handling])
             tmp.write(file_like.read())
             tmp.flush()
             clip = VideoFileClip(tmp.name)
@@ -1349,6 +1577,7 @@ def extract_video_frame_thumbnails(file_like, max_frames: int = 3) -> List[str]:
                 img = Image.fromarray(frame)
                 buf = BytesIO()
                 img.thumbnail((320, 320))
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1366,6 +1595,10 @@ def extract_video_frame_thumbnails(file_like, max_frames: int = 3) -> List[str]:
                 img.save(buf, format='PNG')
                 b64 = base64.b64encode(buf.getvalue()).decode('utf-8')
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
+=======
+                img.save(buf, format='PNG')
+                b64 = base64.b64encode(buf.getvalue()).decode('utf-8')
+>>>>>>> 673954a (Resilience: [error handling])
                 thumbnails.append(f"data:image/png;base64,{b64}")
             try:
                 clip.reader.close()
@@ -1380,6 +1613,7 @@ def extract_video_frame_thumbnails(file_like, max_frames: int = 3) -> List[str]:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 >>>>>>> origin/analytics-monitoring-17353357073288903889
@@ -1389,6 +1623,9 @@ def extract_video_frame_thumbnails(file_like, max_frames: int = 3) -> List[str]:
 =======
 
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
+=======
+
+>>>>>>> 673954a (Resilience: [error handling])
 # Consolidated BLIP Logic is now at the bottom of the file
 # Removed duplicate definition to fix linter error
 
@@ -1396,6 +1633,7 @@ def extract_video_frame_thumbnails(file_like, max_frames: int = 3) -> List[str]:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 >>>>>>> origin/analytics-monitoring-17353357073288903889
@@ -1405,6 +1643,9 @@ def extract_video_frame_thumbnails(file_like, max_frames: int = 3) -> List[str]:
 =======
 
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
+=======
+
+>>>>>>> 673954a (Resilience: [error handling])
 def generate_blip_caption(image) -> Optional[str]:
     try:
         processor, model, device = get_blip_model()
@@ -1413,6 +1654,7 @@ def generate_blip_caption(image) -> Optional[str]:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> origin/analytics-monitoring-17353357073288903889
@@ -1420,6 +1662,8 @@ def generate_blip_caption(image) -> Optional[str]:
 >>>>>>> 9a44f3f (Ethics: [bias fixes])
 =======
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
+=======
+>>>>>>> 673954a (Resilience: [error handling])
         with torch.no_grad():
             output_ids = model.generate(**inputs, max_new_tokens=50)
         caption = processor.decode(output_ids[0], skip_special_tokens=True)
@@ -1429,6 +1673,7 @@ def generate_blip_caption(image) -> Optional[str]:
         return None
 
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1456,6 +1701,8 @@ def call_hosted_caption_api(
 >>>>>>> 9a44f3f (Ethics: [bias fixes])
 =======
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
+=======
+>>>>>>> 673954a (Resilience: [error handling])
 def call_hosted_caption_api(image, api_url: str, api_key: Optional[str] = None) -> Optional[str]:
     try:
         import requests
@@ -1473,16 +1720,20 @@ def call_hosted_caption_api(image, api_url: str, api_key: Optional[str] = None) 
         return data.get('caption') or data.get('text')
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> origin/analytics-monitoring-17353357073288903889
 =======
 >>>>>>> 9a44f3f (Ethics: [bias fixes])
 =======
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
+=======
+>>>>>>> 673954a (Resilience: [error handling])
     except Exception as e:
         logger.info(f"Hosted caption API call failed: {e}")
         return None
 
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1501,6 +1752,9 @@ def generate_image_captions(images: List, use_blip: bool = False, hosted_api_url
 =======
 def generate_image_captions(images: List, use_blip: bool = False, hosted_api_url: Optional[str] = None, hosted_api_key: Optional[str] = None) -> List[Dict]:
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
+=======
+def generate_image_captions(images: List, use_blip: bool = False, hosted_api_url: Optional[str] = None, hosted_api_key: Optional[str] = None) -> List[Dict]:
+>>>>>>> 673954a (Resilience: [error handling])
     if not images:
         return []
     results = []
@@ -1521,6 +1775,7 @@ def generate_image_captions(images: List, use_blip: bool = False, hosted_api_url
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
             caption = fallback.get("caption")
 =======
             caption = fallback.get('caption')
@@ -1531,6 +1786,9 @@ def generate_image_captions(images: List, use_blip: bool = False, hosted_api_url
 =======
             caption = fallback.get('caption')
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
+=======
+            caption = fallback.get('caption')
+>>>>>>> 673954a (Resilience: [error handling])
         results.append({"name": f"image_{i}", "caption": caption})
     return results
 
@@ -1549,6 +1807,7 @@ def _load_blip_resources():
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     from transformers import BlipProcessor, BlipForConditionalGeneration
 >>>>>>> origin/analytics-monitoring-17353357073288903889
@@ -1558,6 +1817,9 @@ def _load_blip_resources():
 =======
     from transformers import BlipProcessor, BlipForConditionalGeneration
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
+=======
+    from transformers import BlipProcessor, BlipForConditionalGeneration
+>>>>>>> 673954a (Resilience: [error handling])
     import torch
 
     model_id = "Salesforce/blip-image-captioning-base"
@@ -1565,6 +1827,7 @@ def _load_blip_resources():
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> origin/analytics-monitoring-17353357073288903889
@@ -1572,6 +1835,8 @@ def _load_blip_resources():
 >>>>>>> 9a44f3f (Ethics: [bias fixes])
 =======
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
+=======
+>>>>>>> 673954a (Resilience: [error handling])
     # helper to load with retry strategy
     def load_with_fallback(cls, model_id):
         # 1. Try local cache first
@@ -1587,6 +1852,7 @@ def _load_blip_resources():
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> origin/analytics-monitoring-17353357073288903889
@@ -1594,10 +1860,13 @@ def _load_blip_resources():
 >>>>>>> 9a44f3f (Ethics: [bias fixes])
 =======
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
+=======
+>>>>>>> 673954a (Resilience: [error handling])
     device = "cuda" if torch.cuda.is_available() else "cpu"
     model.to(device)
     return processor, model, device
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1614,10 +1883,13 @@ def preload_blip_model_with_progress(
 >>>>>>> 9a44f3f (Ethics: [bias fixes])
 =======
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
+=======
+>>>>>>> 673954a (Resilience: [error handling])
 def get_blip_model():
     return _load_blip_resources()
 
 def preload_blip_model_with_progress(progress_callback: Optional[Callable[[int, str], None]] = None) -> bool:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 >>>>>>> origin/analytics-monitoring-17353357073288903889
@@ -1625,6 +1897,8 @@ def preload_blip_model_with_progress(progress_callback: Optional[Callable[[int, 
 >>>>>>> 9a44f3f (Ethics: [bias fixes])
 =======
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
+=======
+>>>>>>> 673954a (Resilience: [error handling])
     """
     Simulated progress loader that actually just triggers the cached resource load.
     Since st.cache_resource handles the singleton, we just call it.
@@ -1636,6 +1910,7 @@ def preload_blip_model_with_progress(progress_callback: Optional[Callable[[int, 
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
         # We'll use a thread/process safe check by just calling the cached function
         # Streamlit's cache will handle the heavy lifting.
@@ -1656,6 +1931,11 @@ def preload_blip_model_with_progress(progress_callback: Optional[Callable[[int, 
         # Streamlit's cache will handle the heavy lifting.
 
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
+=======
+        # We'll use a thread/process safe check by just calling the cached function
+        # Streamlit's cache will handle the heavy lifting.
+
+>>>>>>> 673954a (Resilience: [error handling])
         if progress_callback:
              progress_callback(30, "Loading BLIP model items...")
 
@@ -1665,6 +1945,7 @@ def preload_blip_model_with_progress(progress_callback: Optional[Callable[[int, 
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> origin/analytics-monitoring-17353357073288903889
@@ -1672,12 +1953,15 @@ def preload_blip_model_with_progress(progress_callback: Optional[Callable[[int, 
 >>>>>>> 9a44f3f (Ethics: [bias fixes])
 =======
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
+=======
+>>>>>>> 673954a (Resilience: [error handling])
         if progress_callback:
             progress_callback(100, "BLIP model ready")
         return True
     except Exception as e:
         logger.error(f"BLIP load failed: {e}")
         if progress_callback:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -2342,3 +2626,7 @@ def serialize_messages(messages: List[Dict]) -> str:
 
     return json.dumps(serializable_messages, indent=2, default=str)
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
+=======
+             progress_callback(0, f"Failed: {str(e)}")
+        return False
+>>>>>>> 673954a (Resilience: [error handling])

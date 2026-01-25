@@ -1,5 +1,6 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import asyncio
 import time
 from datetime import datetime
@@ -35,6 +36,8 @@ def show_chat_page():
     """
 =======
 
+=======
+>>>>>>> 673954a (Resilience: [error handling])
 import streamlit as st
 import os
 import time
@@ -60,6 +63,7 @@ from brain_learning import LearningBrain
 from multimodal_voice_integration import MultimodalVoiceIntegrator
 from ui.config import MODEL_PRICING, MODEL_CAPABILITIES, PROVIDER_ICONS
 
+<<<<<<< HEAD
 
 def run_async(coro):
     """Safe wrapper for asyncio.run that handles existing event loops"""
@@ -79,17 +83,25 @@ def run_async(coro):
 def show_chat_page():
     """Display the main chat interface"""
 >>>>>>> 3e83144 (AI Review: Fix ui/chat_utils.py syntax and asyncio crash in ui/chat.py)
+=======
+def show_chat_page():
+    """Display the main chat interface"""
+>>>>>>> 673954a (Resilience: [error handling])
 
     # --- 1. Header & Status Bar ---
     # Compact Header
     c_head1, c_head2 = st.columns([3, 1])
     with c_head1:
 <<<<<<< HEAD
+<<<<<<< HEAD
         st.markdown(
             """
 =======
         st.markdown("""
 >>>>>>> 3e83144 (AI Review: Fix ui/chat_utils.py syntax and asyncio crash in ui/chat.py)
+=======
+        st.markdown("""
+>>>>>>> 673954a (Resilience: [error handling])
         <div style="display: flex; align-items: center; gap: 1rem;">
             <div style="font-size: 2rem;">🤖</div>
             <div>
@@ -104,6 +116,7 @@ def show_chat_page():
             </div>
         </div>
 <<<<<<< HEAD
+<<<<<<< HEAD
         """,
             unsafe_allow_html=True,
         )
@@ -114,6 +127,8 @@ def show_chat_page():
         brain_on = st.session_state.get("enable_brain_mode", False)
         inet_on = st.session_state.get("enable_internet_search", False)
 =======
+=======
+>>>>>>> 673954a (Resilience: [error handling])
         """, unsafe_allow_html=True)
 
     with c_head2:
@@ -121,7 +136,10 @@ def show_chat_page():
         provider = st.session_state.get('selected_provider', 'google').upper()
         brain_on = st.session_state.get('enable_brain_mode', False)
         inet_on = st.session_state.get('enable_internet_search', False)
+<<<<<<< HEAD
 >>>>>>> 3e83144 (AI Review: Fix ui/chat_utils.py syntax and asyncio crash in ui/chat.py)
+=======
+>>>>>>> 673954a (Resilience: [error handling])
 
         status_html = f"""
         <div style="text-align: right;">
@@ -146,6 +164,7 @@ def show_chat_page():
 
     # --- 3. Chat History or Welcome Screen ---
 <<<<<<< HEAD
+<<<<<<< HEAD
     messages = st.session_state.get("messages", [])
 
     if not messages:
@@ -155,6 +174,8 @@ def show_chat_page():
         st.markdown(
             f"""
 =======
+=======
+>>>>>>> 673954a (Resilience: [error handling])
     messages = st.session_state.get('messages', [])
 
     if not messages:
@@ -162,7 +183,10 @@ def show_chat_page():
         user_name = st.session_state.get('username', 'Traveler')
 
         st.markdown(f"""
+<<<<<<< HEAD
 >>>>>>> 3e83144 (AI Review: Fix ui/chat_utils.py syntax and asyncio crash in ui/chat.py)
+=======
+>>>>>>> 673954a (Resilience: [error handling])
         <div class="welcome-container">
             <div class="welcome-title">Welcome back, {user_name}! 👋</div>
             <div class="welcome-subtitle">
@@ -170,18 +194,23 @@ def show_chat_page():
             </div>
         </div>
 <<<<<<< HEAD
+<<<<<<< HEAD
         """,
             unsafe_allow_html=True,
         )
 =======
         """, unsafe_allow_html=True)
 >>>>>>> 3e83144 (AI Review: Fix ui/chat_utils.py syntax and asyncio crash in ui/chat.py)
+=======
+        """, unsafe_allow_html=True)
+>>>>>>> 673954a (Resilience: [error handling])
 
         wc1, wc2 = st.columns(2)
         with wc1:
             if st.button("🚀 Explain Quantum Computing", use_container_width=True):
                 prompt = "Explain quantum computing in simple terms."
             if st.button("📝 Write a Python Script", use_container_width=True):
+<<<<<<< HEAD
 <<<<<<< HEAD
                 prompt = "Write a python script to parse a CSV file and plot it."
         with wc2:
@@ -190,17 +219,23 @@ def show_chat_page():
             if st.button("🎨 Analyze an Image", use_container_width=True):
                 prompt = "Help me analyze an image I'm about to upload."
 =======
+=======
+>>>>>>> 673954a (Resilience: [error handling])
                  prompt = "Write a python script to parse a CSV file and plot it."
         with wc2:
              if st.button("📰 Search Latest News", use_container_width=True):
                  prompt = "What are the latest tech news headlines today?"
              if st.button("🎨 Analyze an Image", use_container_width=True):
                  prompt = "Help me analyze an image I'm about to upload."
+<<<<<<< HEAD
 >>>>>>> 3e83144 (AI Review: Fix ui/chat_utils.py syntax and asyncio crash in ui/chat.py)
+=======
+>>>>>>> 673954a (Resilience: [error handling])
 
         st.markdown("<div style='height: 2rem'></div>", unsafe_allow_html=True)
 
     # 4. Filter logic (kept from original)
+<<<<<<< HEAD
 <<<<<<< HEAD
     chat_search = st.session_state.get("chat_search_value", "")
     messages_to_display = messages
@@ -209,11 +244,16 @@ def show_chat_page():
             m for m in messages if chat_search.lower() in m.get("content", "").lower()
         ]
 =======
+=======
+>>>>>>> 673954a (Resilience: [error handling])
     chat_search = st.session_state.get('chat_search_value', '')
     messages_to_display = messages
     if chat_search:
         messages_to_display = [m for m in messages if chat_search.lower() in m.get('content', '').lower()]
+<<<<<<< HEAD
 >>>>>>> 3e83144 (AI Review: Fix ui/chat_utils.py syntax and asyncio crash in ui/chat.py)
+=======
+>>>>>>> 673954a (Resilience: [error handling])
         st.info(f"🔍 Found {len(messages_to_display)} matching messages")
 
     model_icons = PROVIDER_ICONS
@@ -225,15 +265,20 @@ def show_chat_page():
                 cols = st.columns(min(len(msg["images"]), 3))
                 for i, img in enumerate(msg["images"]):
 <<<<<<< HEAD
+<<<<<<< HEAD
                     with cols[i % 3]:
 =======
                     with cols[i%3]:
 >>>>>>> 3e83144 (AI Review: Fix ui/chat_utils.py syntax and asyncio crash in ui/chat.py)
+=======
+                    with cols[i%3]:
+>>>>>>> 673954a (Resilience: [error handling])
                         st.image(img, width="stretch")
 
             # Files info
             if "files" in msg and msg["files"]:
                 for file_info in msg["files"]:
+<<<<<<< HEAD
 <<<<<<< HEAD
                     st.caption(f"📎 {file_info.get('name')} ({file_info.get('type')})")
 =======
@@ -242,6 +287,15 @@ def show_chat_page():
 
             # Content
             st.markdown(msg["content"])
+=======
+                     st.caption(f"📎 {file_info.get('name')} ({file_info.get('type')})")
+
+            # Content
+            if msg["content"].startswith("Error:"):
+                 st.error(msg["content"])
+            else:
+                 st.markdown(msg["content"])
+>>>>>>> 673954a (Resilience: [error handling])
 
             # Metadata footer
             if msg["role"] == "assistant":
@@ -249,16 +303,22 @@ def show_chat_page():
                 mc1, mc2, mc3 = st.columns([0.6, 0.2, 0.2])
                 with mc1:
 <<<<<<< HEAD
+<<<<<<< HEAD
                     prov = msg.get("provider", "")
                     mod = msg.get("model", "")
 =======
                     prov = msg.get('provider', '')
                     mod = msg.get('model', '')
 >>>>>>> 3e83144 (AI Review: Fix ui/chat_utils.py syntax and asyncio crash in ui/chat.py)
+=======
+                    prov = msg.get('provider', '')
+                    mod = msg.get('model', '')
+>>>>>>> 673954a (Resilience: [error handling])
                     icon = model_icons.get(prov, "🤖")
                     st.caption(f"{icon} {mod} • {msg.get('timestamp','')}")
 
                 with mc2:
+<<<<<<< HEAD
 <<<<<<< HEAD
                     if "response_time" in msg:
                         st.caption(f"⚡ {msg['response_time']:.2f}s")
@@ -266,11 +326,16 @@ def show_chat_page():
                      if "response_time" in msg:
                          st.caption(f"⚡ {msg['response_time']:.2f}s")
 >>>>>>> 3e83144 (AI Review: Fix ui/chat_utils.py syntax and asyncio crash in ui/chat.py)
+=======
+                     if "response_time" in msg:
+                         st.caption(f"⚡ {msg['response_time']:.2f}s")
+>>>>>>> 673954a (Resilience: [error handling])
 
                 with mc3:
                     # Action buttons
                     c_copy, c_regen = st.columns(2)
                     with c_copy:
+<<<<<<< HEAD
 <<<<<<< HEAD
                         if st.button(
                             "📋", key=f"copy_{idx}", help="View raw text to copy"
@@ -299,11 +364,32 @@ def show_chat_page():
     # 4. Internet Search Configuration
     with st.expander("🌐 Internet Search Settings", expanded=st.session_state.get('enable_internet_search', False)):
 >>>>>>> 3e83144 (AI Review: Fix ui/chat_utils.py syntax and asyncio crash in ui/chat.py)
+=======
+                        if st.button("📋", key=f"copy_{idx}", help="View raw text to copy"):
+                            st.code(msg["content"], language=None)
+                    with c_regen:
+                        if st.button("🔄", key=f"regen_{idx}", help="Regenerate response"):
+                            try:
+                                real_idx = st.session_state.messages.index(msg)
+                                if real_idx > 0:
+                                    prev_msg = st.session_state.messages[real_idx - 1]
+                                    if prev_msg["role"] == "user":
+                                        st.session_state.retry_prompt = prev_msg["content"]
+                                        st.session_state.messages.pop(real_idx)
+                                        st.session_state.messages.pop(real_idx - 1)
+                                        st.rerun()
+                            except ValueError:
+                                st.error("Could not locate message.")
+
+    # 4. Internet Search Configuration
+    with st.expander("🌐 Internet Search Settings", expanded=st.session_state.get('enable_internet_search', False)):
+>>>>>>> 673954a (Resilience: [error handling])
 
         c_search1, c_search2 = st.columns([1, 1])
         with c_search1:
             enable_internet = st.toggle(
                 "Enable Real-time Search",
+<<<<<<< HEAD
 <<<<<<< HEAD
                 value=st.session_state.get("enable_internet_search", False),
                 help="Augment answers with live web data",
@@ -311,6 +397,10 @@ def show_chat_page():
                 value=st.session_state.get('enable_internet_search', False),
                 help="Augment answers with live web data"
 >>>>>>> 3e83144 (AI Review: Fix ui/chat_utils.py syntax and asyncio crash in ui/chat.py)
+=======
+                value=st.session_state.get('enable_internet_search', False),
+                help="Augment answers with live web data"
+>>>>>>> 673954a (Resilience: [error handling])
             )
             st.session_state.enable_internet_search = enable_internet
 
@@ -319,17 +409,23 @@ def show_chat_page():
                 ["Web", "News"],
                 horizontal=True,
 <<<<<<< HEAD
+<<<<<<< HEAD
                 index=0 if st.session_state.get("search_type") != "News" else 1,
                 key="search_type_selector",
 =======
                 index=0 if st.session_state.get('search_type') != "News" else 1,
                 key="search_type_selector"
 >>>>>>> 3e83144 (AI Review: Fix ui/chat_utils.py syntax and asyncio crash in ui/chat.py)
+=======
+                index=0 if st.session_state.get('search_type') != "News" else 1,
+                key="search_type_selector"
+>>>>>>> 673954a (Resilience: [error handling])
             )
             st.session_state.search_type = search_type
 
         with c_search2:
             result_count = st.slider(
+<<<<<<< HEAD
 <<<<<<< HEAD
                 "Result Count", 1, 10, st.session_state.get("search_result_count", 5)
 =======
@@ -337,6 +433,11 @@ def show_chat_page():
                 1, 10,
                 st.session_state.get('search_result_count', 5)
 >>>>>>> 3e83144 (AI Review: Fix ui/chat_utils.py syntax and asyncio crash in ui/chat.py)
+=======
+                "Result Count",
+                1, 10,
+                st.session_state.get('search_result_count', 5)
+>>>>>>> 673954a (Resilience: [error handling])
             )
             st.session_state.search_result_count = result_count
 
@@ -345,10 +446,14 @@ def show_chat_page():
                 "Time Range",
                 ["Anytime", "Past Day", "Past Week", "Past Month"],
 <<<<<<< HEAD
+<<<<<<< HEAD
                 index=0,
 =======
                 index=0
 >>>>>>> 3e83144 (AI Review: Fix ui/chat_utils.py syntax and asyncio crash in ui/chat.py)
+=======
+                index=0
+>>>>>>> 673954a (Resilience: [error handling])
             )
             st.session_state.search_time_range = time_range
 
@@ -357,14 +462,19 @@ def show_chat_page():
             "Limit to Site (optional)",
             placeholder="e.g. reddit.com, stackoverflow.com",
 <<<<<<< HEAD
+<<<<<<< HEAD
             help="Restrict search results to a specific domain",
 =======
             help="Restrict search results to a specific domain"
 >>>>>>> 3e83144 (AI Review: Fix ui/chat_utils.py syntax and asyncio crash in ui/chat.py)
+=======
+            help="Restrict search results to a specific domain"
+>>>>>>> 673954a (Resilience: [error handling])
         )
         st.session_state.search_domain_filter = domain_filter
 
     # 5. Multimodal Uploads Area
+<<<<<<< HEAD
 <<<<<<< HEAD
     multimodal_options = [
         "Images",
@@ -375,6 +485,9 @@ def show_chat_page():
 =======
     multimodal_options = ["Images", "Documents (PDF/TXT)", "Audio Files", "Video Frames"]
 >>>>>>> 3e83144 (AI Review: Fix ui/chat_utils.py syntax and asyncio crash in ui/chat.py)
+=======
+    multimodal_options = ["Images", "Documents (PDF/TXT)", "Audio Files", "Video Frames"]
+>>>>>>> 673954a (Resilience: [error handling])
 
     uploaded_images = []
     uploaded_file_info = []
@@ -387,19 +500,27 @@ def show_chat_page():
             "Upload files",
             type=["jpg", "jpeg", "png", "pdf", "txt", "md", "mp3", "wav", "mp4"],
 <<<<<<< HEAD
+<<<<<<< HEAD
             accept_multiple_files=True,
 =======
             accept_multiple_files=True
 >>>>>>> 3e83144 (AI Review: Fix ui/chat_utils.py syntax and asyncio crash in ui/chat.py)
+=======
+            accept_multiple_files=True
+>>>>>>> 673954a (Resilience: [error handling])
         )
 
         if uploaded_files:
             for file in uploaded_files:
 <<<<<<< HEAD
+<<<<<<< HEAD
                 file_ext = file.name.split(".")[-1].lower()
 =======
                 file_ext = file.name.split('.')[-1].lower()
 >>>>>>> 3e83144 (AI Review: Fix ui/chat_utils.py syntax and asyncio crash in ui/chat.py)
+=======
+                file_ext = file.name.split('.')[-1].lower()
+>>>>>>> 673954a (Resilience: [error handling])
 
                 # Images
                 if file_ext in ["jpg", "jpeg", "png", "webp"]:
@@ -414,14 +535,18 @@ def show_chat_page():
                         try:
                             import PyPDF2
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> 3e83144 (AI Review: Fix ui/chat_utils.py syntax and asyncio crash in ui/chat.py)
+=======
+>>>>>>> 673954a (Resilience: [error handling])
                             pdf = PyPDF2.PdfReader(file)
                             text = ""
                             for page in pdf.pages[:5]:
                                 text += page.extract_text() + "\n"
                             extra_context += f"\n--- PDF {file.name} ---\n{text}\n"
+<<<<<<< HEAD
 <<<<<<< HEAD
                             uploaded_file_info.append(
                                 {"name": file.name, "type": "PDF"}
@@ -429,6 +554,9 @@ def show_chat_page():
 =======
                             uploaded_file_info.append({"name": file.name, "type": "PDF"})
 >>>>>>> 3e83144 (AI Review: Fix ui/chat_utils.py syntax and asyncio crash in ui/chat.py)
+=======
+                            uploaded_file_info.append({"name": file.name, "type": "PDF"})
+>>>>>>> 673954a (Resilience: [error handling])
                             st.success(f"PDF: {file.name}")
                         except ImportError:
                             st.error("PyPDF2 not installed")
@@ -445,6 +573,7 @@ def show_chat_page():
                         file_bytes = file.read()
                         from io import BytesIO
 <<<<<<< HEAD
+<<<<<<< HEAD
 
                         audio_buf = BytesIO(file_bytes)
                         transcription = transcribe_audio_file(audio_buf)
@@ -457,11 +586,16 @@ def show_chat_page():
                             }
                         )
 =======
+=======
+>>>>>>> 673954a (Resilience: [error handling])
                         audio_buf = BytesIO(file_bytes)
                         transcription = transcribe_audio_file(audio_buf)
                         extra_context += f"\n--- Audio {file.name} (transcript) ---\n{transcription}\n"
                         uploaded_file_info.append({"name": file.name, "type": "Audio", "transcript": transcription})
+<<<<<<< HEAD
 >>>>>>> 3e83144 (AI Review: Fix ui/chat_utils.py syntax and asyncio crash in ui/chat.py)
+=======
+>>>>>>> 673954a (Resilience: [error handling])
                         st.success(f"Audio processed: {file.name}")
                     except Exception as e:
                         st.warning(f"Audio processing failed: {e}")
@@ -471,13 +605,17 @@ def show_chat_page():
                     try:
                         from io import BytesIO
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> 3e83144 (AI Review: Fix ui/chat_utils.py syntax and asyncio crash in ui/chat.py)
+=======
+>>>>>>> 673954a (Resilience: [error handling])
                         file_bytes = file.read()
                         video_buf = BytesIO(file_bytes)
                         thumbs = extract_video_frame_thumbnails(video_buf, max_frames=3)
                         if thumbs:
+<<<<<<< HEAD
 <<<<<<< HEAD
                             uploaded_file_info.append(
                                 {
@@ -491,12 +629,17 @@ def show_chat_page():
                             for i, b64 in enumerate(thumbs):
                                 with cols[i % 3]:
 =======
+=======
+>>>>>>> 673954a (Resilience: [error handling])
                             uploaded_file_info.append({"name": file.name, "type": "Video", "thumbnails": thumbs})
                             # display small gallery
                             cols = st.columns(min(len(thumbs), 3))
                             for i, b64 in enumerate(thumbs):
                                 with cols[i%3]:
+<<<<<<< HEAD
 >>>>>>> 3e83144 (AI Review: Fix ui/chat_utils.py syntax and asyncio crash in ui/chat.py)
+=======
+>>>>>>> 673954a (Resilience: [error handling])
                                     st.image(b64)
                             extra_context += f"\n--- Video {file.name} - {len(thumbs)} thumbnails extracted ---\n"
                             st.success(f"Video processed: {file.name}")
@@ -509,18 +652,24 @@ def show_chat_page():
     adv_caption = st.checkbox(
         "🖼️ Enable Advanced Image Captioning (BLIP)",
 <<<<<<< HEAD
+<<<<<<< HEAD
         value=st.session_state.get("enable_advanced_captioning", False),
         help="Use BLIP model locally to generate richer image captions if installed",
 =======
         value=st.session_state.get('enable_advanced_captioning', False),
         help="Use BLIP model locally to generate richer image captions if installed"
 >>>>>>> 3e83144 (AI Review: Fix ui/chat_utils.py syntax and asyncio crash in ui/chat.py)
+=======
+        value=st.session_state.get('enable_advanced_captioning', False),
+        help="Use BLIP model locally to generate richer image captions if installed"
+>>>>>>> 673954a (Resilience: [error handling])
     )
     st.session_state.enable_advanced_captioning = adv_caption
 
     # Hosted caption API settings (optional)
     if adv_caption:
         # Check readiness without triggering download/load
+<<<<<<< HEAD
 <<<<<<< HEAD
 
         # Check if the resource is already cached in Streamlit
@@ -537,6 +686,8 @@ def show_chat_page():
                 from ui.chat_utils import preload_blip_model_with_progress
 
 =======
+=======
+>>>>>>> 673954a (Resilience: [error handling])
         from ui.chat_utils import get_blip_model
 
         # Check if the resource is already cached in Streamlit
@@ -549,7 +700,10 @@ def show_chat_page():
 
             if st.button("⬇️ Download & Load BLIP Model"):
                 from ui.chat_utils import preload_blip_model_with_progress
+<<<<<<< HEAD
 >>>>>>> 3e83144 (AI Review: Fix ui/chat_utils.py syntax and asyncio crash in ui/chat.py)
+=======
+>>>>>>> 673954a (Resilience: [error handling])
                 progress_bar = st.progress(0)
                 status_text = st.empty()
 
@@ -560,6 +714,7 @@ def show_chat_page():
                     except Exception:
                         pass
 
+<<<<<<< HEAD
 <<<<<<< HEAD
                 with st.spinner("Downloading BLIP model..."):
                     ok = preload_blip_model_with_progress(
@@ -585,6 +740,8 @@ def show_chat_page():
             )
             st.session_state.hosted_caption_url = hosted_url
 =======
+=======
+>>>>>>> 673954a (Resilience: [error handling])
                 with st.spinner('Downloading BLIP model...'):
                     ok = preload_blip_model_with_progress(progress_callback=_progress_callback)
                     if ok:
@@ -606,8 +763,16 @@ def show_chat_page():
                 help="External captioning service URL"
             )
              st.session_state.hosted_caption_url = hosted_url
+<<<<<<< HEAD
 >>>>>>> 3e83144 (AI Review: Fix ui/chat_utils.py syntax and asyncio crash in ui/chat.py)
     # 'prompt' might already be set by Welcome Screen buttons or Voice mode simulation
+=======
+
+    # Check for retry trigger
+    if "retry_prompt" in st.session_state and st.session_state.retry_prompt:
+        prompt = st.session_state.retry_prompt
+        del st.session_state.retry_prompt
+>>>>>>> 673954a (Resilience: [error handling])
 
     # We still need to render the chat input widget to allow typing
     input_prompt = st.chat_input("Ask anything...")
@@ -617,16 +782,22 @@ def show_chat_page():
 
     # Check voice mode override if not already set
 <<<<<<< HEAD
+<<<<<<< HEAD
     if not prompt and st.session_state.get("voice_mode"):
         # Simple simulation specific logic check
         # (In a real app, this would be an audio buffer handling block)
         pass
 =======
+=======
+>>>>>>> 673954a (Resilience: [error handling])
     if not prompt and st.session_state.get('voice_mode'):
          # Simple simulation specific logic check
          # (In a real app, this would be an audio buffer handling block)
          pass
+<<<<<<< HEAD
 >>>>>>> 3e83144 (AI Review: Fix ui/chat_utils.py syntax and asyncio crash in ui/chat.py)
+=======
+>>>>>>> 673954a (Resilience: [error handling])
 
     # 5. Processing
     if prompt:
@@ -634,6 +805,7 @@ def show_chat_page():
         user_msg = {
             "role": "user",
             "content": prompt,
+<<<<<<< HEAD
 <<<<<<< HEAD
             "timestamp": datetime.now().strftime("%H:%M:%S"),
             "images": uploaded_images,
@@ -643,11 +815,17 @@ def show_chat_page():
             "images": uploaded_images,
             "files": uploaded_file_info
 >>>>>>> 3e83144 (AI Review: Fix ui/chat_utils.py syntax and asyncio crash in ui/chat.py)
+=======
+            "timestamp": datetime.now().strftime('%H:%M:%S'),
+            "images": uploaded_images,
+            "files": uploaded_file_info
+>>>>>>> 673954a (Resilience: [error handling])
         }
         st.session_state.messages.append(user_msg)
 
         # --- DB SAVE: USER ---
         from ui.database import create_new_conversation, save_message
+<<<<<<< HEAD
 <<<<<<< HEAD
 
         try:
@@ -659,19 +837,25 @@ def show_chat_page():
                     user_id, title
                 )
 =======
+=======
+>>>>>>> 673954a (Resilience: [error handling])
         try:
             if 'conversation_id' not in st.session_state:
                 user_id = st.session_state.get('username', 'guest')
                 # Smart title generation
                 title = (prompt[:30] + '..') if len(prompt) > 30 else prompt
                 st.session_state.conversation_id = create_new_conversation(user_id, title)
+<<<<<<< HEAD
 >>>>>>> 3e83144 (AI Review: Fix ui/chat_utils.py syntax and asyncio crash in ui/chat.py)
+=======
+>>>>>>> 673954a (Resilience: [error handling])
 
             # Save to DB
             save_message(
                 st.session_state.conversation_id,
                 "user",
                 prompt,
+<<<<<<< HEAD
 <<<<<<< HEAD
                 {
                     "images": bool(uploaded_images),
@@ -680,6 +864,9 @@ def show_chat_page():
 =======
                 {"images": bool(uploaded_images), "files": [f['name'] for f in uploaded_file_info]}
 >>>>>>> 3e83144 (AI Review: Fix ui/chat_utils.py syntax and asyncio crash in ui/chat.py)
+=======
+                {"images": bool(uploaded_images), "files": [f['name'] for f in uploaded_file_info]}
+>>>>>>> 673954a (Resilience: [error handling])
             )
         except Exception as e:
             # Don't block chat if DB fails
@@ -690,10 +877,14 @@ def show_chat_page():
                 cols = st.columns(min(len(uploaded_images), 3))
                 for i, img in enumerate(uploaded_images):
 <<<<<<< HEAD
+<<<<<<< HEAD
                     with cols[i % 3]:
 =======
                     with cols[i%3]:
 >>>>>>> 3e83144 (AI Review: Fix ui/chat_utils.py syntax and asyncio crash in ui/chat.py)
+=======
+                    with cols[i%3]:
+>>>>>>> 673954a (Resilience: [error handling])
                         st.image(img, width="stretch")
             if uploaded_file_info:
                 for f in uploaded_file_info:
@@ -711,6 +902,7 @@ def show_chat_page():
             if uploaded_images:
                 try:
 <<<<<<< HEAD
+<<<<<<< HEAD
                     use_blip = st.session_state.get("enable_advanced_captioning", False)
                     img_context = generate_image_captions(
                         uploaded_images, use_blip=use_blip
@@ -720,16 +912,22 @@ def show_chat_page():
                             [f"{it['name']}: {it['caption']}" for it in img_context]
                         )
 =======
+=======
+>>>>>>> 673954a (Resilience: [error handling])
                     use_blip = st.session_state.get('enable_advanced_captioning', False)
                     img_context = generate_image_captions(uploaded_images, use_blip=use_blip)
                     if img_context:
                         img_texts = "\n".join([f"{it['name']}: {it['caption']}" for it in img_context])
+<<<<<<< HEAD
 >>>>>>> 3e83144 (AI Review: Fix ui/chat_utils.py syntax and asyncio crash in ui/chat.py)
+=======
+>>>>>>> 673954a (Resilience: [error handling])
                         final_prompt += f"\n\nImage Context:\n{img_texts}"
                 except Exception as e:
                     st.warning(f"Image processing error: {e}")
 
             # Internet Search Integration
+<<<<<<< HEAD
 <<<<<<< HEAD
             if st.session_state.get("enable_internet_search", False):
                 with st.spinner("🔍 Searching the internet..."):
@@ -740,28 +938,39 @@ def show_chat_page():
                     )
                     domain_val = st.session_state.get("search_domain_filter", None)
 =======
+=======
+>>>>>>> 673954a (Resilience: [error handling])
             if st.session_state.get('enable_internet_search', False):
                 with st.spinner("🔍 Searching the internet..."):
                     # Pass new filters to helper
                     search_type_val = st.session_state.get('search_type', 'Web')
                     time_range_val = st.session_state.get('search_time_range', 'Anytime')
                     domain_val = st.session_state.get('search_domain_filter', None)
+<<<<<<< HEAD
 >>>>>>> 3e83144 (AI Review: Fix ui/chat_utils.py syntax and asyncio crash in ui/chat.py)
+=======
+>>>>>>> 673954a (Resilience: [error handling])
 
                     search_results, search_context = perform_internet_search(
                         prompt,
                         enable_search=True,
+<<<<<<< HEAD
 <<<<<<< HEAD
                         max_results=st.session_state.get("search_result_count", 5),
                         search_type=search_type_val,
                         time_range=time_range_val,
                         domain=domain_val,
 =======
+=======
+>>>>>>> 673954a (Resilience: [error handling])
                         max_results=st.session_state.get('search_result_count', 5),
                         search_type=search_type_val,
                         time_range=time_range_val,
                         domain=domain_val
+<<<<<<< HEAD
 >>>>>>> 3e83144 (AI Review: Fix ui/chat_utils.py syntax and asyncio crash in ui/chat.py)
+=======
+>>>>>>> 673954a (Resilience: [error handling])
                     )
 
                     if search_results:
@@ -769,6 +978,7 @@ def show_chat_page():
 
                         # Display search results
                         with st.expander("🌐 Search Results", expanded=False):
+<<<<<<< HEAD
 <<<<<<< HEAD
                             from ui.internet_search import (
                                 format_search_results_for_chat,
@@ -800,6 +1010,8 @@ def show_chat_page():
                 brain = AIBrain()
                 brain.internet_enabled = st.session_state.get("enable_internet", True)
 =======
+=======
+>>>>>>> 673954a (Resilience: [error handling])
                             from ui.internet_search import format_search_results_for_chat
                             search_display = format_search_results_for_chat(search_results, "web")
                             st.markdown(search_display)
@@ -822,7 +1034,10 @@ def show_chat_page():
                 st.info("🧠 Brain processing...")
                 brain = AIBrain()
                 brain.internet_enabled = st.session_state.get('enable_internet', True)
+<<<<<<< HEAD
 >>>>>>> 3e83144 (AI Review: Fix ui/chat_utils.py syntax and asyncio crash in ui/chat.py)
+=======
+>>>>>>> 673954a (Resilience: [error handling])
 
                 models_to_query = prepare_brain_configuration(api_key_map)
 
@@ -838,6 +1053,7 @@ def show_chat_page():
                             with st.spinner("Searching internet..."):
                                 internet_ctx = brain.gather_internet_context(prompt)
                                 if internet_ctx:
+<<<<<<< HEAD
 <<<<<<< HEAD
                                     final_prompt += (
                                         f"\n\nInternet Info:\n{internet_ctx}"
@@ -856,19 +1072,29 @@ def show_chat_page():
                             prompt, responses, internet_ctx
                         )
 =======
+=======
+>>>>>>> 673954a (Resilience: [error handling])
                                     final_prompt += f"\n\nInternet Info:\n{internet_ctx}"
 
                         # Query Models
                         # Async execution wrapper
+<<<<<<< HEAD
                         responses = run_async(brain.query_multiple_models(final_prompt, models_to_query, config))
 
                         # Synthesize
                         response_text = brain.synthesize_responses(prompt, responses, internet_ctx)
 >>>>>>> 3e83144 (AI Review: Fix ui/chat_utils.py syntax and asyncio crash in ui/chat.py)
+=======
+                        responses = asyncio.run(brain.query_multiple_models(final_prompt, models_to_query, config))
+
+                        # Synthesize
+                        response_text = brain.synthesize_responses(prompt, responses, internet_ctx)
+>>>>>>> 673954a (Resilience: [error handling])
 
                         # Show comparison
                         with st.expander("Model Comparison"):
                             for r in responses:
+<<<<<<< HEAD
 <<<<<<< HEAD
                                 st.markdown(
                                     f"**{r['provider'].upper()}**: {r.get('success', False)}"
@@ -878,6 +1104,10 @@ def show_chat_page():
                                 st.markdown(f"**{r['provider'].upper()}**: {r.get('success', False)}")
                                 st.text(r.get('response', '')[:200] + "...")
 >>>>>>> 3e83144 (AI Review: Fix ui/chat_utils.py syntax and asyncio crash in ui/chat.py)
+=======
+                                st.markdown(f"**{r['provider'].upper()}**: {r.get('success', False)}")
+                                st.text(r.get('response', '')[:200] + "...")
+>>>>>>> 673954a (Resilience: [error handling])
 
                     except Exception as e:
                         response_text = f"Brain Error: {e}"
@@ -887,6 +1117,7 @@ def show_chat_page():
 
             else:
                 # Standard Mode
+<<<<<<< HEAD
 <<<<<<< HEAD
                 provider = st.session_state.get("selected_provider", "google")
                 model_name = st.session_state.get(
@@ -902,6 +1133,8 @@ def show_chat_page():
 
                 sys_prompt = st.session_state.get("system_instruction", "")
 =======
+=======
+>>>>>>> 673954a (Resilience: [error handling])
                 provider = st.session_state.get('selected_provider', 'google')
                 model_name = st.session_state.get('selected_model_name', 'gemini-1.5-flash')
 
@@ -913,7 +1146,10 @@ def show_chat_page():
                 }
 
                 sys_prompt = st.session_state.get('system_instruction', "")
+<<<<<<< HEAD
 >>>>>>> 3e83144 (AI Review: Fix ui/chat_utils.py syntax and asyncio crash in ui/chat.py)
+=======
+>>>>>>> 673954a (Resilience: [error handling])
 
                 response_text = generate_standard_response(
                     provider=provider,
@@ -923,6 +1159,7 @@ def show_chat_page():
                     chat_history=st.session_state.messages,
                     system_instruction=sys_prompt,
                     config=config,
+<<<<<<< HEAD
 <<<<<<< HEAD
                     images=uploaded_images,
                 )
@@ -959,6 +1196,8 @@ def show_chat_page():
                 "auto_speak"
             ):
 =======
+=======
+>>>>>>> 673954a (Resilience: [error handling])
                     images=uploaded_images
                 )
 
@@ -982,6 +1221,7 @@ def show_chat_page():
                  print(f"DB Save Assistant Error: {e}")
 
             if st.session_state.get('voice_mode') and st.session_state.get('auto_speak'):
+<<<<<<< HEAD
 >>>>>>> 3e83144 (AI Review: Fix ui/chat_utils.py syntax and asyncio crash in ui/chat.py)
                 pass
 
@@ -1529,3 +1769,8 @@ def show_chat_page():
             st.rerun()
 
 >>>>>>> d4117c9 (Review: Fix syntax error and refactor inline styles)
+=======
+                pass
+
+            st.rerun()
+>>>>>>> 673954a (Resilience: [error handling])
