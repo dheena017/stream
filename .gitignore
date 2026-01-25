@@ -37,6 +37,7 @@ logs/
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 *.db
 =======
 
@@ -92,3 +93,11 @@ secret.key
 users.json
 logs/*.jsonl
 >>>>>>> origin/privacy-compliance-updates-15433171418981572602
+=======
+
+# Database
+*.db
+
+# User data
+users.json
+>>>>>>> origin/monitoring-setup-3187580208021102587
