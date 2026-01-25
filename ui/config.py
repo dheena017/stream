@@ -1,5 +1,6 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 # Pricing per 1M tokens (input, output) - Updated Jan 2026 estimates
 
 # Pricing per 1M tokens (input, output) - Updated Jan 2026 estimates
@@ -195,6 +196,8 @@ PROVIDER_LABELS = {
 =======
 =======
 >>>>>>> api-integrations-groq-3434217061461873316
+=======
+>>>>>>> origin/api-integrations-groq-12473300930587894354
 
 # Pricing per 1M tokens (input, output) - Updated Jan 2026 estimates
 
@@ -230,9 +233,14 @@ MODEL_PRICING = {
     "llama-3.3-70b-versatile": (0.59, 0.79),
     "llama-3.1-8b-instant": (0.05, 0.08),
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     "mixtral-8x7b-32768": (0.24, 0.24),
 >>>>>>> api-integrations-groq-3434217061461873316
+=======
+    "mixtral-8x7b-32768": (0.24, 0.24),
+    "gemma2-9b-it": (0.20, 0.20),
+>>>>>>> origin/api-integrations-groq-12473300930587894354
 }
 
 # Detailed Model Metadata
@@ -372,6 +380,7 @@ MODEL_DETAILS = {
     # Groq
     "llama-3.3-70b-versatile": {
 <<<<<<< HEAD
+<<<<<<< HEAD
         "label": "Llama 3.3 70B (Groq)",
         "provider": "groq",
         "context": "128k",
@@ -391,22 +400,47 @@ MODEL_DETAILS = {
         "context": "128k",
         "description": "High speed open model.",
         "capabilities": ["⚡ Fast", "🦙 Open"]
+=======
+        "label": "Groq Llama 3.3 70B",
+        "provider": "groq",
+        "context": "128k",
+        "description": "Versatile high-performance model on Groq LPU.",
+        "capabilities": ["⚡ Ultra-Fast", "🦙 Open"]
+>>>>>>> origin/api-integrations-groq-12473300930587894354
     },
     "llama-3.1-8b-instant": {
         "label": "Groq Llama 3.1 8B",
         "provider": "groq",
         "context": "128k",
+<<<<<<< HEAD
         "description": "Extremely fast small model.",
         "capabilities": ["⚡ Fast", "💰 Cheap"]
+=======
+        "description": "Instant speed for lightweight tasks.",
+        "capabilities": ["⚡ Ultra-Fast", "💰 Cheap"]
+>>>>>>> origin/api-integrations-groq-12473300930587894354
     },
     "mixtral-8x7b-32768": {
         "label": "Groq Mixtral 8x7b",
         "provider": "groq",
         "context": "32k",
+<<<<<<< HEAD
         "description": "Balanced performance and speed.",
         "capabilities": ["⚡ Fast", "🧠 Smart"]
     },
 >>>>>>> api-integrations-groq-3434217061461873316
+=======
+        "description": "High-quality MoE model.",
+        "capabilities": ["⚡ Ultra-Fast", "🧠 Smart"]
+    },
+    "gemma2-9b-it": {
+        "label": "Groq Gemma 2 9B",
+        "provider": "groq",
+        "context": "8k",
+        "description": "Google's open model running on Groq.",
+        "capabilities": ["⚡ Ultra-Fast", "💎 Gemma"]
+    },
+>>>>>>> origin/api-integrations-groq-12473300930587894354
 }
 
 # Legacy Compatibility Lists (Generated from MODEL_DETAILS)
@@ -424,10 +458,14 @@ PROVIDER_ICONS = {
     "google": "🔵", "openai": "🟢", "anthropic": "🟣",
     "together": "🔴", "xai": "⚫", "deepseek": "🟠",
 <<<<<<< HEAD
+<<<<<<< HEAD
     "groq": "🚀",
 =======
     "groq": "⚡",
 >>>>>>> api-integrations-groq-3434217061461873316
+=======
+    "groq": "⚡",
+>>>>>>> origin/api-integrations-groq-12473300930587894354
     "brain-mode": "🧠"
 }
 
@@ -438,6 +476,9 @@ PROVIDER_LABELS = {
     "brain-mode": "Brain Mode"
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> api-groq-integration-6554511320622598819
 =======
 >>>>>>> api-integrations-groq-3434217061461873316
+=======
+>>>>>>> origin/api-integrations-groq-12473300930587894354
