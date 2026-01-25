@@ -32,8 +32,8 @@ def show_chat_page():
     c_head1, c_head2 = st.columns([3, 1])
     with c_head1:
         st.markdown("""
-        <div style="display: flex; align-items: center; gap: 1rem;">
-            <div style="font-size: 2rem;">🤖</div>
+        <div role="region" aria-label="Chat Header" style="display: flex; align-items: center; gap: 1rem;">
+            <div style="font-size: 2rem;" aria-hidden="true">🤖</div>
             <div>
                 <h2 style="margin: 0; font-weight: 700; color: white;">Multi-Provider Chat</h2>
                 <div style="display: flex; gap: 0.8rem; flex-wrap: wrap; margin-top: 0.25rem;">
@@ -54,12 +54,12 @@ def show_chat_page():
         inet_on = st.session_state.get('enable_internet_search', False)
         
         status_html = f"""
-        <div style="text-align: right;">
-            <div class="status-badge {'active' if brain_on else ''}" style="display:inline-flex; width:auto; font-size:0.8rem; padding: 2px 8px;">
-                {'🧠 Brain' if brain_on else '🤖 Std'}
+        <div role="status" aria-label="System Status" style="text-align: right;">
+            <div class="status-badge {'active' if brain_on else ''}" style="display:inline-flex; width:auto; font-size:0.8rem; padding: 2px 8px;" aria-label="Brain Mode {'Active' if brain_on else 'Standard'}">
+                <span aria-hidden="true">{'🧠 Brain' if brain_on else '🤖 Std'}</span>
             </div>
-             <div class="status-badge {'active' if inet_on else ''}" style="display:inline-flex; width:auto; font-size:0.8rem; padding: 2px 8px; margin-left:4px;">
-                {'🌐 Web' if inet_on else '📱 Off'}
+             <div class="status-badge {'active' if inet_on else ''}" style="display:inline-flex; width:auto; font-size:0.8rem; padding: 2px 8px; margin-left:4px;" aria-label="Internet Search {'Enabled' if inet_on else 'Disabled'}">
+                <span aria-hidden="true">{'🌐 Web' if inet_on else '📱 Off'}</span>
             </div>
             <div style="margin-top: 4px; font-weight: 600; font-size: 0.9rem; color: var(--accent-primary);">
                  🔌 {provider}
@@ -82,11 +82,11 @@ def show_chat_page():
         user_name = st.session_state.get('username', 'Traveler')
         
         st.markdown(f"""
-        <div class="welcome-container">
-            <div class="welcome-title">Welcome back, {user_name}! 👋</div>
-            <div class="welcome-subtitle">
+        <div class="welcome-container" role="main" aria-labelledby="welcome-title">
+            <h1 id="welcome-title" class="welcome-title">Welcome back, {user_name}! <span aria-hidden="true">👋</span></h1>
+            <p class="welcome-subtitle">
                 I'm your intelligent assistant. Select a starter or type below to begin.
-            </div>
+            </p>
         </div>
         """, unsafe_allow_html=True)
         
@@ -120,7 +120,7 @@ def show_chat_page():
                 cols = st.columns(min(len(msg["images"]), 3))
                 for i, img in enumerate(msg["images"]):
                     with cols[i%3]:
-                        st.image(img, width="stretch")
+                        st.image(img, width="stretch", caption=f"Uploaded Image {i+1}")
             
             # Files info
             if "files" in msg and msg["files"]:

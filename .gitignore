@@ -29,3 +29,8 @@ dist/
 # Streamlit
 .streamlit/secrets.toml
 .streamlit/config.toml
+
+# Database & Sensitive Files
+*.db
+users.json
+secret.key

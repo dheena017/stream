@@ -350,5 +350,18 @@ def load_css():
         opacity: 0.5;
     }
     ::-webkit-scrollbar-thumb:hover { background: var(--text-primary); }
+
+    /* --- Accessibility Enhancements --- */
+    /* Strong focus indicators for keyboard navigation */
+    :focus-visible, [tabindex="0"]:focus, button:focus, input:focus, select:focus, textarea:focus {
+        outline: 3px solid var(--accent-primary) !important;
+        outline-offset: 2px !important;
+        box-shadow: 0 0 0 4px var(--accent-subtle) !important;
+    }
+
+    /* Ensure text visibility */
+    .stMarkdown, p, span, div {
+        text-rendering: optimizeLegibility;
+    }
     </style>
     """
