@@ -32,11 +32,11 @@ def show_chat_page():
     c_head1, c_head2 = st.columns([3, 1])
     with c_head1:
         st.markdown("""
-        <div style="display: flex; align-items: center; gap: 1rem;">
-            <div style="font-size: 2rem;">🤖</div>
+        <div class="chat-header-container">
+            <div class="header-icon">🤖</div>
             <div>
-                <h2 style="margin: 0; font-weight: 700; color: white;">Multi-Provider Chat</h2>
-                <div style="display: flex; gap: 0.8rem; flex-wrap: wrap; margin-top: 0.25rem;">
+                <h2 class="chat-title">Multi-Provider Chat</h2>
+                <div class="chat-subtitle">
                     <span class="subtle-text">GPT-4</span>
                     <span class="subtle-text">•</span>
                     <span class="subtle-text">Claude</span>
@@ -54,14 +54,14 @@ def show_chat_page():
         inet_on = st.session_state.get('enable_internet_search', False)
         
         status_html = f"""
-        <div style="text-align: right;">
-            <div class="status-badge {'active' if brain_on else ''}" style="display:inline-flex; width:auto; font-size:0.8rem; padding: 2px 8px;">
+        <div class="chat-status-container">
+            <div class="status-badge {'active' if brain_on else ''} chat-status-badge">
                 {'🧠 Brain' if brain_on else '🤖 Std'}
             </div>
-             <div class="status-badge {'active' if inet_on else ''}" style="display:inline-flex; width:auto; font-size:0.8rem; padding: 2px 8px; margin-left:4px;">
+             <div class="status-badge {'active' if inet_on else ''} chat-status-badge chat-status-badge-ml">
                 {'🌐 Web' if inet_on else '📱 Off'}
             </div>
-            <div style="margin-top: 4px; font-weight: 600; font-size: 0.9rem; color: var(--accent-primary);">
+            <div class="chat-provider-status">
                  🔌 {provider}
             </div>
         </div>
@@ -102,7 +102,7 @@ def show_chat_page():
              if st.button("🎨 Analyze an Image", use_container_width=True):
                  prompt = "Help me analyze an image I'm about to upload."
                  
-        st.markdown("<div style='height: 2rem'></div>", unsafe_allow_html=True)
+        st.markdown("<div class='spacer-2rem'></div>", unsafe_allow_html=True)
     
     # 4. Filter logic (kept from original)
     chat_search = st.session_state.get('chat_search_value', '')

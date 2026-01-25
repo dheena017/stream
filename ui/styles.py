@@ -350,5 +350,48 @@ def load_css():
         opacity: 0.5;
     }
     ::-webkit-scrollbar-thumb:hover { background: var(--text-primary); }
+
+    /* --- Header & Status --- */
+    .chat-header-container {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    .header-icon {
+        font-size: 2rem;
+    }
+    .chat-title {
+        margin: 0 !important;
+        font-weight: 700 !important;
+        color: white !important;
+    }
+    .chat-subtitle {
+        display: flex;
+        gap: 0.8rem;
+        flex-wrap: wrap;
+        margin-top: 0.25rem;
+    }
+    .chat-status-container {
+        text-align: right;
+    }
+    .chat-status-badge {
+        display: inline-flex;
+        width: auto;
+        font-size: 0.8rem;
+        padding: 2px 8px;
+    }
+    .chat-status-badge-ml {
+        margin-left: 4px;
+    }
+    .chat-provider-status {
+        margin-top: 4px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: var(--accent-primary);
+    }
+
+    .spacer-2rem {
+        height: 2rem;
+    }
     </style>
     """
