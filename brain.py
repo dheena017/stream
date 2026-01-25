@@ -18,6 +18,7 @@ import logging
 from datetime import datetime
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 from typing import Any, Dict, List, Optional
 =======
 import streamlit as st
@@ -73,6 +74,9 @@ from typing import List, Dict, Any, Optional
 # Configure logger
 logger = logging.getLogger(__name__)
 >>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
+=======
+from ui.resilience import track_failure, async_retry_with_backoff
+>>>>>>> origin/resilience-error-handling-7924837681139551131
 
 
 class AIBrain:
@@ -210,6 +214,7 @@ class AIBrain:
         
         return "".join(context_parts)
     
+<<<<<<< HEAD
     async def _query_google(
         self,
         model_name: str,
@@ -218,6 +223,26 @@ class AIBrain:
     ) -> Dict[str, Any]:
         """Helper to query Google models"""
         try:
+=======
+    @async_retry_with_backoff(retries=2)
+    async def _query_model_impl(
+        self,
+        provider: str,
+        model_name: str,
+        prompt: str,
+        api_key: str,
+        config: Dict[str, Any]
+    ) -> Dict[str, str]:
+        # Validate prompt is not empty
+        if not prompt or not prompt.strip():
+            return {
+                "provider": provider,
+                "model": model_name,
+                "response": "Error: Prompt cannot be empty",
+                "success": False
+            }
+        if provider == "google":
+>>>>>>> origin/resilience-error-handling-7924837681139551131
             from google import genai
             client = genai.Client(api_key=api_key)
 
@@ -227,11 +252,16 @@ class AIBrain:
                 contents=[{"role": "user", "parts": [{"text": prompt}]}]
             )
             return {
+<<<<<<< HEAD
                 "provider": "google",
+=======
+                "provider": provider,
+>>>>>>> origin/resilience-error-handling-7924837681139551131
                 "model": model_name,
                 "response": response.text,
                 "success": True
             }
+<<<<<<< HEAD
         except Exception as e:
             logger.error(f"Google query failed: {e}")
             return {
@@ -242,6 +272,56 @@ class AIBrain:
             }
 
     async def _query_openai_compatible(
+=======
+
+        elif provider in ["openai", "together", "xai", "deepseek"]:
+            from openai import OpenAI
+
+            base_urls = {
+                "together": "https://api.together.xyz/v1",
+                "xai": "https://api.x.ai/v1",
+                "deepseek": "https://api.deepseek.com"
+            }
+
+            client = OpenAI(
+                api_key=api_key,
+                base_url=base_urls.get(provider)
+            )
+
+            response = client.chat.completions.create(
+                model=model_name,
+                messages=[{"role": "user", "content": prompt}],
+                temperature=config.get("temperature", 0.7),
+                max_tokens=config.get("max_output_tokens", 1024)
+            )
+
+            return {
+                "provider": provider,
+                "model": model_name,
+                "response": response.choices[0].message.content,
+                "success": True
+            }
+
+        elif provider == "anthropic":
+            from anthropic import Anthropic
+            client = Anthropic(api_key=api_key)
+
+            response = client.messages.create(
+                model=model_name,
+                messages=[{"role": "user", "content": prompt}],
+                max_tokens=config.get("max_output_tokens", 1024),
+                temperature=config.get("temperature", 0.7)
+            )
+
+            return {
+                "provider": provider,
+                "model": model_name,
+                "response": response.content[0].text,
+                "success": True
+            }
+
+    async def query_model(
+>>>>>>> origin/resilience-error-handling-7924837681139551131
         self,
         provider: str,
         model_name: str,
@@ -251,6 +331,7 @@ class AIBrain:
     ) -> Dict[str, Any]:
         """Helper to query OpenAI-compatible models"""
         try:
+<<<<<<< HEAD
             from openai import OpenAI
             
             base_urls = {
@@ -279,6 +360,11 @@ class AIBrain:
             }
         except Exception as e:
             logger.error(f"{provider} query failed: {e}")
+=======
+            return await self._query_model_impl(provider, model_name, prompt, api_key, config)
+        except Exception as e:
+            track_failure(f"{provider}/{model_name}", e)
+>>>>>>> origin/resilience-error-handling-7924837681139551131
             return {
                 "provider": provider,
                 "model": model_name,

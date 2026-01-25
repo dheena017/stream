@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 """
 Internet Search Module - DuckDuckGo Search Integration
 Provides real-time web search capabilities for the chat interface
@@ -284,16 +285,26 @@ def create_search_context(search_results: List[Dict], query: str) -> str:
     context += "=" * 50 + "\n"
     return context
 =======
+=======
+>>>>>>> origin/resilience-error-handling-7924837681139551131
 """
 Internet Search Module - DuckDuckGo Search Integration
 Provides real-time web search capabilities for the chat interface
 """
 
 import logging
+<<<<<<< HEAD
 from typing import Dict, List, Optional
 
 import requests
 from duckduckgo_search import DDGS
+=======
+from typing import List, Dict, Optional
+import requests
+from duckduckgo_search import DDGS
+import asyncio
+from ui.resilience import retry_with_backoff
+>>>>>>> origin/resilience-error-handling-7924837681139551131
 
 logger = logging.getLogger(__name__)
 
@@ -308,6 +319,10 @@ class InternetSearchEngine:
         self.timeout = timeout
         self.ddgs = DDGS(timeout=timeout)
 
+<<<<<<< HEAD
+=======
+    @retry_with_backoff(retries=2)
+>>>>>>> origin/resilience-error-handling-7924837681139551131
     def search(self, query: str, max_results: int = 5, detailed: bool = False, time_range: str = "Anytime", domain: str = None) -> List[Dict]:
         """
         Perform a web search using DuckDuckGo
@@ -360,6 +375,10 @@ class InternetSearchEngine:
             logger.error(f"Search error: {str(e)}")
             return []
 
+<<<<<<< HEAD
+=======
+    @retry_with_backoff(retries=2)
+>>>>>>> origin/resilience-error-handling-7924837681139551131
     def search_news(self, query: str, max_results: int = 5) -> List[Dict]:
         """
         Search for news articles
@@ -394,6 +413,10 @@ class InternetSearchEngine:
             logger.error(f"News search error: {str(e)}")
             return []
 
+<<<<<<< HEAD
+=======
+    @retry_with_backoff(retries=2)
+>>>>>>> origin/resilience-error-handling-7924837681139551131
     def search_images(self, query: str, max_results: int = 5) -> List[Dict]:
         """
         Search for images
@@ -427,6 +450,10 @@ class InternetSearchEngine:
             logger.error(f"Image search error: {str(e)}")
             return []
 
+<<<<<<< HEAD
+=======
+    @retry_with_backoff(retries=2)
+>>>>>>> origin/resilience-error-handling-7924837681139551131
     def fetch_url_content(self, url: str, max_length: int = 2000) -> Optional[str]:
         """
         Fetch and extract text content from a URL
@@ -549,4 +576,7 @@ def create_search_context(search_results: List[Dict], query: str) -> str:
 
     context += "=" * 50 + "\n"
     return context
+<<<<<<< HEAD
 >>>>>>> origin/code-quality-refactor-17423438479402428749
+=======
+>>>>>>> origin/resilience-error-handling-7924837681139551131
