@@ -2,6 +2,18 @@
 
 This project is a Streamlit-based multi-provider AI chat with multimodal (image/audio/video) support, internet search augmentation, and optional advanced image captioning via BLIP or a hosted caption API.
 
+<<<<<<< HEAD
+=======
+## Supported Providers
+- Google (Gemini)
+- OpenAI (GPT-4o, etc.)
+- Anthropic (Claude)
+- Together AI (Llama)
+- xAI (Grok)
+- DeepSeek
+- Groq (Llama, Mixtral)
+
+>>>>>>> api-groq-integration-6554511320622598819
 ## BLIP (Optional)
 - BLIP model (`Salesforce/blip-image-captioning-base`) is optional and will be downloaded on first preload.
 - To enable advanced captioning in the UI, toggle "Enable Advanced Image Captioning (BLIP)" in the chat page and optionally provide a Hosted Caption API URL.
@@ -11,6 +23,7 @@ This project is a Streamlit-based multi-provider AI chat with multimodal (image/
 - Provide an endpoint that accepts multipart image uploads and returns JSON containing `caption` or `text` fields.
 - The app will prefer the hosted caption API if configured, then BLIP (if available), then fallback heuristics.
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
 ## Documentation
@@ -28,6 +41,8 @@ This project is a Streamlit-based multi-provider AI chat with multimodal (image/
 We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for more details.
 
 >>>>>>> 948b4f4 (Community: [PR merges/docs])
+=======
+>>>>>>> api-groq-integration-6554511320622598819
 ## Running locally
 Create and activate a virtual environment, then install dependencies:
 
@@ -50,12 +65,17 @@ streamlit run app.py
 Run tests locally:
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 ```bash
 PYTHONPATH=. pytest -q
 =======
 ```powershell
 pytest -q
 >>>>>>> 948b4f4 (Community: [PR merges/docs])
+=======
+```powershell
+pytest -q
+>>>>>>> api-groq-integration-6554511320622598819
 ```
 
 ## Notes

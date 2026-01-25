@@ -4,6 +4,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import functools
 import logging
 import time
@@ -24,10 +25,13 @@ logger = logging.getLogger(__name__)
 =======
 =======
 >>>>>>> 673954a (Resilience: [error handling])
+=======
+>>>>>>> api-groq-integration-6554511320622598819
 
 import streamlit as st
 import logging
 from typing import List, Dict, Optional, Any, Callable, Tuple
+<<<<<<< HEAD
 <<<<<<< HEAD
 from ui.ethics import EthicsGuardian
 =======
@@ -48,11 +52,14 @@ import time
 import functools
 from io import BytesIO
 >>>>>>> performance-optimization-13534932852089819512
+=======
+>>>>>>> api-groq-integration-6554511320622598819
 
 logger = logging.getLogger(__name__)
 
 # BLIP cache holds (processor, model, device)
 BLIP_CACHE: Optional[Tuple[Any, Any, Any]] = None
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -63,12 +70,15 @@ BLIP_CACHE: Optional[Tuple[Any, Any, Any]] = None
 >>>>>>> 673954a (Resilience: [error handling])
 =======
 >>>>>>> performance-optimization-13534932852089819512
+=======
+>>>>>>> api-groq-integration-6554511320622598819
 
 
 # --- Cached clients / resources ---
 @st.cache_resource
 def get_internet_search_engine():
     from ui.internet_search import InternetSearchEngine
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -85,12 +95,15 @@ def get_internet_search_engine():
 >>>>>>> 673954a (Resilience: [error handling])
 =======
 >>>>>>> performance-optimization-13534932852089819512
+=======
+>>>>>>> api-groq-integration-6554511320622598819
     return InternetSearchEngine()
 
 
 @st.cache_resource
 def get_openai_client(api_key: str, base_url: Optional[str] = None):
     from openai import OpenAI
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -117,11 +130,15 @@ def get_openai_client(api_key: str, base_url: Optional[str] = None):
 =======
     return OpenAI(api_key=api_key, base_url=base_url) if base_url else OpenAI(api_key=api_key)
 >>>>>>> performance-optimization-13534932852089819512
+=======
+    return OpenAI(api_key=api_key, base_url=base_url) if base_url else OpenAI(api_key=api_key)
+>>>>>>> api-groq-integration-6554511320622598819
 
 
 @st.cache_resource
 def get_anthropic_client(api_key: str):
     from anthropic import Anthropic
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -138,6 +155,8 @@ def get_anthropic_client(api_key: str):
 >>>>>>> 673954a (Resilience: [error handling])
 =======
 >>>>>>> performance-optimization-13534932852089819512
+=======
+>>>>>>> api-groq-integration-6554511320622598819
     return Anthropic(api_key=api_key)
 
 
@@ -145,6 +164,7 @@ def get_anthropic_client(api_key: str):
 def get_google_client(api_key: str):
     # Import dynamically to avoid hard dependency if not used
     import google.generativeai as genai
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -179,6 +199,8 @@ def build_conversation_history(
 >>>>>>> 673954a (Resilience: [error handling])
 =======
 >>>>>>> performance-optimization-13534932852089819512
+=======
+>>>>>>> api-groq-integration-6554511320622598819
     genai.configure(api_key=api_key)
     return genai
 
@@ -192,6 +214,7 @@ def build_conversation_history(messages: List[Dict], exclude_last: bool = True, 
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> origin/analytics-monitoring-17353357073288903889
 =======
 >>>>>>> 9a44f3f (Ethics: [bias fixes])
@@ -201,6 +224,8 @@ def build_conversation_history(messages: List[Dict], exclude_last: bool = True, 
 >>>>>>> 673954a (Resilience: [error handling])
 =======
 >>>>>>> performance-optimization-13534932852089819512
+=======
+>>>>>>> api-groq-integration-6554511320622598819
     total_chars = sum(len(m.get("content", "")) for m in formatted)
     if len(formatted) > max_messages or total_chars > max_chars:
         older = formatted[:-max_messages] if len(formatted) > max_messages else []
@@ -210,6 +235,7 @@ def build_conversation_history(messages: List[Dict], exclude_last: bool = True, 
             for msg in older[-10:]:
                 content = msg.get("content", "")
                 preview = content[:200] + "..." if len(content) > 200 else content
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -241,12 +267,17 @@ def build_conversation_history(messages: List[Dict], exclude_last: bool = True, 
                 older_summary_parts.append(f"{msg.get('role', 'unknown').upper()}: {preview}")
             summary_text = "[Earlier conversation summary]\n" + "\n".join(older_summary_parts)
 >>>>>>> performance-optimization-13534932852089819512
+=======
+                older_summary_parts.append(f"{msg.get('role', 'unknown').upper()}: {preview}")
+            summary_text = "[Earlier conversation summary]\n" + "\n".join(older_summary_parts)
+>>>>>>> api-groq-integration-6554511320622598819
             return [{"role": "system", "content": summary_text}] + recent
         else:
             return recent
     return formatted
 
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -272,6 +303,9 @@ def create_openai_messages(conversation_history: List[Dict], current_prompt: str
 =======
 def create_openai_messages(conversation_history: List[Dict], current_prompt: str, system_instruction: Optional[str] = None) -> List[Dict]:
 >>>>>>> performance-optimization-13534932852089819512
+=======
+def create_openai_messages(conversation_history: List[Dict], current_prompt: str, system_instruction: Optional[str] = None) -> List[Dict]:
+>>>>>>> api-groq-integration-6554511320622598819
     messages = []
     if system_instruction:
         messages.append({"role": "system", "content": system_instruction})
@@ -281,6 +315,7 @@ def create_openai_messages(conversation_history: List[Dict], current_prompt: str
 
 
 # --- Resilience Helpers ---
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -309,6 +344,11 @@ import functools
 =======
 
 >>>>>>> performance-optimization-13534932852089819512
+=======
+import time
+import functools
+
+>>>>>>> api-groq-integration-6554511320622598819
 def retry_with_backoff(retries=3, backoff_in_seconds=1):
     def decorator(func):
         @functools.wraps(func)
@@ -319,6 +359,7 @@ def retry_with_backoff(retries=3, backoff_in_seconds=1):
                     return func(*args, **kwargs)
                 except Exception as e:
                     if x == retries:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
                         raise e
@@ -350,11 +391,16 @@ def retry_with_backoff(retries=3, backoff_in_seconds=1):
                         raise e
                     sleep = (backoff_in_seconds * 2 ** x)
 >>>>>>> performance-optimization-13534932852089819512
+=======
+                        raise e
+                    sleep = (backoff_in_seconds * 2 ** x)
+>>>>>>> api-groq-integration-6554511320622598819
                     time.sleep(sleep)
                     x += 1
         return wrapper
     return decorator
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -368,6 +414,8 @@ def retry_with_backoff(retries=3, backoff_in_seconds=1):
 >>>>>>> 673954a (Resilience: [error handling])
 =======
 >>>>>>> performance-optimization-13534932852089819512
+=======
+>>>>>>> api-groq-integration-6554511320622598819
 # --- Provider Handlers ---
 def handle_google_provider(
     api_key: str,
@@ -378,6 +426,7 @@ def handle_google_provider(
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     api_key: str,
     model_name: str,
     prompt: str,
@@ -391,11 +440,14 @@ def handle_google_provider(
 >>>>>>> 673954a (Resilience: [error handling])
 =======
 >>>>>>> performance-optimization-13534932852089819512
+=======
+>>>>>>> api-groq-integration-6554511320622598819
     system_instruction: Optional[str] = None,
     temperature: float = 0.7,
     max_tokens: int = 2048,
     top_p: float = 0.95,
     images: List = None,
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -429,10 +481,13 @@ def handle_google_provider(
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
 =======
 >>>>>>> performance-optimization-13534932852089819512
+=======
+>>>>>>> api-groq-integration-6554511320622598819
     enable_streaming: bool = False
 ) -> str:
     try:
         if not api_key: return "Please provide a Google API Key."
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
     enable_streaming: bool = False
@@ -442,6 +497,8 @@ def handle_google_provider(
 >>>>>>> 673954a (Resilience: [error handling])
 =======
 >>>>>>> performance-optimization-13534932852089819512
+=======
+>>>>>>> api-groq-integration-6554511320622598819
         import google.generativeai as genai
         # Configure the global instance
         genai.configure(api_key=api_key)
@@ -457,6 +514,7 @@ def handle_google_provider(
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> origin/analytics-monitoring-17353357073288903889
 =======
 >>>>>>> 9a44f3f (Ethics: [bias fixes])
@@ -464,11 +522,14 @@ def handle_google_provider(
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
 =======
 >>>>>>> 673954a (Resilience: [error handling])
+=======
+>>>>>>> api-groq-integration-6554511320622598819
         # Initialize model
         # system_instruction is supported in newer versions as init argument or via specific methods
         # For broader compatibility, passing via constructor if supported, else prepending to prompt might be needed
         # But latest SDK supports 'system_instruction' in GenerativeModel constructor
         try:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -493,6 +554,9 @@ def handle_google_provider(
         try:
             model = genai.GenerativeModel(model_name=model_name, system_instruction=system_instruction)
 >>>>>>> performance-optimization-13534932852089819512
+=======
+            model = genai.GenerativeModel(model_name=model_name, system_instruction=system_instruction)
+>>>>>>> api-groq-integration-6554511320622598819
         except TypeError:
             # Fallback for older SDK versions that don't support system_instruction in init
             model = genai.GenerativeModel(model_name=model_name)
@@ -504,6 +568,7 @@ def handle_google_provider(
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
         contents = []
         if images:
@@ -514,10 +579,13 @@ def handle_google_provider(
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
 =======
 >>>>>>> 673954a (Resilience: [error handling])
+=======
+>>>>>>> api-groq-integration-6554511320622598819
         contents = []
         if images:
             from io import BytesIO
             import base64
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -532,6 +600,8 @@ def handle_google_provider(
         contents = []
         if images:
 >>>>>>> performance-optimization-13534932852089819512
+=======
+>>>>>>> api-groq-integration-6554511320622598819
             for img in images:
                 # Gemai SDK can take PIL images directly in 'contents'
                 contents.append(img)
@@ -541,6 +611,7 @@ def handle_google_provider(
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
         contents.append(prompt)
 
@@ -565,6 +636,10 @@ def handle_google_provider(
         contents.append(prompt)
 
 >>>>>>> performance-optimization-13534932852089819512
+=======
+        contents.append(prompt)
+
+>>>>>>> api-groq-integration-6554511320622598819
         @retry_with_backoff(retries=2)
         def _generate():
             # For gemini, we can pass stream=True/False to generate_content
@@ -574,6 +649,7 @@ def handle_google_provider(
                 stream=enable_streaming
             )
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -595,10 +671,13 @@ def handle_google_provider(
 >>>>>>> 673954a (Resilience: [error handling])
 =======
 >>>>>>> performance-optimization-13534932852089819512
+=======
+>>>>>>> api-groq-integration-6554511320622598819
         response = _generate()
 
         if enable_streaming:
             collected_text = []
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -612,6 +691,8 @@ def handle_google_provider(
 >>>>>>> 673954a (Resilience: [error handling])
 =======
 >>>>>>> performance-optimization-13534932852089819512
+=======
+>>>>>>> api-groq-integration-6554511320622598819
             def _stream_gen():
                 for chunk in response:
                     if chunk.text:
@@ -623,6 +704,7 @@ def handle_google_provider(
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> origin/analytics-monitoring-17353357073288903889
@@ -634,11 +716,14 @@ def handle_google_provider(
 >>>>>>> 673954a (Resilience: [error handling])
 =======
 >>>>>>> performance-optimization-13534932852089819512
+=======
+>>>>>>> api-groq-integration-6554511320622598819
             try:
                 st.write_stream(_stream_gen())
             except Exception as e:
                 logger.warning(f"Google streaming visualization failed: {e}")
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -663,11 +748,17 @@ def handle_google_provider(
         else:
              return response.text
 >>>>>>> performance-optimization-13534932852089819512
+=======
+            return "".join(collected_text)
+        else:
+             return response.text
+>>>>>>> api-groq-integration-6554511320622598819
 
     except Exception as e:
         logger.error(f"Google provider error: {e}")
         return f"Error connecting to Google Gemini: {str(e)}"
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -703,6 +794,8 @@ def handle_google_provider(
 >>>>>>> 673954a (Resilience: [error handling])
 =======
 >>>>>>> performance-optimization-13534932852089819512
+=======
+>>>>>>> api-groq-integration-6554511320622598819
 def handle_anthropic_provider(
     api_key: str,
     model_name: str,
@@ -710,6 +803,7 @@ def handle_anthropic_provider(
     system_instruction: Optional[str] = None,
     temperature: float = 0.7,
     max_tokens: int = 2048,
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -740,10 +834,13 @@ def handle_anthropic_provider(
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
 =======
 >>>>>>> performance-optimization-13534932852089819512
+=======
+>>>>>>> api-groq-integration-6554511320622598819
     enable_streaming: bool = False
 ) -> str:
     try:
         if not api_key: return "Please provide an Anthropic API Key."
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
     enable_streaming: bool = False
@@ -753,6 +850,8 @@ def handle_anthropic_provider(
 >>>>>>> 673954a (Resilience: [error handling])
 =======
 >>>>>>> performance-optimization-13534932852089819512
+=======
+>>>>>>> api-groq-integration-6554511320622598819
         from anthropic import Anthropic
         client = Anthropic(api_key=api_key)
 
@@ -761,6 +860,7 @@ def handle_anthropic_provider(
              "messages": messages,
              "max_tokens": max_tokens,
              "temperature": temperature,
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -774,6 +874,8 @@ def handle_anthropic_provider(
 >>>>>>> 673954a (Resilience: [error handling])
 =======
 >>>>>>> performance-optimization-13534932852089819512
+=======
+>>>>>>> api-groq-integration-6554511320622598819
         }
         if system_instruction:
              kwargs["system"] = system_instruction
@@ -785,6 +887,7 @@ def handle_anthropic_provider(
             else:
                 return client.messages.create(stream=False, **kwargs)
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -809,6 +912,8 @@ def handle_anthropic_provider(
 >>>>>>> 673954a (Resilience: [error handling])
 =======
 >>>>>>> performance-optimization-13534932852089819512
+=======
+>>>>>>> api-groq-integration-6554511320622598819
         response = _create_message()
 
         if enable_streaming:
@@ -820,6 +925,7 @@ def handle_anthropic_provider(
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> origin/analytics-monitoring-17353357073288903889
 =======
 >>>>>>> 9a44f3f (Ethics: [bias fixes])
@@ -829,6 +935,8 @@ def handle_anthropic_provider(
 >>>>>>> 673954a (Resilience: [error handling])
 =======
 >>>>>>> performance-optimization-13534932852089819512
+=======
+>>>>>>> api-groq-integration-6554511320622598819
                         text = event.delta.text
                         collected_text.append(text)
                         yield text
@@ -838,6 +946,7 @@ def handle_anthropic_provider(
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> origin/analytics-monitoring-17353357073288903889
@@ -849,10 +958,13 @@ def handle_anthropic_provider(
 >>>>>>> 673954a (Resilience: [error handling])
 =======
 >>>>>>> performance-optimization-13534932852089819512
+=======
+>>>>>>> api-groq-integration-6554511320622598819
             try:
                 st.write_stream(_stream_gen())
             except Exception:
                 pass
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -866,11 +978,14 @@ def handle_anthropic_provider(
 >>>>>>> 673954a (Resilience: [error handling])
 =======
 >>>>>>> performance-optimization-13534932852089819512
+=======
+>>>>>>> api-groq-integration-6554511320622598819
             return "".join(collected_text)
         else:
             return response.content[0].text
 
     except Exception as e:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -908,6 +1023,10 @@ def handle_anthropic_provider(
          logger.error(f"Anthropic provider error: {e}")
          return f"Error connecting to Anthropic Claude: {str(e)}"
 >>>>>>> performance-optimization-13534932852089819512
+=======
+         logger.error(f"Anthropic provider error: {e}")
+         return f"Error connecting to Anthropic Claude: {str(e)}"
+>>>>>>> api-groq-integration-6554511320622598819
 
 def generate_standard_response(
     provider: str,
@@ -917,6 +1036,7 @@ def generate_standard_response(
     chat_history: List[Dict],
     system_instruction: str = "",
     config: Dict[str, Any] = {},
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -938,10 +1058,14 @@ def generate_standard_response(
 =======
     images: List = None
 >>>>>>> performance-optimization-13534932852089819512
+=======
+    images: List = None
+>>>>>>> api-groq-integration-6554511320622598819
 ) -> str:
     """Unified dispatcher for standard mode chat generation"""
     api_key = api_keys.get(provider)
     if not api_key:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
         return f"❌ Missing API Key for {provider}. Please check sidebar settings."
@@ -979,10 +1103,16 @@ def generate_standard_response(
 
     try:
 >>>>>>> performance-optimization-13534932852089819512
+=======
+        return f"❌ Missing API Key for {provider}. Please check sidebar settings."
+
+    try:
+>>>>>>> api-groq-integration-6554511320622598819
         temp = config.get('temperature', 0.7)
         max_tok = config.get('max_tokens', 2048)
         top_p = config.get('top_p', 0.95)
         stream = config.get('enable_streaming', False)
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1013,10 +1143,16 @@ def generate_standard_response(
         if provider == "google":
             return handle_google_provider(
 >>>>>>> performance-optimization-13534932852089819512
+=======
+
+        if provider == "google":
+            return handle_google_provider(
+>>>>>>> api-groq-integration-6554511320622598819
                 api_key, model_name, prompt, system_instruction,
                 temp, max_tok, top_p, images, enable_streaming=stream
             )
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1055,6 +1191,14 @@ def generate_standard_response(
 =======
                 "deepseek": "https://api.deepseek.com"
 >>>>>>> performance-optimization-13534932852089819512
+=======
+        elif provider in ["openai", "together", "xai", "deepseek", "groq"]:
+            base_urls = {
+                "together": "https://api.together.xyz/v1",
+                "xai": "https://api.x.ai/v1",
+                "deepseek": "https://api.deepseek.com",
+                "groq": "https://api.groq.com/openai/v1"
+>>>>>>> api-groq-integration-6554511320622598819
             }
             client = get_openai_client(api_key, base_urls.get(provider))
             msgs = create_openai_messages(build_conversation_history(chat_history), prompt, system_instruction)
@@ -1062,6 +1206,7 @@ def generate_standard_response(
 
         elif provider == "anthropic":
             # Anthropic expects just user/assistant messages
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1081,11 +1226,15 @@ def generate_standard_response(
 =======
             msgs = [{"role": "user", "content": prompt}] # Simplified for this call; ideally use full history if supported
 >>>>>>> performance-optimization-13534932852089819512
+=======
+            msgs = [{"role": "user", "content": prompt}] # Simplified for this call; ideally use full history if supported
+>>>>>>> api-groq-integration-6554511320622598819
             return handle_anthropic_provider(
                 api_key, model_name, msgs, system_instruction,
                 temp, max_tok, enable_streaming=stream
             )
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1148,16 +1297,22 @@ def prepare_brain_configuration(
 >>>>>>> 673954a (Resilience: [error handling])
 
 =======
+=======
+>>>>>>> api-groq-integration-6554511320622598819
         return "Provider not supported."
 
     except Exception as e:
         return f"Generation Error: {str(e)}"
 
+<<<<<<< HEAD
 >>>>>>> performance-optimization-13534932852089819512
+=======
+>>>>>>> api-groq-integration-6554511320622598819
 def prepare_brain_configuration(api_keys: Dict[str, str], requested_models: List[str] = None) -> List[Dict[str, Any]]:
     """Helper to build the list of models for Brain Mode based on available keys"""
     models_to_query = []
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1171,6 +1326,8 @@ def prepare_brain_configuration(api_keys: Dict[str, str], requested_models: List
 >>>>>>> 673954a (Resilience: [error handling])
 =======
 >>>>>>> performance-optimization-13534932852089819512
+=======
+>>>>>>> api-groq-integration-6554511320622598819
     # Default strategy: Use available keys (simplified)
     # In a real app, 'requested_models' would come from user config
 
@@ -1183,6 +1340,7 @@ def prepare_brain_configuration(api_keys: Dict[str, str], requested_models: List
     if api_keys.get('anthropic'):
          models_to_query.append({"provider": "anthropic", "model": "claude-3-5-haiku-20241022", "api_key": api_keys['anthropic']})
 
+<<<<<<< HEAD
     return models_to_query
 
 <<<<<<< HEAD
@@ -1201,6 +1359,13 @@ def prepare_brain_configuration(api_keys: Dict[str, str], requested_models: List
 >>>>>>> 673954a (Resilience: [error handling])
 =======
 >>>>>>> performance-optimization-13534932852089819512
+=======
+    if api_keys.get('groq'):
+         models_to_query.append({"provider": "groq", "model": "llama-3.1-8b-instant", "api_key": api_keys['groq']})
+
+    return models_to_query
+
+>>>>>>> api-groq-integration-6554511320622598819
 def handle_openai_compatible_provider(
     client: Any,
     model_name: str,
@@ -1208,6 +1373,7 @@ def handle_openai_compatible_provider(
     temperature: float,
     max_tokens: int,
     top_p: float,
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1229,6 +1395,9 @@ def handle_openai_compatible_provider(
 =======
     enable_streaming: bool
 >>>>>>> performance-optimization-13534932852089819512
+=======
+    enable_streaming: bool
+>>>>>>> api-groq-integration-6554511320622598819
 ) -> str:
     @retry_with_backoff(retries=2)
     def _create_completion(stream_mode):
@@ -1238,6 +1407,7 @@ def handle_openai_compatible_provider(
             temperature=temperature,
             max_tokens=max_tokens,
             top_p=top_p,
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1272,10 +1442,16 @@ def handle_openai_compatible_provider(
         )
 
 >>>>>>> performance-optimization-13534932852089819512
+=======
+            stream=stream_mode
+        )
+
+>>>>>>> api-groq-integration-6554511320622598819
     if enable_streaming:
         try:
             stream = _create_completion(True)
         except Exception as e:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1312,11 +1488,17 @@ def handle_openai_compatible_provider(
 
         collected_chunks = []
 >>>>>>> performance-optimization-13534932852089819512
+=======
+            return f"Error: {str(e)}"
+
+        collected_chunks = []
+>>>>>>> api-groq-integration-6554511320622598819
         def _iter_chunks():
             for chunk in stream:
                 piece = chunk.choices[0].delta.content or ""
                 collected_chunks.append(piece)
                 yield piece
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1333,12 +1515,15 @@ def handle_openai_compatible_provider(
 >>>>>>> 673954a (Resilience: [error handling])
 =======
 >>>>>>> performance-optimization-13534932852089819512
+=======
+>>>>>>> api-groq-integration-6554511320622598819
         # Stream to Streamlit (best-effort)
         try:
             st.write_stream(_iter_chunks())
         except Exception:
             pass
         response_text = "".join(collected_chunks)
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1365,10 +1550,14 @@ def handle_openai_compatible_provider(
 =======
         return response_text if response_text else "I apologize, but I couldn't generate a response."
 >>>>>>> performance-optimization-13534932852089819512
+=======
+        return response_text if response_text else "I apologize, but I couldn't generate a response."
+>>>>>>> api-groq-integration-6554511320622598819
     else:
         try:
             response = _create_completion(False)
         except Exception as e:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1407,12 +1596,18 @@ def handle_openai_compatible_provider(
 
         response_text = getattr(response.choices[0].message, 'content', None) or response.choices[0].message['content']
 >>>>>>> performance-optimization-13534932852089819512
+=======
+            return f"Error: {str(e)}"
+
+        response_text = getattr(response.choices[0].message, 'content', None) or response.choices[0].message['content']
+>>>>>>> api-groq-integration-6554511320622598819
         if not response_text:
             response_text = "I apologize, but I couldn't generate a response."
         try:
             st.markdown(response_text)
         except Exception:
             pass
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1429,10 +1624,13 @@ def handle_openai_compatible_provider(
 >>>>>>> 673954a (Resilience: [error handling])
 =======
 >>>>>>> performance-optimization-13534932852089819512
+=======
+>>>>>>> api-groq-integration-6554511320622598819
         return response_text
 
 
 # --- Internet search integration ---
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1462,6 +1660,9 @@ def perform_internet_search(query: str, enable_search: bool = True, max_results:
 @st.cache_data(ttl=300)
 def perform_internet_search(query: str, enable_search: bool = True, max_results: int = 5, search_type: str = "Web", time_range: str = "Anytime", domain: str = None) -> tuple[List[Dict], str]:
 >>>>>>> performance-optimization-13534932852089819512
+=======
+def perform_internet_search(query: str, enable_search: bool = True, max_results: int = 5, search_type: str = "Web", time_range: str = "Anytime", domain: str = None) -> tuple[List[Dict], str]:
+>>>>>>> api-groq-integration-6554511320622598819
     if not enable_search:
         return [], ""
     try:
@@ -1472,6 +1673,7 @@ def perform_internet_search(query: str, enable_search: bool = True, max_results:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> origin/analytics-monitoring-17353357073288903889
@@ -1481,6 +1683,8 @@ def perform_internet_search(query: str, enable_search: bool = True, max_results:
 >>>>>>> d35a0fe (Innovation: Add chat export functionality (TXT/JSON))
 =======
 >>>>>>> 673954a (Resilience: [error handling])
+=======
+>>>>>>> api-groq-integration-6554511320622598819
         if search_type == "News":
              # News search generally supports time range implicitly by recency,
              # but standard DDG news api might handle max_results.
@@ -1489,11 +1693,14 @@ def perform_internet_search(query: str, enable_search: bool = True, max_results:
              results = search_engine.search_news(query, max_results=max_results)
         else:
              # Standard Web Search with filters
+<<<<<<< HEAD
 =======
         if search_type == "News":
              results = search_engine.search_news(query, max_results=max_results)
         else:
 >>>>>>> performance-optimization-13534932852089819512
+=======
+>>>>>>> api-groq-integration-6554511320622598819
              results = search_engine.search(query, max_results=max_results, time_range=time_range, domain=domain)
 
         if results:
@@ -1503,6 +1710,7 @@ def perform_internet_search(query: str, enable_search: bool = True, max_results:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> origin/analytics-monitoring-17353357073288903889
@@ -1514,6 +1722,8 @@ def perform_internet_search(query: str, enable_search: bool = True, max_results:
 >>>>>>> 673954a (Resilience: [error handling])
 =======
 >>>>>>> performance-optimization-13534932852089819512
+=======
+>>>>>>> api-groq-integration-6554511320622598819
             context = create_search_context(results, query)
             logger.info(f"Search completed with {len(results)} results")
             return results, context
@@ -1532,6 +1742,7 @@ def augment_prompt_with_search(prompt: str, search_results: List[Dict]) -> str:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> origin/analytics-monitoring-17353357073288903889
@@ -1543,6 +1754,8 @@ def augment_prompt_with_search(prompt: str, search_results: List[Dict]) -> str:
 >>>>>>> 673954a (Resilience: [error handling])
 =======
 >>>>>>> performance-optimization-13534932852089819512
+=======
+>>>>>>> api-groq-integration-6554511320622598819
     context = create_search_context(search_results, prompt)
     augmented = f"""{prompt}
 
@@ -1554,6 +1767,7 @@ Please use the above search results to provide a current and accurate answer."""
 
 
 # --- Multimodal helpers ---
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1681,12 +1895,18 @@ def process_images_for_context(images: List) -> List[Dict]:
     results = []
     try:
 >>>>>>> performance-optimization-13534932852089819512
+=======
+def process_images_for_context(images: List) -> List[Dict]:
+    results = []
+    try:
+>>>>>>> api-groq-integration-6554511320622598819
         from PIL import Image
         for i, img in enumerate(images, 1):
             caption = None
             try:
                 info = getattr(img, 'info', {}) or {}
                 caption = info.get('description') or info.get('caption')
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1700,6 +1920,8 @@ def process_images_for_context(images: List) -> List[Dict]:
 >>>>>>> 673954a (Resilience: [error handling])
 =======
 >>>>>>> performance-optimization-13534932852089819512
+=======
+>>>>>>> api-groq-integration-6554511320622598819
             except Exception:
                 caption = None
             if not caption:
@@ -1713,10 +1935,14 @@ def process_images_for_context(images: List) -> List[Dict]:
     return results
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> api-groq-integration-6554511320622598819
 
 def transcribe_audio_file(file_like) -> str:
     try:
         import speech_recognition as sr
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1766,6 +1992,10 @@ def transcribe_audio_file(audio_bytes: bytes) -> str:
         recognizer = sr.Recognizer()
         with sr.AudioFile(BytesIO(audio_bytes)) as source:
 >>>>>>> performance-optimization-13534932852089819512
+=======
+        recognizer = sr.Recognizer()
+        with sr.AudioFile(file_like) as source:
+>>>>>>> api-groq-integration-6554511320622598819
             audio = recognizer.record(source)
         try:
             text = recognizer.recognize_google(audio)
@@ -1778,6 +2008,7 @@ def transcribe_audio_file(audio_bytes: bytes) -> str:
         return "[Transcription unavailable - install speech_recognition]"
 
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 def extract_video_frame_thumbnails(file_like, max_frames: int = 3) -> List[str]:
     thumbnails: List[str] = []
@@ -1809,6 +2040,11 @@ def extract_video_frame_thumbnails(video_bytes: bytes, max_frames: int = 3) -> L
     thumbnails: List[str] = []
     try:
 >>>>>>> performance-optimization-13534932852089819512
+=======
+def extract_video_frame_thumbnails(file_like, max_frames: int = 3) -> List[str]:
+    thumbnails: List[str] = []
+    try:
+>>>>>>> api-groq-integration-6554511320622598819
         import importlib
         moviepy = importlib.import_module("moviepy.editor")
         VideoFileClip = getattr(moviepy, "VideoFileClip")
@@ -1818,6 +2054,7 @@ def extract_video_frame_thumbnails(video_bytes: bytes, max_frames: int = 3) -> L
         from PIL import Image
 
         with tempfile.NamedTemporaryFile(suffix='.mp4', delete=True) as tmp:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1833,6 +2070,9 @@ def extract_video_frame_thumbnails(video_bytes: bytes, max_frames: int = 3) -> L
 =======
             tmp.write(video_bytes)
 >>>>>>> performance-optimization-13534932852089819512
+=======
+            tmp.write(file_like.read())
+>>>>>>> api-groq-integration-6554511320622598819
             tmp.flush()
             clip = VideoFileClip(tmp.name)
             duration = clip.duration or 0
@@ -1842,6 +2082,7 @@ def extract_video_frame_thumbnails(video_bytes: bytes, max_frames: int = 3) -> L
                 img = Image.fromarray(frame)
                 buf = BytesIO()
                 img.thumbnail((320, 320))
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1869,6 +2110,10 @@ def extract_video_frame_thumbnails(video_bytes: bytes, max_frames: int = 3) -> L
                 img.save(buf, format='PNG')
                 b64 = base64.b64encode(buf.getvalue()).decode('utf-8')
 >>>>>>> performance-optimization-13534932852089819512
+=======
+                img.save(buf, format='PNG')
+                b64 = base64.b64encode(buf.getvalue()).decode('utf-8')
+>>>>>>> api-groq-integration-6554511320622598819
                 thumbnails.append(f"data:image/png;base64,{b64}")
             try:
                 clip.reader.close()
@@ -1885,6 +2130,7 @@ def extract_video_frame_thumbnails(video_bytes: bytes, max_frames: int = 3) -> L
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 >>>>>>> origin/analytics-monitoring-17353357073288903889
@@ -1900,6 +2146,9 @@ def extract_video_frame_thumbnails(video_bytes: bytes, max_frames: int = 3) -> L
 =======
 
 >>>>>>> performance-optimization-13534932852089819512
+=======
+
+>>>>>>> api-groq-integration-6554511320622598819
 # Consolidated BLIP Logic is now at the bottom of the file
 # Removed duplicate definition to fix linter error
 
@@ -1909,6 +2158,7 @@ def extract_video_frame_thumbnails(video_bytes: bytes, max_frames: int = 3) -> L
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 >>>>>>> origin/analytics-monitoring-17353357073288903889
@@ -1924,6 +2174,9 @@ def extract_video_frame_thumbnails(video_bytes: bytes, max_frames: int = 3) -> L
 =======
 
 >>>>>>> performance-optimization-13534932852089819512
+=======
+
+>>>>>>> api-groq-integration-6554511320622598819
 def generate_blip_caption(image) -> Optional[str]:
     try:
         processor, model, device = get_blip_model()
@@ -1934,6 +2187,7 @@ def generate_blip_caption(image) -> Optional[str]:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> origin/analytics-monitoring-17353357073288903889
@@ -1945,6 +2199,8 @@ def generate_blip_caption(image) -> Optional[str]:
 >>>>>>> 673954a (Resilience: [error handling])
 =======
 >>>>>>> performance-optimization-13534932852089819512
+=======
+>>>>>>> api-groq-integration-6554511320622598819
         with torch.no_grad():
             output_ids = model.generate(**inputs, max_new_tokens=50)
         caption = processor.decode(output_ids[0], skip_special_tokens=True)
@@ -1954,6 +2210,7 @@ def generate_blip_caption(image) -> Optional[str]:
         return None
 
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1987,6 +2244,8 @@ def call_hosted_caption_api(
 >>>>>>> 673954a (Resilience: [error handling])
 =======
 >>>>>>> performance-optimization-13534932852089819512
+=======
+>>>>>>> api-groq-integration-6554511320622598819
 def call_hosted_caption_api(image, api_url: str, api_key: Optional[str] = None) -> Optional[str]:
     try:
         import requests
@@ -2006,6 +2265,7 @@ def call_hosted_caption_api(image, api_url: str, api_key: Optional[str] = None) 
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> origin/analytics-monitoring-17353357073288903889
 =======
 >>>>>>> 9a44f3f (Ethics: [bias fixes])
@@ -2015,11 +2275,14 @@ def call_hosted_caption_api(image, api_url: str, api_key: Optional[str] = None) 
 >>>>>>> 673954a (Resilience: [error handling])
 =======
 >>>>>>> performance-optimization-13534932852089819512
+=======
+>>>>>>> api-groq-integration-6554511320622598819
     except Exception as e:
         logger.info(f"Hosted caption API call failed: {e}")
         return None
 
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -2046,6 +2309,9 @@ def generate_image_captions(images: List, use_blip: bool = False, hosted_api_url
 =======
 def generate_image_captions(images: List, use_blip: bool = False, hosted_api_url: Optional[str] = None, hosted_api_key: Optional[str] = None) -> List[Dict]:
 >>>>>>> performance-optimization-13534932852089819512
+=======
+def generate_image_captions(images: List, use_blip: bool = False, hosted_api_url: Optional[str] = None, hosted_api_key: Optional[str] = None) -> List[Dict]:
+>>>>>>> api-groq-integration-6554511320622598819
     if not images:
         return []
     results = []
@@ -2068,6 +2334,7 @@ def generate_image_captions(images: List, use_blip: bool = False, hosted_api_url
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
             caption = fallback.get("caption")
 =======
             caption = fallback.get('caption')
@@ -2084,6 +2351,9 @@ def generate_image_captions(images: List, use_blip: bool = False, hosted_api_url
 =======
             caption = fallback.get('caption')
 >>>>>>> performance-optimization-13534932852089819512
+=======
+            caption = fallback.get('caption')
+>>>>>>> api-groq-integration-6554511320622598819
         results.append({"name": f"image_{i}", "caption": caption})
     return results
 
@@ -2104,6 +2374,7 @@ def _load_blip_resources():
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     from transformers import BlipProcessor, BlipForConditionalGeneration
 >>>>>>> origin/analytics-monitoring-17353357073288903889
@@ -2119,6 +2390,9 @@ def _load_blip_resources():
 =======
     from transformers import BlipProcessor, BlipForConditionalGeneration
 >>>>>>> performance-optimization-13534932852089819512
+=======
+    from transformers import BlipProcessor, BlipForConditionalGeneration
+>>>>>>> api-groq-integration-6554511320622598819
     import torch
 
     model_id = "Salesforce/blip-image-captioning-base"
@@ -2128,6 +2402,7 @@ def _load_blip_resources():
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> origin/analytics-monitoring-17353357073288903889
@@ -2139,6 +2414,8 @@ def _load_blip_resources():
 >>>>>>> 673954a (Resilience: [error handling])
 =======
 >>>>>>> performance-optimization-13534932852089819512
+=======
+>>>>>>> api-groq-integration-6554511320622598819
     # helper to load with retry strategy
     def load_with_fallback(cls, model_id):
         # 1. Try local cache first
@@ -2156,6 +2433,7 @@ def _load_blip_resources():
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> origin/analytics-monitoring-17353357073288903889
@@ -2167,10 +2445,13 @@ def _load_blip_resources():
 >>>>>>> 673954a (Resilience: [error handling])
 =======
 >>>>>>> performance-optimization-13534932852089819512
+=======
+>>>>>>> api-groq-integration-6554511320622598819
     device = "cuda" if torch.cuda.is_available() else "cpu"
     model.to(device)
     return processor, model, device
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -2193,10 +2474,13 @@ def preload_blip_model_with_progress(
 >>>>>>> 673954a (Resilience: [error handling])
 =======
 >>>>>>> performance-optimization-13534932852089819512
+=======
+>>>>>>> api-groq-integration-6554511320622598819
 def get_blip_model():
     return _load_blip_resources()
 
 def preload_blip_model_with_progress(progress_callback: Optional[Callable[[int, str], None]] = None) -> bool:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -2210,6 +2494,8 @@ def preload_blip_model_with_progress(progress_callback: Optional[Callable[[int, 
 >>>>>>> 673954a (Resilience: [error handling])
 =======
 >>>>>>> performance-optimization-13534932852089819512
+=======
+>>>>>>> api-groq-integration-6554511320622598819
     """
     Simulated progress loader that actually just triggers the cached resource load.
     Since st.cache_resource handles the singleton, we just call it.
@@ -2223,6 +2509,7 @@ def preload_blip_model_with_progress(progress_callback: Optional[Callable[[int, 
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
         # We'll use a thread/process safe check by just calling the cached function
         # Streamlit's cache will handle the heavy lifting.
@@ -2253,6 +2540,11 @@ def preload_blip_model_with_progress(progress_callback: Optional[Callable[[int, 
         # Streamlit's cache will handle the heavy lifting.
 
 >>>>>>> performance-optimization-13534932852089819512
+=======
+        # We'll use a thread/process safe check by just calling the cached function
+        # Streamlit's cache will handle the heavy lifting.
+
+>>>>>>> api-groq-integration-6554511320622598819
         if progress_callback:
              progress_callback(30, "Loading BLIP model items...")
 
@@ -2264,6 +2556,7 @@ def preload_blip_model_with_progress(progress_callback: Optional[Callable[[int, 
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> origin/analytics-monitoring-17353357073288903889
@@ -2275,12 +2568,15 @@ def preload_blip_model_with_progress(progress_callback: Optional[Callable[[int, 
 >>>>>>> 673954a (Resilience: [error handling])
 =======
 >>>>>>> performance-optimization-13534932852089819512
+=======
+>>>>>>> api-groq-integration-6554511320622598819
         if progress_callback:
             progress_callback(100, "BLIP model ready")
         return True
     except Exception as e:
         logger.error(f"BLIP load failed: {e}")
         if progress_callback:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -2958,3 +3254,7 @@ def serialize_messages(messages: List[Dict]) -> str:
              progress_callback(0, f"Failed: {str(e)}")
         return False
 >>>>>>> performance-optimization-13534932852089819512
+=======
+             progress_callback(0, f"Failed: {str(e)}")
+        return False
+>>>>>>> api-groq-integration-6554511320622598819
