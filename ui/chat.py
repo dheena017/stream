@@ -15,6 +15,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import asyncio
 import time
 from datetime import datetime
@@ -119,6 +120,10 @@ import streamlit as st
 
 import streamlit as st
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+
+import streamlit as st
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
 import os
 import time
 import base64
@@ -127,9 +132,12 @@ import tempfile
 import json
 import pandas as pd
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 import html
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
 from datetime import datetime
 from io import BytesIO
 from PIL import Image
@@ -140,6 +148,7 @@ from ui.chat_utils import (
     build_conversation_history, create_openai_messages, handle_openai_compatible_provider,
     perform_internet_search, augment_prompt_with_search,
     process_images_for_context, transcribe_audio_file, extract_video_frame_thumbnails,
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -188,11 +197,15 @@ from ui.chat_utils import (
 =======
     generate_image_captions, generate_standard_response, prepare_brain_configuration
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+    generate_image_captions, generate_standard_response, prepare_brain_configuration
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
 )
 from brain import AIBrain
 from brain_learning import LearningBrain
 from multimodal_voice_integration import MultimodalVoiceIntegrator
 from ui.config import MODEL_PRICING, MODEL_CAPABILITIES, PROVIDER_ICONS
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -309,11 +322,17 @@ def show_chat_page():
 def show_chat_page():
     """Display the main chat interface"""
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+
+def show_chat_page():
+    """Display the main chat interface"""
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
 
     # --- 1. Header & Status Bar ---
     # Compact Header
     c_head1, c_head2 = st.columns([3, 1])
     with c_head1:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -377,6 +396,9 @@ def show_chat_page():
 =======
         st.markdown("""
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+        st.markdown("""
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
         <div style="display: flex; align-items: center; gap: 1rem;">
             <div style="font-size: 2rem;">🤖</div>
             <div>
@@ -386,6 +408,7 @@ def show_chat_page():
                     <span class="subtle-text">•</span>
                     <span class="subtle-text">Claude</span>
                     <span class="subtle-text">•</span>
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -410,10 +433,13 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
 =======
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
                     <span class="subtle-text">Gemini</span>
                 </div>
             </div>
         </div>
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -470,11 +496,14 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
 =======
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
         """, unsafe_allow_html=True)
 
     with c_head2:
         # Mini Status Details
         provider = st.session_state.get('selected_provider', 'google').upper()
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -545,6 +574,10 @@ def show_chat_page():
         brain_on = st.session_state.get('enable_brain_mode', False)
         inet_on = st.session_state.get('enable_internet_search', False)
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+        brain_on = st.session_state.get('enable_brain_mode', False)
+        inet_on = st.session_state.get('enable_internet_search', False)
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
 
         status_html = f"""
         <div style="text-align: right;">
@@ -555,6 +588,7 @@ def show_chat_page():
                 {'🌐 Web' if inet_on else '📱 Off'}
             </div>
             <div style="margin-top: 4px; font-weight: 600; font-size: 0.9rem; color: var(--accent-primary);">
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -615,6 +649,9 @@ def show_chat_page():
 =======
                  🔌 {provider}
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+                 🔌 {provider}
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
             </div>
         </div>
         """
@@ -627,6 +664,7 @@ def show_chat_page():
     prompt = None
 
     # --- 3. Chat History or Welcome Screen ---
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -682,11 +720,14 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
 =======
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
     messages = st.session_state.get('messages', [])
 
     if not messages:
         # ZERO STATE: Welcome Screen
         user_name = st.session_state.get('username', 'Traveler')
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -741,10 +782,13 @@ def show_chat_page():
 >>>>>>> origin/monitoring-setup-3291123637376011491
 =======
 >>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
+=======
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
 
         st.markdown(f"""
         <div class="welcome-container">
             <div class="welcome-title">Welcome back, {user_name}! 👋</div>
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -772,10 +816,13 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
 =======
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
             <div class="welcome-subtitle">
                 I'm your intelligent assistant. Select a starter or type below to begin.
             </div>
         </div>
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -847,12 +894,16 @@ def show_chat_page():
 =======
         """, unsafe_allow_html=True)
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+        """, unsafe_allow_html=True)
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
 
         wc1, wc2 = st.columns(2)
         with wc1:
             if st.button("🚀 Explain Quantum Computing", use_container_width=True):
                 prompt = "Explain quantum computing in simple terms."
             if st.button("📝 Write a Python Script", use_container_width=True):
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -903,12 +954,15 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
 =======
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
                  prompt = "Write a python script to parse a CSV file and plot it."
         with wc2:
              if st.button("📰 Search Latest News", use_container_width=True):
                  prompt = "What are the latest tech news headlines today?"
              if st.button("🎨 Analyze an Image", use_container_width=True):
                  prompt = "Help me analyze an image I'm about to upload."
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -967,10 +1021,13 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
 =======
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
 
         st.markdown("<div style='height: 2rem'></div>", unsafe_allow_html=True)
 
     # 4. Filter logic (kept from original)
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1024,10 +1081,13 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
 =======
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
     chat_search = st.session_state.get('chat_search_value', '')
     messages_to_display = messages
     if chat_search:
         messages_to_display = [m for m in messages if chat_search.lower() in m.get('content', '').lower()]
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1074,6 +1134,8 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
 =======
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
         st.info(f"🔍 Found {len(messages_to_display)} matching messages")
 
     model_icons = PROVIDER_ICONS
@@ -1084,6 +1146,7 @@ def show_chat_page():
             if "images" in msg and msg["images"]:
                 cols = st.columns(min(len(msg["images"]), 3))
                 for i, img in enumerate(msg["images"]):
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1155,10 +1218,15 @@ def show_chat_page():
                     with cols[i%3]:
                         st.image(img, width="stretch")
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+                    with cols[i%3]:
+                        st.image(img, width="stretch")
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
 
             # Files info
             if "files" in msg and msg["files"]:
                 for file_info in msg["files"]:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1218,10 +1286,13 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
 =======
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
                      st.caption(f"📎 {file_info.get('name')} ({file_info.get('type')})")
 
             # Content
             st.markdown(msg["content"])
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1262,12 +1333,15 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
 =======
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
 
             # Metadata footer
             if msg["role"] == "assistant":
                 st.markdown("---")
                 mc1, mc2, mc3 = st.columns([0.6, 0.2, 0.2])
                 with mc1:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1350,10 +1424,15 @@ def show_chat_page():
                     prov = msg.get('provider', '')
                     mod = msg.get('model', '')
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+                    prov = msg.get('provider', '')
+                    mod = msg.get('model', '')
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
                     icon = model_icons.get(prov, "🤖")
                     st.caption(f"{icon} {mod} • {msg.get('timestamp','')}")
 
                 with mc2:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1436,11 +1515,16 @@ def show_chat_page():
                      if "response_time" in msg:
                          st.caption(f"⚡ {msg['response_time']:.2f}s")
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+                     if "response_time" in msg:
+                         st.caption(f"⚡ {msg['response_time']:.2f}s")
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
 
                 with mc3:
                     # Action buttons
                     c_copy, c_regen = st.columns(2)
                     with c_copy:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1501,12 +1585,15 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
 =======
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
                         if st.button("📋", key=f"copy_{idx}", help="View raw text to copy"):
                             st.code(msg["content"], language=None)
                     with c_regen:
                         if st.button("🔄", key=f"regen_{idx}", help="Regenerate (Not implemented yet)"):
                              st.toast("Regeneration coming soon!")
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1625,11 +1712,16 @@ def show_chat_page():
     # 4. Internet Search Configuration
     with st.expander("🌐 Internet Search Settings", expanded=st.session_state.get('enable_internet_search', False)):
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+    # 4. Internet Search Configuration
+    with st.expander("🌐 Internet Search Settings", expanded=st.session_state.get('enable_internet_search', False)):
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
 
         c_search1, c_search2 = st.columns([1, 1])
         with c_search1:
             enable_internet = st.toggle(
                 "Enable Real-time Search",
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1712,6 +1804,10 @@ def show_chat_page():
                 value=st.session_state.get('enable_internet_search', False),
                 help="Augment answers with live web data"
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+                value=st.session_state.get('enable_internet_search', False),
+                help="Augment answers with live web data"
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
             )
             st.session_state.enable_internet_search = enable_internet
 
@@ -1719,6 +1815,7 @@ def show_chat_page():
                 "Search Mode",
                 ["Web", "News"],
                 horizontal=True,
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1801,11 +1898,16 @@ def show_chat_page():
                 index=0 if st.session_state.get('search_type') != "News" else 1,
                 key="search_type_selector"
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+                index=0 if st.session_state.get('search_type') != "News" else 1,
+                key="search_type_selector"
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
             )
             st.session_state.search_type = search_type
 
         with c_search2:
             result_count = st.slider(
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1903,6 +2005,11 @@ def show_chat_page():
                 1, 10,
                 st.session_state.get('search_result_count', 5)
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+                "Result Count",
+                1, 10,
+                st.session_state.get('search_result_count', 5)
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
             )
             st.session_state.search_result_count = result_count
 
@@ -1910,6 +2017,7 @@ def show_chat_page():
             time_range = st.selectbox(
                 "Time Range",
                 ["Anytime", "Past Day", "Past Week", "Past Month"],
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1975,6 +2083,9 @@ def show_chat_page():
 =======
                 index=0
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+                index=0
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
             )
             st.session_state.search_time_range = time_range
 
@@ -1982,6 +2093,7 @@ def show_chat_page():
         domain_filter = st.text_input(
             "Limit to Site (optional)",
             placeholder="e.g. reddit.com, stackoverflow.com",
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -2047,10 +2159,14 @@ def show_chat_page():
 =======
             help="Restrict search results to a specific domain"
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+            help="Restrict search results to a specific domain"
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
         )
         st.session_state.search_domain_filter = domain_filter
 
     # 5. Multimodal Uploads Area
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -2120,6 +2236,9 @@ def show_chat_page():
 =======
     multimodal_options = ["Images", "Documents (PDF/TXT)", "Audio Files", "Video Frames"]
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+    multimodal_options = ["Images", "Documents (PDF/TXT)", "Audio Files", "Video Frames"]
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
 
     uploaded_images = []
     uploaded_file_info = []
@@ -2131,6 +2250,7 @@ def show_chat_page():
         uploaded_files = st.file_uploader(
             "Upload files",
             type=["jpg", "jpeg", "png", "pdf", "txt", "md", "mp3", "wav", "mp4"],
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -2196,10 +2316,14 @@ def show_chat_page():
 =======
             accept_multiple_files=True
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+            accept_multiple_files=True
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
         )
 
         if uploaded_files:
             for file in uploaded_files:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -2268,6 +2392,9 @@ def show_chat_page():
 =======
                 file_ext = file.name.split('.')[-1].lower()
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+                file_ext = file.name.split('.')[-1].lower()
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
 
                 # Images
                 if file_ext in ["jpg", "jpeg", "png", "webp"]:
@@ -2278,6 +2405,7 @@ def show_chat_page():
 
                 # PDF/TXT
                 elif file_ext in ["pdf", "txt", "md"]:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -2364,11 +2492,17 @@ def show_chat_page():
                         try:
                             import PyPDF2
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+                    if file_ext == "pdf":
+                        try:
+                            import PyPDF2
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
                             pdf = PyPDF2.PdfReader(file)
                             text = ""
                             for page in pdf.pages[:5]:
                                 text += page.extract_text() + "\n"
                             extra_context += f"\n--- PDF {file.name} ---\n{text}\n"
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -2432,6 +2566,9 @@ def show_chat_page():
 =======
                             uploaded_file_info.append({"name": file.name, "type": "PDF"})
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+                            uploaded_file_info.append({"name": file.name, "type": "PDF"})
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
                             st.success(f"PDF: {file.name}")
                         except ImportError:
                             st.error("PyPDF2 not installed")
@@ -2440,6 +2577,7 @@ def show_chat_page():
                         extra_context += f"\n--- {file.name} ---\n{text}\n"
                         uploaded_file_info.append({"name": file.name, "type": "Text"})
                         st.success(f"Text: {file.name}")
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -2482,10 +2620,13 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
 =======
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
 
                 # Audio files
                 if file_ext in ["mp3", "wav"]:
                     try:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -2581,10 +2722,16 @@ def show_chat_page():
                         file_bytes = file.read()
                         from io import BytesIO
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+                        # Keep a buffer copy for transcription helper
+                        file_bytes = file.read()
+                        from io import BytesIO
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
                         audio_buf = BytesIO(file_bytes)
                         transcription = transcribe_audio_file(audio_buf)
                         extra_context += f"\n--- Audio {file.name} (transcript) ---\n{transcription}\n"
                         uploaded_file_info.append({"name": file.name, "type": "Audio", "transcript": transcription})
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -2633,6 +2780,8 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
 =======
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
                         st.success(f"Audio processed: {file.name}")
                     except Exception as e:
                         st.warning(f"Audio processing failed: {e}")
@@ -2640,6 +2789,7 @@ def show_chat_page():
                 # Video files
                 if file_ext in ["mp4", "mov"]:
                     try:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -2700,10 +2850,14 @@ def show_chat_page():
 =======
                         from io import BytesIO
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+                        from io import BytesIO
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
                         file_bytes = file.read()
                         video_buf = BytesIO(file_bytes)
                         thumbs = extract_video_frame_thumbnails(video_buf, max_frames=3)
                         if thumbs:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -2763,11 +2917,14 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
 =======
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
                             uploaded_file_info.append({"name": file.name, "type": "Video", "thumbnails": thumbs})
                             # display small gallery
                             cols = st.columns(min(len(thumbs), 3))
                             for i, b64 in enumerate(thumbs):
                                 with cols[i%3]:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -2814,6 +2971,8 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
 =======
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
                                     st.image(b64)
                             extra_context += f"\n--- Video {file.name} - {len(thumbs)} thumbnails extracted ---\n"
                             st.success(f"Video processed: {file.name}")
@@ -2825,6 +2984,7 @@ def show_chat_page():
     # Advanced captioning option (move outside upload loop)
     adv_caption = st.checkbox(
         "🖼️ Enable Advanced Image Captioning (BLIP)",
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -2907,12 +3067,17 @@ def show_chat_page():
         value=st.session_state.get('enable_advanced_captioning', False),
         help="Use BLIP model locally to generate richer image captions if installed"
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+        value=st.session_state.get('enable_advanced_captioning', False),
+        help="Use BLIP model locally to generate richer image captions if installed"
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
     )
     st.session_state.enable_advanced_captioning = adv_caption
 
     # Hosted caption API settings (optional)
     if adv_caption:
         # Check readiness without triggering download/load
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -2982,6 +3147,9 @@ def show_chat_page():
 =======
         from ui.chat_utils import get_blip_model
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+        from ui.chat_utils import get_blip_model
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
 
         # Check if the resource is already cached in Streamlit
         # We can try to peek or just rely on a session state flag that indicates explicit load success
@@ -2992,6 +3160,7 @@ def show_chat_page():
             st.caption("Advanced captioning requires downloading the BLIP model (~1GB). This happens only once.")
 
             if st.button("⬇️ Download & Load BLIP Model"):
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -3046,6 +3215,9 @@ def show_chat_page():
 =======
                 from ui.chat_utils import preload_blip_model_with_progress
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+                from ui.chat_utils import preload_blip_model_with_progress
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
                 progress_bar = st.progress(0)
                 status_text = st.empty()
 
@@ -3056,6 +3228,7 @@ def show_chat_page():
                     except Exception:
                         pass
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -3126,6 +3299,8 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
 =======
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
                 with st.spinner('Downloading BLIP model...'):
                     ok = preload_blip_model_with_progress(progress_callback=_progress_callback)
                     if ok:
@@ -3147,6 +3322,7 @@ def show_chat_page():
                 help="External captioning service URL"
             )
              st.session_state.hosted_caption_url = hosted_url
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -3213,6 +3389,9 @@ def show_chat_page():
 =======
     # 'prompt' might already be set by Welcome Screen buttons or Voice mode simulation
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+    # 'prompt' might already be set by Welcome Screen buttons or Voice mode simulation
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
 
     # We still need to render the chat input widget to allow typing
     input_prompt = st.chat_input("Ask anything...")
@@ -3221,6 +3400,7 @@ def show_chat_page():
         prompt = input_prompt
 
     # Check voice mode override if not already set
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -3272,10 +3452,13 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
 =======
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
     if not prompt and st.session_state.get('voice_mode'):
          # Simple simulation specific logic check
          # (In a real app, this would be an audio buffer handling block)
          pass
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -3330,6 +3513,8 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
 =======
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
 
     # 5. Processing
     if prompt:
@@ -3337,6 +3522,7 @@ def show_chat_page():
         user_msg = {
             "role": "user",
             "content": prompt,
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -3454,12 +3640,15 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
 =======
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
             "timestamp": datetime.now().strftime('%H:%M:%S'),
             "images": uploaded_images,
             "files": uploaded_file_info
         }
         st.session_state.messages.append(user_msg)
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -3509,12 +3698,17 @@ def show_chat_page():
         # --- DB SAVE: USER ---
         from ui.database import create_new_conversation, save_message
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+        # --- DB SAVE: USER ---
+        from ui.database import create_new_conversation, save_message
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
         try:
             if 'conversation_id' not in st.session_state:
                 user_id = st.session_state.get('username', 'guest')
                 # Smart title generation
                 title = (prompt[:30] + '..') if len(prompt) > 30 else prompt
                 st.session_state.conversation_id = create_new_conversation(user_id, title)
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -3561,12 +3755,15 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
 =======
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
 
             # Save to DB
             save_message(
                 st.session_state.conversation_id,
                 "user",
                 prompt,
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -3651,11 +3848,14 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
 =======
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
                 {"images": bool(uploaded_images), "files": [f['name'] for f in uploaded_file_info]}
             )
         except Exception as e:
             # Don't block chat if DB fails
             print(f"DB Save Error: {e}")
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -3669,11 +3869,14 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
 =======
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
 
         with st.chat_message("user"):
             if uploaded_images:
                 cols = st.columns(min(len(uploaded_images), 3))
                 for i, img in enumerate(uploaded_images):
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -3745,6 +3948,10 @@ def show_chat_page():
                     with cols[i%3]:
                         st.image(img, width="stretch")
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+                    with cols[i%3]:
+                        st.image(img, width="stretch")
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
             if uploaded_file_info:
                 for f in uploaded_file_info:
                     st.caption(f"📎 {f['name']}")
@@ -3757,6 +3964,7 @@ def show_chat_page():
             if extra_context:
                 final_prompt += f"\n\nContext:\n{extra_context}"
 
+<<<<<<< HEAD
             # Multimodal processing: images -> captions
             if uploaded_images:
                 try:
@@ -3815,10 +4023,28 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
 =======
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+            # Ethics Check
+            from ui.ethics import EthicsEngine
+            ethics_engine = EthicsEngine()
+            bias_type = ethics_engine.detect_bias(prompt)
+            import logging
+            logging.getLogger(__name__).info(f"DEBUG: Prompt='{prompt}', Bias='{bias_type}'")
+            ethics_disclaimer = ""
+            if bias_type:
+                ethics_disclaimer = ethics_engine.get_disclaimer()
+                st.warning(ethics_disclaimer)
+                final_prompt = f"{ethics_engine.get_ethical_guidelines()}\n\n{final_prompt}"
+
+            # Multimodal processing: images -> captions
+            if uploaded_images:
+                try:
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
                     use_blip = st.session_state.get('enable_advanced_captioning', False)
                     img_context = generate_image_captions(uploaded_images, use_blip=use_blip)
                     if img_context:
                         img_texts = "\n".join([f"{it['name']}: {it['caption']}" for it in img_context])
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -3863,11 +4089,14 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
 =======
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
                         final_prompt += f"\n\nImage Context:\n{img_texts}"
                 except Exception as e:
                     st.warning(f"Image processing error: {e}")
 
             # Internet Search Integration
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -3928,12 +4157,15 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
 =======
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
             if st.session_state.get('enable_internet_search', False):
                 with st.spinner("🔍 Searching the internet..."):
                     # Pass new filters to helper
                     search_type_val = st.session_state.get('search_type', 'Web')
                     time_range_val = st.session_state.get('search_time_range', 'Anytime')
                     domain_val = st.session_state.get('search_domain_filter', None)
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -3980,10 +4212,13 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
 =======
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
 
                     search_results, search_context = perform_internet_search(
                         prompt,
                         enable_search=True,
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -4035,10 +4270,13 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
 =======
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
                         max_results=st.session_state.get('search_result_count', 5),
                         search_type=search_type_val,
                         time_range=time_range_val,
                         domain=domain_val
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -4085,6 +4323,8 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
 =======
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
                     )
 
                     if search_results:
@@ -4092,6 +4332,7 @@ def show_chat_page():
 
                         # Display search results
                         with st.expander("🌐 Search Results", expanded=False):
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -4168,6 +4409,8 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
 =======
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
                             from ui.internet_search import format_search_results_for_chat
                             search_display = format_search_results_for_chat(search_results, "web")
                             st.markdown(search_display)
@@ -4190,6 +4433,7 @@ def show_chat_page():
                 st.info("🧠 Brain processing...")
                 brain = AIBrain()
                 brain.internet_enabled = st.session_state.get('enable_internet', True)
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -4236,6 +4480,8 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
 =======
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
 
                 models_to_query = prepare_brain_configuration(api_key_map)
 
@@ -4251,6 +4497,7 @@ def show_chat_page():
                             with st.spinner("Searching internet..."):
                                 internet_ctx = brain.gather_internet_context(prompt)
                                 if internet_ctx:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -4314,10 +4561,13 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
 =======
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
                                     final_prompt += f"\n\nInternet Info:\n{internet_ctx}"
 
                         # Query Models
                         # Async execution wrapper
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -4367,10 +4617,13 @@ def show_chat_page():
 >>>>>>> origin/monitoring-setup-3291123637376011491
 =======
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
                         responses = asyncio.run(brain.query_multiple_models(final_prompt, models_to_query, config))
 
                         # Synthesize
                         response_text = brain.synthesize_responses(prompt, responses, internet_ctx)
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -4415,10 +4668,13 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
 =======
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
 
                         # Show comparison
                         with st.expander("Model Comparison"):
                             for r in responses:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -4485,11 +4741,14 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
 =======
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
                                 st.markdown(f"**{r['provider'].upper()}**: {r.get('success', False)}")
                                 st.text(r.get('response', '')[:200] + "...")
 
                     except Exception as e:
                         response_text = f"Brain Error: {e}"
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -4519,12 +4778,15 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
 =======
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
 
                 provider = "brain-mode"
                 model_name = "ensemble"
 
             else:
                 # Standard Mode
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -4585,6 +4847,8 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
 =======
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
                 provider = st.session_state.get('selected_provider', 'google')
                 model_name = st.session_state.get('selected_model_name', 'gemini-1.5-flash')
 
@@ -4596,6 +4860,7 @@ def show_chat_page():
                 }
 
                 sys_prompt = st.session_state.get('system_instruction', "")
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -4640,6 +4905,8 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
 =======
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
 
                 response_text = generate_standard_response(
                     provider=provider,
@@ -4649,6 +4916,7 @@ def show_chat_page():
                     chat_history=st.session_state.messages,
                     system_instruction=sys_prompt,
                     config=config,
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -4789,10 +5057,20 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
 =======
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+                    images=uploaded_images
+                )
+
+            if ethics_disclaimer:
+                response_text = f"{ethics_disclaimer}\n\n{response_text}"
+
+            end_time = time.time()
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
             st.session_state.messages.append({
                 "role": "assistant",
                 "content": response_text,
                 "timestamp": datetime.now().strftime('%H:%M:%S'),
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -4834,10 +5112,14 @@ def show_chat_page():
 =======
                 "response_time": end_time - start_time,
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+                "response_time": end_time - start_time,
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
                 "provider": provider,
                 "model": model_name
             })
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -4864,6 +5146,8 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
 =======
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
             # --- DB SAVE: ASSISTANT ---
             try:
                 if 'conversation_id' in st.session_state:
@@ -4871,6 +5155,7 @@ def show_chat_page():
                         "provider": provider, "model": model_name, "response_time": end_time - start_time
                      })
             except Exception as e:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -5626,12 +5911,15 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
 =======
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
                  print(f"DB Save Assistant Error: {e}")
 
             if st.session_state.get('voice_mode') and st.session_state.get('auto_speak'):
                 pass
 
             st.rerun()
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -5645,3 +5933,5 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-brain-and-async-11409629077043540949
 =======
 >>>>>>> origin/security-fixes-5054230979788780781
+=======
+>>>>>>> origin/ethics-bias-fixes-10212520104040218540
