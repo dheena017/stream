@@ -2037,9 +2037,12 @@ def preload_blip_model_with_progress(progress_callback: Optional[Callable[[int, 
         if progress_callback:
              progress_callback(0, f"Failed: {str(e)}")
         return False
+<<<<<<< HEAD
 
 >>>>>>> 3e83144 (AI Review: Fix ui/chat_utils.py syntax and asyncio crash in ui/chat.py)
 =======
              progress_callback(0, f"Failed: {str(e)}")
         return False
 >>>>>>> 9a44f3f (Ethics: [bias fixes])
+=======
+>>>>>>> d4117c9 (Review: Fix syntax error and refactor inline styles)

@@ -29,4 +29,11 @@ dist/
 # Streamlit
 .streamlit/secrets.toml
 .streamlit/config.toml
+<<<<<<< HEAD
 *.db
+=======
+
+# Runtime files
+*.db
+*.pid
+>>>>>>> d4117c9 (Review: Fix syntax error and refactor inline styles)
