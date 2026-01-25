@@ -43,6 +43,7 @@ def render_sidebar():
         # Navigation
         st.markdown("### 📍 Navigation")
 <<<<<<< HEAD
+<<<<<<< HEAD
         col_nav1, col_nav2 = st.columns(2)
 
 =======
@@ -63,6 +64,11 @@ def render_sidebar():
 =======
             if st.button("📊 Dash", key="nav_dash", use_container_width=True, type="primary" if st.session_state.current_page == "dashboard" else "secondary", help="Go to Dashboard"):
 >>>>>>> 89c4a85 (Feedback: [integrations])
+=======
+        col_nav1, col_nav2, col_nav3 = st.columns([1, 1, 1.2])
+        with col_nav1:
+            if st.button("📊 Dash", use_container_width=True, type="primary" if st.session_state.current_page == "dashboard" else "secondary", help="Go to Dashboard"):
+>>>>>>> origin/ui-ux-improvements-3860328367442600035
                 st.session_state.current_page = "dashboard"
                 st.rerun()
             if st.button("👤 Profile", key="nav_profile", use_container_width=True, type="primary" if st.session_state.current_page == "profile" else "secondary", help="Go to Profile"):
@@ -70,6 +76,7 @@ def render_sidebar():
                 st.rerun()
 
         with col_nav2:
+<<<<<<< HEAD
 <<<<<<< HEAD
             if st.button(
                 "💬 Chat",
@@ -94,6 +101,13 @@ def render_sidebar():
                 ),
                 help="Go to Profile",
             ):
+=======
+            if st.button("💬 Chat", use_container_width=True, type="primary" if st.session_state.current_page == "chat" else "secondary", help="Go to Chat"):
+                st.session_state.current_page = "chat"
+                st.rerun()
+        with col_nav3:
+            if st.button("👤 Profile", use_container_width=True, type="primary" if st.session_state.current_page == "profile" else "secondary", help="Go to Profile"):
+>>>>>>> origin/ui-ux-improvements-3860328367442600035
                 st.session_state.current_page = "profile"
 =======
             if st.button("💬 Chat", key="nav_chat", use_container_width=True, type="primary" if st.session_state.current_page == "chat" else "secondary", help="Go to Chat"):
@@ -128,8 +142,13 @@ def render_sidebar():
             </div>
         </div>
         """, unsafe_allow_html=True)
+<<<<<<< HEAD
 
         if st.button("🚪 Sign Out", key="sidebar_logout_btn", width="stretch"):
+=======
+        
+        if st.button("🚪 Sign Out", key="sidebar_logout_btn", use_container_width=True):
+>>>>>>> origin/ui-ux-improvements-3860328367442600035
             logout()
 
 
@@ -450,6 +469,7 @@ def render_sidebar():
         st.markdown("### 💬 Chat Controls")
         c1, c2 = st.columns(2)
         with c1:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
             if st.button("🗑️ Clear", width="stretch", help="Clear current conversation"):
@@ -981,3 +1001,14 @@ def render_sidebar():
 >>>>>>> origin/code-quality-refactor-17423438479402428749
 =======
 >>>>>>> origin/feedback-integration-17764393616523020931
+=======
+            if st.button("🗑️ Clear", use_container_width=True):
+                st.session_state.messages = []
+                st.rerun()
+        with c2:
+            if st.button("💾 Save", use_container_width=True):
+                # Simple export
+                msgs = st.session_state.get('messages', [])
+                text = "\n".join([f"{m['role']}: {m['content']}" for m in msgs])
+                st.download_button("TxT", text, "chat.txt")
+>>>>>>> origin/ui-ux-improvements-3860328367442600035
