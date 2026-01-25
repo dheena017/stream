@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 import json
 import platform
 import sys
@@ -542,6 +543,9 @@ Python: {platform.python_version()}
             st.success("✅ Session info copied to clipboard!")
             st.code(session_info)
 =======
+=======
+
+>>>>>>> origin/engagement-features-5881933724913241534
 import streamlit as st
 import time
 import json
@@ -550,13 +554,21 @@ import platform
 from datetime import datetime
 import pandas as pd
 from ui.common import logout
+<<<<<<< HEAD
 from ui.analytics import get_recent_errors, get_analytics_summary
+=======
+from ui.database import get_user_stats, get_all_user_stats
+from ui.engagement import ACHIEVEMENTS
+>>>>>>> origin/engagement-features-5881933724913241534
 
 def show_dashboard():
     """Display user dashboard with stats and activity"""
 
     # Modern gradient header for dashboard
+<<<<<<< HEAD
     # Modern gradient header for dashboard
+=======
+>>>>>>> origin/engagement-features-5881933724913241534
     st.markdown("""
     <div class="main-header">
         <div style="font-size: 3rem;">📊</div>
@@ -577,7 +589,10 @@ def show_dashboard():
     user_email = user_info.get('email', '')
 
     # Welcome card
+<<<<<<< HEAD
     # Welcome card
+=======
+>>>>>>> origin/engagement-features-5881933724913241534
     st.markdown(f"""
     <div class="glass-panel" style="margin-bottom: 2rem;">
         <h3 style="margin: 0 0 0.5rem 0; color: var(--text-primary);">Welcome back, {user_name}! 👋</h3>
@@ -585,6 +600,74 @@ def show_dashboard():
     </div>
     """, unsafe_allow_html=True)
 
+<<<<<<< HEAD
+=======
+    # --- GAMIFICATION SECTION ---
+    user_id = st.session_state.get('username', 'guest')
+    user_stats = get_user_stats(user_id)
+
+    st.markdown("### 🏆 Your Progress")
+
+    # Level & XP
+    level = user_stats.get('level', 1)
+    xp = user_stats.get('xp', 0)
+    # Calculate progress to next level
+    next_level_xp = sum([100 * i for i in range(1, level + 1)]) # Simplified for display logic if needed
+    current_level_base = sum([100 * i for i in range(1, level)])
+    xp_in_level = xp - current_level_base
+    req_xp = 100 * level
+
+    # Simple progress bar logic
+    if req_xp > 0:
+        progress = min(max(xp_in_level / req_xp, 0.0), 1.0)
+    else:
+        progress = 0.0
+
+    cols_prog = st.columns([1, 3, 1])
+    with cols_prog[0]:
+        st.markdown(f"""
+        <div style="text-align:center; padding: 1rem; background: var(--card-bg); border-radius: 10px; border: 1px solid var(--border-color);">
+            <div style="font-size: 2rem;">Lvl {level}</div>
+            <div style="color: var(--text-secondary); font-size: 0.8rem;">Current Level</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with cols_prog[1]:
+        st.write(f"**XP Progress** ({xp_in_level}/{req_xp})")
+        st.progress(progress)
+        st.caption("Keep chatting to earn XP and level up!")
+
+    with cols_prog[2]:
+        st.markdown(f"""
+        <div style="text-align:center; padding: 1rem; background: var(--card-bg); border-radius: 10px; border: 1px solid var(--border-color);">
+            <div style="font-size: 2rem;">🔥 {user_stats.get('streak_days', 0)}</div>
+            <div style="color: var(--text-secondary); font-size: 0.8rem;">Day Streak</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    # Achievements
+    st.markdown("#### 🏅 Achievements")
+    unlocked = set(user_stats.get('achievements', []))
+
+    ach_cols = st.columns(6)
+    for idx, (code, data) in enumerate(ACHIEVEMENTS.items()):
+        is_unlocked = code in unlocked
+        opacity = "1" if is_unlocked else "0.3"
+        filter_style = "grayscale(0%)" if is_unlocked else "grayscale(100%)"
+
+        with ach_cols[idx % 6]:
+            st.markdown(f"""
+            <div style="text-align: center; opacity: {opacity}; filter: {filter_style};" title="{data['desc']}">
+                <div style="font-size: 2rem;">{data['icon']}</div>
+                <div style="font-size: 0.7rem; font-weight: bold;">{data['name']}</div>
+            </div>
+            """, unsafe_allow_html=True)
+
+    st.divider()
+
+    # --- END GAMIFICATION ---
+
+>>>>>>> origin/engagement-features-5881933724913241534
     # Activity metrics with modern cards
     col1, col2, col3, col4 = st.columns(4)
 
@@ -626,6 +709,30 @@ def show_dashboard():
 
     st.markdown("<div style='height: 1.5rem;'></div>", unsafe_allow_html=True)
 
+<<<<<<< HEAD
+=======
+    # Leaderboard Section
+    with st.expander("🏆 Leaderboard", expanded=False):
+        all_stats = get_all_user_stats()
+        # Create a DataFrame for nice display
+        lb_data = []
+        for i, s in enumerate(all_stats[:10]): # Top 10
+            lb_data.append({
+                "Rank": i + 1,
+                "User": s['user_id'],
+                "Level": s['level'],
+                "XP": s['xp'],
+                "Streak": s['streak_days']
+            })
+
+        if lb_data:
+            st.table(pd.DataFrame(lb_data).set_index("Rank"))
+        else:
+            st.info("No data yet.")
+
+    st.markdown("<div style='height: 1.5rem;'></div>", unsafe_allow_html=True)
+
+>>>>>>> origin/engagement-features-5881933724913241534
     # Enhanced Quick actions with descriptions
     st.markdown("""
     <h3 style="display: flex; align-items: center; gap: 0.5rem;">
@@ -953,6 +1060,7 @@ def show_dashboard():
             brain_status = "🧠 On" if st.session_state.get('enable_brain_mode', False) else "⚪ Off"
             st.metric("Brain Mode", brain_status)
 
+<<<<<<< HEAD
         # --- Analytics / System Health ---
         st.markdown("---")
         st.markdown("### 🩺 System Health")
@@ -983,6 +1091,8 @@ def show_dashboard():
         else:
              st.success("✅ No recent errors detected.")
 
+=======
+>>>>>>> origin/engagement-features-5881933724913241534
         st.markdown("---")
         st.markdown("### 📝 Quick Debug Info")
 
@@ -1013,4 +1123,7 @@ Python: {platform.python_version()}
         if st.button("📋 Copy Session Info", width="stretch"):
             st.success("✅ Session info copied to clipboard!")
             st.code(session_info)
+<<<<<<< HEAD
 >>>>>>> origin/analytics-monitoring-17353357073288903889
+=======
+>>>>>>> origin/engagement-features-5881933724913241534
