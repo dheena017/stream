@@ -39,6 +39,7 @@ logs/
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 *.db
 =======
 
@@ -110,3 +111,9 @@ secret.key
 *.db
 backups/
 >>>>>>> origin/backup-automation-3294980274908117359
+=======
+
+# Backups
+backups/
+backup.key
+>>>>>>> origin/backup-automation-2982499736536864191
