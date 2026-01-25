@@ -3,6 +3,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import json
 import os
 from datetime import datetime
@@ -562,6 +563,8 @@ def render_sidebar():
 >>>>>>> origin/feedback-integration-17764393616523020931
 =======
 >>>>>>> origin/ui-ux-improvements-11896252316584290961
+=======
+>>>>>>> origin/feedback-integration-7692380356929291134
 
 import streamlit as st
 import os
@@ -575,6 +578,7 @@ from ui.auth import load_user_credentials, save_user_credentials, hash_password
 from ui.config import MODEL_OPTIONS, MODEL_PRICING, MODEL_CAPABILITIES, PROVIDER_ICONS, PROVIDER_LABELS
 from brain_learning import LearningBrain
 from multimodal_voice_integration import MultimodalVoiceIntegrator
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
@@ -592,6 +596,8 @@ from ui.config import MODEL_DETAILS, MODEL_PRICING, PROVIDER_ICONS
 >>>>>>> origin/feedback-integration-17764393616523020931
 =======
 >>>>>>> origin/ui-ux-improvements-11896252316584290961
+=======
+>>>>>>> origin/feedback-integration-7692380356929291134
 
 def render_sidebar():
     """Render the application sidebar and handle settings"""
@@ -621,6 +627,7 @@ def render_sidebar():
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         st.divider()
 
         # 2. User Info (Compact)
@@ -635,14 +642,19 @@ def render_sidebar():
 
 =======
 >>>>>>> origin/ui-ux-improvements-11896252316584290961
+=======
+>>>>>>> origin/feedback-integration-7692380356929291134
         st.divider()
 
         # 2. User Info (Compact)
         user_info = st.session_state.get('user_info', {})
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> origin/feedback-integration-17764393616523020931
 =======
 >>>>>>> origin/ui-ux-improvements-11896252316584290961
+=======
+>>>>>>> origin/feedback-integration-7692380356929291134
         username = st.session_state.get('username', 'Guest')
         auth_type = '🔐 Google' if 'google_oauth_token' in st.session_state else '🔐 Login'
 
@@ -665,6 +677,7 @@ def render_sidebar():
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
             from ui.database import get_user_conversations, create_new_conversation, get_conversation_messages
 =======
             from ui.database import get_conversation_messages, get_user_conversations
@@ -675,6 +688,9 @@ def render_sidebar():
 =======
             from ui.database import get_user_conversations, create_new_conversation, get_conversation_messages
 >>>>>>> origin/ui-ux-improvements-11896252316584290961
+=======
+            from ui.database import get_user_conversations, create_new_conversation, get_conversation_messages
+>>>>>>> origin/feedback-integration-7692380356929291134
 
             c_hist1, c_hist2 = st.columns([0.2, 0.8])
             with c_hist1:
@@ -717,6 +733,7 @@ def render_sidebar():
         st.markdown("### 🤖 Model Selection")
 
 <<<<<<< HEAD
+<<<<<<< HEAD
         # Provider Filter (Horizontal Radio for cleaner look)
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -727,6 +744,10 @@ def render_sidebar():
 =======
         providers = ["All", "Google", "OpenAI", "Anthropic", "Together", "xAI", "DeepSeek"]
 >>>>>>> origin/feedback-integration-17764393616523020931
+=======
+        # Provider Filter (Horizontal Radio for cleaner look)
+        providers = ["All", "Google", "OpenAI", "Anthropic", "Together", "xAI", "DeepSeek"]
+>>>>>>> origin/feedback-integration-7692380356929291134
         selected_provider_filter = st.radio(
             "Provider Filter",
             providers,
@@ -739,12 +760,16 @@ def render_sidebar():
         # Using the new MODEL_DETAILS structure
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         from ui.config import MODEL_DETAILS
 =======
 >>>>>>> origin/code-quality-refactor-17423438479402428749
 =======
         from ui.config import MODEL_DETAILS
 >>>>>>> origin/feedback-integration-17764393616523020931
+=======
+        from ui.config import MODEL_DETAILS
+>>>>>>> origin/feedback-integration-7692380356929291134
 
         provider_map = {
             "Google": "google",
@@ -752,6 +777,7 @@ def render_sidebar():
             "Anthropic": "anthropic",
             "Together": "together",
             "xAI": "xai",
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
             "DeepSeek": "deepseek",
@@ -762,6 +788,9 @@ def render_sidebar():
 =======
             "DeepSeek": "deepseek"
 >>>>>>> origin/feedback-integration-17764393616523020931
+=======
+            "DeepSeek": "deepseek"
+>>>>>>> origin/feedback-integration-7692380356929291134
         }
 
         filter_key = provider_map.get(selected_provider_filter)
@@ -816,6 +845,7 @@ def render_sidebar():
         pricing = MODEL_PRICING.get(model_id, (0, 0))
 
         with st.container():
+<<<<<<< HEAD
 =======
         with st.container(border=True):
             # Provider Filter (Horizontal Radio for cleaner look)
@@ -896,6 +926,8 @@ def render_sidebar():
             # Removing inner container call, just using markdown inside the border container.
 
 >>>>>>> origin/ui-ux-improvements-11896252316584290961
+=======
+>>>>>>> origin/feedback-integration-7692380356929291134
             # Description
             st.caption(model_info.get('description', 'No description available.'))
 
@@ -911,10 +943,14 @@ def render_sidebar():
                 st.markdown(f"**Context:** `{model_info.get('context', 'Unknown')}`")
             with c_info2:
 <<<<<<< HEAD
+<<<<<<< HEAD
                  st.markdown(f"**Cost:** `${pricing[0]} / ${pricing[1]}`")
 =======
                     st.markdown(f"**Cost:** `${pricing[0]} / ${pricing[1]}`")
 >>>>>>> origin/ui-ux-improvements-11896252316584290961
+=======
+                 st.markdown(f"**Cost:** `${pricing[0]} / ${pricing[1]}`")
+>>>>>>> origin/feedback-integration-7692380356929291134
 
             st.caption(f"*Cost per 1M tokens (In/Out)*")
 
@@ -932,6 +968,7 @@ def render_sidebar():
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
             st.session_state.groq_api_key = os.getenv("GROQ_API_KEY", "")
 =======
 >>>>>>> origin/code-quality-refactor-17423438479402428749
@@ -939,6 +976,8 @@ def render_sidebar():
 >>>>>>> origin/feedback-integration-17764393616523020931
 =======
 >>>>>>> origin/ui-ux-improvements-11896252316584290961
+=======
+>>>>>>> origin/feedback-integration-7692380356929291134
             st.session_state.api_keys_initialized = True
 
         configured_keys = sum([
@@ -947,6 +986,7 @@ def render_sidebar():
             bool(st.session_state.anthropic_api_key),
             bool(st.session_state.together_api_key),
             bool(st.session_state.xai_api_key),
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -960,10 +1000,13 @@ def render_sidebar():
 >>>>>>> origin/feedback-integration-17764393616523020931
 =======
 >>>>>>> origin/ui-ux-improvements-11896252316584290961
+=======
+>>>>>>> origin/feedback-integration-7692380356929291134
             bool(st.session_state.deepseek_api_key)
         ])
 
         with st.expander(f"🔑 API Keys ({configured_keys}/6)", expanded=False):
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 >>>>>>> origin/code-quality-refactor-17423438479402428749
@@ -971,6 +1014,8 @@ def render_sidebar():
 >>>>>>> origin/feedback-integration-17764393616523020931
 =======
 >>>>>>> origin/ui-ux-improvements-11896252316584290961
+=======
+>>>>>>> origin/feedback-integration-7692380356929291134
             show_keys = st.checkbox("Show Keys", value=False)
             key_type = "default" if show_keys else "password"
 
@@ -983,6 +1028,7 @@ def render_sidebar():
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
             st.session_state.groq_api_key = st.text_input("Groq API Key", value=st.session_state.groq_api_key, type=key_type)
 =======
 >>>>>>> origin/code-quality-refactor-17423438479402428749
@@ -990,6 +1036,8 @@ def render_sidebar():
 >>>>>>> origin/feedback-integration-17764393616523020931
 =======
 >>>>>>> origin/ui-ux-improvements-11896252316584290961
+=======
+>>>>>>> origin/feedback-integration-7692380356929291134
 
         st.divider()
 
@@ -1022,6 +1070,7 @@ def render_sidebar():
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                     groq = st.checkbox("Groq", value=False, disabled=not bool(st.session_state.groq_api_key))
 =======
 >>>>>>> api-integrations-groq-3434217061461873316
@@ -1031,10 +1080,13 @@ def render_sidebar():
 >>>>>>> origin/feedback-integration-17764393616523020931
 =======
 >>>>>>> origin/ui-ux-improvements-11896252316584290961
+=======
+>>>>>>> origin/feedback-integration-7692380356929291134
                 with c2:
                     anthropic = st.checkbox("Claude", value=False, disabled=not bool(st.session_state.anthropic_api_key))
                     together = st.checkbox("Llama", value=False, disabled=not bool(st.session_state.together_api_key))
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1061,6 +1113,11 @@ def render_sidebar():
                 st.session_state.brain_consult_models = {
                     "google": google, "openai": openai, "anthropic": anthropic, "together": together
 >>>>>>> origin/ui-ux-improvements-11896252316584290961
+=======
+                # Logic to store which models to consult (could be stored in session state)
+                st.session_state.brain_consult_models = {
+                    "google": google, "openai": openai, "anthropic": anthropic, "together": together
+>>>>>>> origin/feedback-integration-7692380356929291134
                 }
 
         st.divider()
@@ -1117,6 +1174,7 @@ def render_sidebar():
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> api-groq-integration-6554511320622598819
 =======
 >>>>>>> api-integrations-groq-3434217061461873316
@@ -1137,3 +1195,12 @@ def render_sidebar():
 >>>>>>> origin/ui-ux-improvements-3860328367442600035
 =======
 >>>>>>> origin/ui-ux-improvements-11896252316584290961
+=======
+
+        st.divider()
+
+        # Feedback
+        from ui.feedback import render_feedback_form
+        with st.expander("🗣️ Give Feedback", expanded=False):
+            render_feedback_form(key_suffix="sidebar")
+>>>>>>> origin/feedback-integration-7692380356929291134
