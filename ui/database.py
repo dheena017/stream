@@ -145,6 +145,7 @@ def get_user_conversations(user_id: str) -> List[Tuple[str, str, str]]:
     return rows
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 def get_conversation_messages(conversation_id: str) -> List[Dict]:
     conn = sqlite3.connect(DB_FILE)
@@ -171,6 +172,20 @@ def get_conversation_messages(conversation_id: str, limit: int = 50, offset: int
     """, (conversation_id, limit, offset))
 
     rows = c.fetchall()
+=======
+def get_conversation_messages(conversation_id: str, limit: int = None, offset: int = 0) -> List[Dict]:
+    conn = sqlite3.connect(DB_FILE)
+    c = conn.cursor()
+
+    if limit is not None:
+        c.execute("SELECT role, content, meta_json, timestamp FROM messages WHERE conversation_id = ? ORDER BY id DESC LIMIT ? OFFSET ?", (conversation_id, limit, offset))
+        rows = c.fetchall()
+        rows.reverse()
+    else:
+        c.execute("SELECT role, content, meta_json, timestamp FROM messages WHERE conversation_id = ? ORDER BY id ASC", (conversation_id,))
+        rows = c.fetchall()
+
+>>>>>>> origin/scalability-optimizations-11923254205763930774
     conn.close()
     
     # Reverse back to chronological order

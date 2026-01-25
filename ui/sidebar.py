@@ -203,7 +203,11 @@ def render_sidebar():
                         type=type_,
                     ):
                         st.session_state.conversation_id = c_id
+<<<<<<< HEAD
                         st.session_state.messages = get_conversation_messages(c_id, limit=50)
+=======
+                        st.session_state.messages = get_conversation_messages(c_id, limit=50)
+>>>>>>> origin/scalability-optimizations-11923254205763930774
                         st.rerun()
 
 
@@ -217,12 +221,16 @@ def render_sidebar():
                             ):
                                 st.session_state.conversation_id = c_id
 <<<<<<< HEAD
+<<<<<<< HEAD
                                 st.session_state.messages = get_conversation_messages(
                                     c_id
                                 )
 =======
                                 st.session_state.messages = get_conversation_messages(c_id, limit=50)
 >>>>>>> origin/scalability-optimizations-5191153255901361581
+=======
+                                st.session_state.messages = get_conversation_messages(c_id, limit=50)
+>>>>>>> origin/scalability-optimizations-11923254205763930774
                                 st.rerun()
 
 
