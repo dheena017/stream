@@ -21,6 +21,11 @@ def init_db():
         c.execute('''CREATE TABLE IF NOT EXISTS messages
                      (id INTEGER PRIMARY KEY AUTOINCREMENT, conversation_id TEXT, 
                       role TEXT, content TEXT, meta_json TEXT, timestamp TIMESTAMP)''')
+
+        # feedback: id, user_id, rating, category, comment, created_at
+        c.execute('''CREATE TABLE IF NOT EXISTS feedback
+                     (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id TEXT,
+                      rating INTEGER, category TEXT, comment TEXT, created_at TIMESTAMP)''')
         conn.commit()
         conn.close()
     except Exception as e:
@@ -103,3 +108,32 @@ def update_conversation_title(conversation_id: str, title: str):
     c.execute("UPDATE conversations SET title = ? WHERE id = ?", (title, conversation_id))
     conn.commit()
     conn.close()
+
+
+def save_feedback(user_id: str, rating: int, category: str, comment: str):
+    conn = sqlite3.connect(DB_FILE)
+    c = conn.cursor()
+    now = datetime.now()
+    c.execute("INSERT INTO feedback (user_id, rating, category, comment, created_at) VALUES (?, ?, ?, ?, ?)",
+              (user_id, rating, category, comment, now))
+    conn.commit()
+    conn.close()
+
+
+def get_recent_feedback(limit: int = 5) -> List[Dict]:
+    conn = sqlite3.connect(DB_FILE)
+    c = conn.cursor()
+    c.execute("SELECT user_id, rating, category, comment, created_at FROM feedback ORDER BY created_at DESC LIMIT ?", (limit,))
+    rows = c.fetchall()
+    conn.close()
+
+    feedback = []
+    for r in rows:
+        feedback.append({
+            "user_id": r[0],
+            "rating": r[1],
+            "category": r[2],
+            "comment": r[3],
+            "created_at": r[4]
+        })
+    return feedback
