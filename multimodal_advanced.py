@@ -4,12 +4,16 @@ Handles images, documents, audio, video, and real-time media processing
 """
 
 import io
+<<<<<<< HEAD
 import json
 import os
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
 from typing import Any, Dict, List, Optional, Tuple
+=======
+from datetime import datetime
+>>>>>>> origin/code-quality-refactor-17423438479402428749
 
 
 class MediaType(Enum):
@@ -511,6 +515,7 @@ class VideoProcessor:
         """Compress video for faster processing"""
         try:
             from moviepy.editor import VideoFileClip
+<<<<<<< HEAD
 
             quality_settings = {
                 "low": {"bitrate": "500k", "fps": 15},
@@ -520,6 +525,9 @@ class VideoProcessor:
 
             settings = quality_settings.get(quality, quality_settings["medium"])
 
+=======
+            
+>>>>>>> origin/code-quality-refactor-17423438479402428749
             video = VideoFileClip(file_path)
 
             # This is a placeholder - actual compression would require ffmpeg integration

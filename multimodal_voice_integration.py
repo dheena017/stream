@@ -5,6 +5,7 @@ Seamless integration of advanced multimodal and voice capabilities into Streamli
 
 import os
 from datetime import datetime
+<<<<<<< HEAD
 from typing import Any, Dict, List, Optional, Tuple
 
 import streamlit as st
@@ -17,6 +18,13 @@ from multimodal_advanced import (
     MultimodalManager,
     VideoProcessor,
 )
+=======
+from typing import Any, Dict, List, Optional
+
+import streamlit as st
+
+from multimodal_advanced import MultimodalManager
+>>>>>>> origin/code-quality-refactor-17423438479402428749
 from voice_advanced import (
     SpeechToText,
     STTConfig,

@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 import json
 import logging
 import time
@@ -316,6 +317,17 @@ from ui.common import logout
 from ui.auth import load_user_credentials, save_user_credentials, hash_password, delete_user
 from ui.database import delete_user_data
 from ui.prefs import get_pref, set_pref
+=======
+
+import json
+import logging
+import time
+from datetime import datetime
+
+import streamlit as st
+
+from ui.auth import hash_password, load_user_credentials, save_user_credentials
+>>>>>>> origin/code-quality-refactor-17423438479402428749
 
 def show_profile_page():
     """Display full profile page"""
@@ -379,7 +391,11 @@ def show_profile_page():
     st.divider()
 
     # Tabbed interface
+<<<<<<< HEAD
     tab1, tab2, tab3, tab4 = st.tabs(["📊 Statistics", "⚙️ Settings", "🎨 Preferences", "🔒 Privacy & Security"])
+=======
+    tab1, tab2, tab3, tab4 = st.tabs(["📊 Statistics", "⚙️ Settings", "🎨 Preferences", "🔒 Security"])
+>>>>>>> origin/code-quality-refactor-17423438479402428749
 
     with tab1:
         st.markdown("### 📊 Usage Statistics")
@@ -491,6 +507,10 @@ def show_profile_page():
             }
 
             # Apply Theme Change
+<<<<<<< HEAD
+=======
+            # Apply Theme Change
+>>>>>>> origin/code-quality-refactor-17423438479402428749
             st.session_state["dark_mode"] = True
 
             st.success("✅ Preferences saved! reloading...")
@@ -498,6 +518,7 @@ def show_profile_page():
             st.rerun()
 
     with tab4:
+<<<<<<< HEAD
         st.markdown("### 🔒 Privacy & Security")
 
         # Privacy Policy link
@@ -530,6 +551,9 @@ def show_profile_page():
                 st.rerun()
 
         st.divider()
+=======
+        st.markdown("### 🔒 Security")
+>>>>>>> origin/code-quality-refactor-17423438479402428749
 
         if not is_oauth:
             st.markdown("#### Change Password")
@@ -566,6 +590,7 @@ def show_profile_page():
 
         st.markdown("#### Danger Zone")
         with st.expander("⚠️ Delete Account", expanded=False):
+<<<<<<< HEAD
             st.warning("This action cannot be undone! It will permanently delete your account, profile, and all chat history.")
             if st.button("🗑️ Delete My Account", type="primary"):
                  st.session_state.confirm_delete = True
@@ -583,6 +608,11 @@ def show_profile_page():
                          logout()
                     else:
                          st.error("Failed to delete account credentials.")
+=======
+            st.warning("This action cannot be undone!")
+            if st.button("🗑️ Delete My Account", type="secondary"):
+                st.error("Account deletion is not implemented in this demo")
+>>>>>>> origin/code-quality-refactor-17423438479402428749
 
     st.divider()
 
@@ -590,4 +620,7 @@ def show_profile_page():
     if st.button("← Back to Dashboard", width="stretch"):
         st.session_state.current_page = "dashboard"
         st.rerun()
+<<<<<<< HEAD
 >>>>>>> 8a352f7 (Privacy: [compliance updates])
+=======
+>>>>>>> origin/code-quality-refactor-17423438479402428749

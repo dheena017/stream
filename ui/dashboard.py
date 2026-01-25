@@ -1,5 +1,6 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import json
 import platform
 import sys
@@ -602,15 +603,29 @@ from ui.analytics import get_recent_errors, get_analytics_summary
 from ui.database import get_user_stats, get_all_user_stats
 from ui.engagement import ACHIEVEMENTS
 >>>>>>> origin/engagement-features-5881933724913241534
+=======
+
+import json
+import platform
+import sys
+import time
+from datetime import datetime
+
+import streamlit as st
+>>>>>>> origin/code-quality-refactor-17423438479402428749
 
 def show_dashboard():
     """Display user dashboard with stats and activity"""
 
     # Modern gradient header for dashboard
 <<<<<<< HEAD
+<<<<<<< HEAD
     # Modern gradient header for dashboard
 =======
 >>>>>>> origin/engagement-features-5881933724913241534
+=======
+    # Modern gradient header for dashboard
+>>>>>>> origin/code-quality-refactor-17423438479402428749
     st.markdown("""
     <div class="main-header">
         <div style="font-size: 3rem;">📊</div>
@@ -632,9 +647,13 @@ def show_dashboard():
 
     # Welcome card
 <<<<<<< HEAD
+<<<<<<< HEAD
     # Welcome card
 =======
 >>>>>>> origin/engagement-features-5881933724913241534
+=======
+    # Welcome card
+>>>>>>> origin/code-quality-refactor-17423438479402428749
     st.markdown(f"""
     <div class="glass-panel" style="margin-bottom: 2rem;">
         <h3 style="margin: 0 0 0.5rem 0; color: var(--text-primary);">Welcome back, {user_name}! 👋</h3>
@@ -642,6 +661,7 @@ def show_dashboard():
     </div>
     """, unsafe_allow_html=True)
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
     # --- GAMIFICATION SECTION ---
@@ -710,6 +730,8 @@ def show_dashboard():
     # --- END GAMIFICATION ---
 
 >>>>>>> origin/engagement-features-5881933724913241534
+=======
+>>>>>>> origin/code-quality-refactor-17423438479402428749
     # Activity metrics with modern cards
     col1, col2, col3, col4 = st.columns(4)
 
@@ -752,6 +774,7 @@ def show_dashboard():
     st.markdown("<div style='height: 1.5rem;'></div>", unsafe_allow_html=True)
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     # Leaderboard Section
     with st.expander("🏆 Leaderboard", expanded=False):
@@ -775,6 +798,8 @@ def show_dashboard():
     st.markdown("<div style='height: 1.5rem;'></div>", unsafe_allow_html=True)
 
 >>>>>>> origin/engagement-features-5881933724913241534
+=======
+>>>>>>> origin/code-quality-refactor-17423438479402428749
     # Enhanced Quick actions with descriptions
     st.markdown("""
     <h3 style="display: flex; align-items: center; gap: 0.5rem;">
@@ -1103,6 +1128,7 @@ def show_dashboard():
             st.metric("Brain Mode", brain_status)
 
 <<<<<<< HEAD
+<<<<<<< HEAD
         # --- Analytics / System Health ---
         st.markdown("---")
         st.markdown("### 🩺 System Health")
@@ -1135,6 +1161,8 @@ def show_dashboard():
 
 =======
 >>>>>>> origin/engagement-features-5881933724913241534
+=======
+>>>>>>> origin/code-quality-refactor-17423438479402428749
         st.markdown("---")
         st.markdown("### 📝 Quick Debug Info")
 
@@ -1166,6 +1194,9 @@ Python: {platform.python_version()}
             st.success("✅ Session info copied to clipboard!")
             st.code(session_info)
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> origin/analytics-monitoring-17353357073288903889
 =======
 >>>>>>> origin/engagement-features-5881933724913241534
+=======
+>>>>>>> origin/code-quality-refactor-17423438479402428749

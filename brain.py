@@ -4,7 +4,11 @@ AI Brain Module - Combines multiple AI models and internet knowledge
 
 import asyncio
 import json
+<<<<<<< HEAD
 from ui.ethics import EthicsGuardian
+=======
+from typing import Any, Dict, List
+>>>>>>> origin/code-quality-refactor-17423438479402428749
 from datetime import datetime
 <<<<<<< HEAD
 from typing import Any, Dict, List, Optional

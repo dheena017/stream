@@ -1,7 +1,12 @@
+<<<<<<< HEAD
 from io import BytesIO
 
 from PIL import Image
 
+=======
+from PIL import Image
+
+>>>>>>> origin/code-quality-refactor-17423438479402428749
 from ui.chat_utils import generate_image_captions, process_images_for_context
 
 

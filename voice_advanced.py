@@ -3,7 +3,11 @@ Advanced Voice & Speech Processing Module
 Handles text-to-speech, speech-to-text, voice profiles, and real-time processing
 """
 
+<<<<<<< HEAD
 import io
+=======
+import os
+>>>>>>> origin/code-quality-refactor-17423438479402428749
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
@@ -599,8 +603,11 @@ class RealTimeAudioProcessor:
         return self.get_audio_level(chunk) < threshold
 
 
+<<<<<<< HEAD
 import os
 
+=======
+>>>>>>> origin/code-quality-refactor-17423438479402428749
 # Export
 __all__ = [
     "VoiceGender",

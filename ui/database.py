@@ -1,5 +1,6 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import json
 import logging
 import sqlite3
@@ -303,11 +304,22 @@ import logging
 from datetime import datetime, timedelta
 import uuid
 from typing import List, Dict, Optional, Tuple
+=======
+import json
+import logging
+import sqlite3
+import uuid
+from datetime import datetime
+from typing import Dict, List, Tuple
+>>>>>>> origin/code-quality-refactor-17423438479402428749
 
 DB_FILE = "chat_history.db"
 logger = logging.getLogger(__name__)
 
+<<<<<<< HEAD
 >>>>>>> origin/engagement-features-5881933724913241534
+=======
+>>>>>>> origin/code-quality-refactor-17423438479402428749
 def init_db():
     try:
         conn = sqlite3.connect(DB_FILE)
@@ -321,6 +333,7 @@ def init_db():
         c.execute('''CREATE TABLE IF NOT EXISTS messages
                      (id INTEGER PRIMARY KEY AUTOINCREMENT, conversation_id TEXT,
                       role TEXT, content TEXT, meta_json TEXT, timestamp TIMESTAMP)''')
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
 
@@ -336,6 +349,8 @@ def init_db():
                       rating INTEGER, comment TEXT, timestamp TIMESTAMP)''')
 
 >>>>>>> origin/engagement-features-5881933724913241534
+=======
+>>>>>>> origin/code-quality-refactor-17423438479402428749
         conn.commit()
         conn.close()
     except Exception as e:
@@ -365,6 +380,7 @@ def save_message(conversation_id: str, role: str, content: str, meta: Dict = Non
     now = datetime.now()
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     # Encrypt content and meta
     encrypted_content = EncryptionManager.encrypt(content)
     encrypted_meta = EncryptionManager.encrypt(json.dumps(meta))
@@ -376,6 +392,11 @@ def save_message(conversation_id: str, role: str, content: str, meta: Dict = Non
     c.execute("INSERT INTO messages (conversation_id, role, content, meta_json, timestamp) VALUES (?, ?, ?, ?, ?)",
               (conversation_id, role, content, json.dumps(meta), now))
 >>>>>>> origin/engagement-features-5881933724913241534
+=======
+    # Ensure raw content is saved, meta handles images/files references
+    c.execute("INSERT INTO messages (conversation_id, role, content, meta_json, timestamp) VALUES (?, ?, ?, ?, ?)",
+              (conversation_id, role, content, json.dumps(meta), now))
+>>>>>>> origin/code-quality-refactor-17423438479402428749
 
     # Update conversation timestamp
     c.execute("UPDATE conversations SET updated_at = ? WHERE id = ?", (now, conversation_id))
@@ -401,6 +422,7 @@ def get_conversation_messages(conversation_id: str) -> List[Dict]:
     messages = []
     for r in rows:
 <<<<<<< HEAD
+<<<<<<< HEAD
         # Decrypt content and meta
         decrypted_content = EncryptionManager.decrypt(r[1])
         decrypted_meta_json = EncryptionManager.decrypt(r[2]) if r[2] else "{}"
@@ -414,6 +436,8 @@ def get_conversation_messages(conversation_id: str) -> List[Dict]:
             try:
                 meta = json.loads(decrypted_meta_json)
 =======
+=======
+>>>>>>> origin/code-quality-refactor-17423438479402428749
         msg = {
             "role": r[0],
             "content": r[1],
@@ -422,7 +446,10 @@ def get_conversation_messages(conversation_id: str) -> List[Dict]:
         if r[2]:
             try:
                 meta = json.loads(r[2])
+<<<<<<< HEAD
 >>>>>>> origin/engagement-features-5881933724913241534
+=======
+>>>>>>> origin/code-quality-refactor-17423438479402428749
                 msg.update(meta)
             except: pass
         messages.append(msg)
@@ -442,6 +469,7 @@ def update_conversation_title(conversation_id: str, title: str):
     c.execute("UPDATE conversations SET title = ? WHERE id = ?", (title, conversation_id))
     conn.commit()
     conn.close()
+<<<<<<< HEAD
 
 <<<<<<< HEAD
 def delete_user_data(user_id: str):
@@ -617,3 +645,5 @@ def save_feedback(user_id: str, rating: int, comment: str, message_id: str = Non
     conn.commit()
     conn.close()
 >>>>>>> origin/engagement-features-5881933724913241534
+=======
+>>>>>>> origin/code-quality-refactor-17423438479402428749
