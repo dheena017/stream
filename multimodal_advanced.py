@@ -229,7 +229,7 @@ class DocumentProcessor:
         try:
             import PyPDF2
             
-            text = ""
+            text_parts = []
             metadata = {
                 "pages": 0,
                 "title": "",
@@ -249,10 +249,10 @@ class DocumentProcessor:
                 
                 # Extract text
                 for page_num, page in enumerate(reader.pages):
-                    text += f"\n--- Page {page_num + 1} ---\n"
-                    text += page.extract_text()
+                    text_parts.append(f"\n--- Page {page_num + 1} ---\n")
+                    text_parts.append(page.extract_text())
             
-            return text, metadata
+            return "".join(text_parts), metadata
         except ImportError:
             raise Exception("PyPDF2 required: pip install PyPDF2")
         except Exception as e:
