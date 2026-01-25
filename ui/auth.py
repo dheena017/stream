@@ -1,16 +1,18 @@
-
-import streamlit as st
-import os
 import hashlib
 import json
 import logging
-from typing import Dict, Optional, Any
-from google.oauth2 import id_token
+import os
+from typing import Any, Dict, Optional
+
+import streamlit as st
 from google.auth.transport import requests
+from google.oauth2 import id_token
+
 
 def hash_password(password: str) -> str:
     """Hash password using SHA-256"""
     return hashlib.sha256(password.encode()).hexdigest()
+
 
 def load_user_credentials() -> Dict[str, Dict[str, str]]:
     """Load user credentials from file or environment"""
@@ -18,41 +20,43 @@ def load_user_credentials() -> Dict[str, Dict[str, str]]:
     users_file = "users.json"
     if os.path.exists(users_file):
         try:
-            with open(users_file, 'r') as f:
+            with open(users_file, "r") as f:
                 users_data = json.load(f)
                 return users_data
         except Exception:
             pass
-    
+
     # Default credentials with email support
     return {
         "admin": {
             "password": hash_password(os.getenv("ADMIN_PASSWORD", "admin123")),
             "email": "admin@example.com",
-            "name": "Admin User"
+            "name": "Admin User",
         },
         "user": {
             "password": hash_password(os.getenv("USER_PASSWORD", "user123")),
             "email": "user@example.com",
-            "name": "Regular User"
-        }
+            "name": "Regular User",
+        },
     }
+
 
 def save_user_credentials(users: Dict[str, Dict[str, str]]) -> bool:
     """Save user credentials to file"""
     logging.info("User credentials updated.")
     try:
-        with open("users.json", 'w') as f:
+        with open("users.json", "w") as f:
             json.dump(users, f, indent=2)
         return True
     except Exception:
         return False
 
+
 def check_login(username_or_email: str, password: str) -> Optional[Dict[str, str]]:
     """Verify login credentials - accepts username or email"""
     logging.info(f"Login attempt for: {username_or_email}")
     users = load_user_credentials()
-    
+
     # Check if input is username
     if username_or_email in users:
         user_data = users[username_or_email]
@@ -60,9 +64,9 @@ def check_login(username_or_email: str, password: str) -> Optional[Dict[str, str
             return {
                 "username": username_or_email,
                 "email": user_data.get("email", ""),
-                "name": user_data.get("name", username_or_email)
+                "name": user_data.get("name", username_or_email),
             }
-    
+
     # Check if input is email
     for username, user_data in users.items():
         if user_data.get("email", "").lower() == username_or_email.lower():
@@ -70,32 +74,34 @@ def check_login(username_or_email: str, password: str) -> Optional[Dict[str, str
                 return {
                     "username": username,
                     "email": user_data.get("email", ""),
-                    "name": user_data.get("name", username)
+                    "name": user_data.get("name", username),
                 }
-    
+
     return None
+
 
 def register_user(username: str, email: str, password: str, name: str = "") -> bool:
     """Register a new user"""
     users = load_user_credentials()
-    
+
     # Check if username already exists
     if username in users:
         return False
-    
+
     # Check if email already exists
     for user_data in users.values():
         if user_data.get("email", "").lower() == email.lower():
             return False
-    
+
     # Add new user
     users[username] = {
         "password": hash_password(password),
         "email": email,
-        "name": name or username
+        "name": name or username,
     }
-    
+
     return save_user_credentials(users)
+
 
 def verify_google_oauth() -> Optional[Dict[str, Any]]:
     """Verify Google OAuth token and return user info"""
@@ -104,22 +110,27 @@ def verify_google_oauth() -> Optional[Dict[str, Any]]:
         client_id = os.getenv("GOOGLE_CLIENT_ID", "")
         if not client_id:
             return None
-        
+
         # Check if we have a token in session state
         if "google_oauth_token" in st.session_state:
             token = st.session_state.google_oauth_token
             try:
                 # Verify the token
-                idinfo = id_token.verify_oauth2_token(token, requests.Request(), client_id)
-                
-                if idinfo['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
+                idinfo = id_token.verify_oauth2_token(
+                    token, requests.Request(), client_id
+                )
+
+                if idinfo["iss"] not in [
+                    "accounts.google.com",
+                    "https://accounts.google.com",
+                ]:
                     return None
-                
+
                 return {
-                    'email': idinfo.get('email'),
-                    'name': idinfo.get('name'),
-                    'picture': idinfo.get('picture'),
-                    'sub': idinfo.get('sub')
+                    "email": idinfo.get("email"),
+                    "name": idinfo.get("name"),
+                    "picture": idinfo.get("picture"),
+                    "sub": idinfo.get("sub"),
                 }
             except Exception:
                 return None
@@ -127,11 +138,12 @@ def verify_google_oauth() -> Optional[Dict[str, Any]]:
     except ImportError:
         return None
 
+
 def create_google_oauth_url() -> str:
     """Create Google OAuth authorization URL"""
     client_id = os.getenv("GOOGLE_CLIENT_ID", "")
     redirect_uri = os.getenv("GOOGLE_REDIRECT_URI", "http://localhost:8501")
-    
+
     scope = "openid email profile"
     auth_url = (
         f"https://accounts.google.com/o/oauth2/v2/auth?"
@@ -141,6 +153,7 @@ def create_google_oauth_url() -> str:
         f"scope={scope}"
     )
     return auth_url
+
 
 def show_login_page():
     """Display enhanced login page with animations"""
@@ -170,7 +183,7 @@ def show_login_page():
         """,
         unsafe_allow_html=True,
     )
-    
+
     # Hero section
     col1, col2, col3 = st.columns([1, 3, 1])
 
@@ -179,80 +192,86 @@ def show_login_page():
         pass
 
     with col2:
-        st.markdown('<div class="login-header"><h1>🚀 Antigravity AI</h1><div class="login-subtitle">Your intelligent multi-model AI companion</div></div>', unsafe_allow_html=True)
-        
+        st.markdown(
+            '<div class="login-header"><h1>🚀 Antigravity AI</h1><div class="login-subtitle">Your intelligent multi-model AI companion</div></div>',
+            unsafe_allow_html=True,
+        )
+
         # Feature highlights
         st.markdown(
             '<div class="feature-card">✨ <strong>25+ AI Models</strong> from Google, OpenAI, Anthropic, Meta & more</div>'
             '<div class="feature-card">🧠 <strong>AI Brain Mode</strong> - Combines multiple models for enhanced responses</div>'
             '<div class="feature-card">🌐 <strong>Internet Search</strong> - Real-time information from the web</div>'
             '<div class="feature-card">📎 <strong>Multimodal</strong> - Images, PDFs, Audio & Video support</div>',
-            unsafe_allow_html=True
+            unsafe_allow_html=True,
         )
-        
+
         st.markdown("---")
-        
+
         # Check for Google OAuth
         google_client_id = os.getenv("GOOGLE_CLIENT_ID", "")
-        
+
         if google_client_id:
             st.markdown("#### 🔐 Sign in with Google")
-            
+
             # JavaScript to handle OAuth redirect and extract token from URL
             oauth_code = st.text_input(
                 "Google OAuth Token (auto-filled from redirect)",
                 type="password",
                 key="oauth_token_input",
-                help="Paste the token from Google OAuth redirect here if not auto-filled."
+                help="Paste the token from Google OAuth redirect here if not auto-filled.",
             )
-            
+
             if oauth_code:
                 st.session_state.google_oauth_token = oauth_code
                 user_info = verify_google_oauth()
                 if user_info:
                     st.session_state.authenticated = True
-                    st.session_state.username = user_info['email']
+                    st.session_state.username = user_info["email"]
                     st.session_state.user_info = user_info
                     st.success("✅ Google login successful!")
                     st.rerun()
                 else:
                     st.error("❌ Invalid Google OAuth token")
-            
+
             oauth_url = create_google_oauth_url()
-            st.markdown(f'<a href="{oauth_url}" target="_blank" class="google-btn">🔐 Sign in with Google</a>', unsafe_allow_html=True)
-            
+            st.markdown(
+                f'<a href="{oauth_url}" target="_blank" class="google-btn">🔐 Sign in with Google</a>',
+                unsafe_allow_html=True,
+            )
+
             st.markdown("---")
             st.markdown("#### Or use Email/Username Login")
-        
+
         # Tabs for Login and Register
         tab_login, tab_register = st.tabs(["🔐 Login", "📝 Register"])
-        
+
         with tab_login:
             username_or_email = st.text_input(
-                "Email or Username", 
-                key="login_username", 
+                "Email or Username",
+                key="login_username",
                 placeholder="Enter email or username",
-                help="Enter your registered email address or username."
+                help="Enter your registered email address or username.",
             )
             password = st.text_input(
-                "Password", 
-                type="password", 
-                key="login_password", 
+                "Password",
+                type="password",
+                key="login_password",
                 placeholder="Enter password",
-                help="Enter your account password."
+                help="Enter your account password.",
             )
-            
+
             st.markdown("")
-            
+
             col_login, col_info = st.columns([1, 1])
-            
+
             with col_login:
                 if st.button("🔐 Login", use_container_width=True, type="primary"):
                     if username_or_email and password:
                         user_data = check_login(username_or_email, password)
                         if user_data:
                             st.session_state.authenticated = True
-                            st.session_state.username = user_data['username']
+                            st.session_state.username = user_data["username"]
                             st.session_state.user_info = user_data
                             st.success("✅ Login successful!")
                             st.rerun()
@@ -260,33 +279,77 @@ def show_login_page():
                             st.error("❌ Invalid email/username or password")
                     else:
                         st.warning("⚠️ Please enter both email/username and password.")
-            
+
             with col_info:
                 with st.popover("ℹ️ Info"):
-                    st.markdown("<div style='box-shadow:0 2px 12px rgba(0,0,0,0.07); border-radius:12px; padding:1rem 1.2rem; background:#f9fafb;'>", unsafe_allow_html=True)
+                    st.markdown(
+                        "<div style='box-shadow:0 2px 12px rgba(0,0,0,0.07); border-radius:12px; padding:1rem 1.2rem; background:#f9fafb;'>",
+                        unsafe_allow_html=True,
+                    )
                     st.markdown("**Default Credentials:**")
-                    st.code("Email: admin@example.com\nUsername: admin\nPassword: admin123")
+                    st.code(
+                        "Email: admin@example.com\nUsername: admin\nPassword: admin123"
+                    )
                     st.markdown("---")
                     st.markdown("**Login with email or username**")
-                    st.caption("You can use either your email address or username to login")
+                    st.caption(
+                        "You can use either your email address or username to login"
+                    )
                     if google_client_id:
                         st.markdown("---")
                         st.markdown("**Google OAuth Setup:**")
-                        st.caption("Set GOOGLE_CLIENT_ID and GOOGLE_REDIRECT_URI in environment variables")
+                        st.caption(
+                            "Set GOOGLE_CLIENT_ID and GOOGLE_REDIRECT_URI in environment variables"
+                        )
                     st.markdown("</div>", unsafe_allow_html=True)
-        
+
         with tab_register:
             st.markdown("#### Create New Account")
-            reg_name = st.text_input("Full Name", key="reg_name", placeholder="Enter your full name", help="Enter your real name for your profile.")
-            reg_email = st.text_input("Email Address", key="reg_email", placeholder="Enter your email", help="Enter a valid email address for account recovery.")
-            reg_username = st.text_input("Username", key="reg_username", placeholder="Choose a username", help="Pick a unique username for login.")
-            reg_password = st.text_input("Password", type="password", key="reg_password", placeholder="Choose a password", help="Password must be at least 6 characters.")
-            reg_password_confirm = st.text_input("Confirm Password", type="password", key="reg_password_confirm", placeholder="Confirm password", help="Re-enter your password to confirm.")
-            
+            reg_name = st.text_input(
+                "Full Name",
+                key="reg_name",
+                placeholder="Enter your full name",
+                help="Enter your real name for your profile.",
+            )
+            reg_email = st.text_input(
+                "Email Address",
+                key="reg_email",
+                placeholder="Enter your email",
+                help="Enter a valid email address for account recovery.",
+            )
+            reg_username = st.text_input(
+                "Username",
+                key="reg_username",
+                placeholder="Choose a username",
+                help="Pick a unique username for login.",
+            )
+            reg_password = st.text_input(
+                "Password",
+                type="password",
+                key="reg_password",
+                placeholder="Choose a password",
+                help="Password must be at least 6 characters.",
+            )
+            reg_password_confirm = st.text_input(
+                "Confirm Password",
+                type="password",
+                key="reg_password_confirm",
+                placeholder="Confirm password",
+                help="Re-enter your password to confirm.",
+            )
+
             st.markdown("")
-            
+
             if st.button("📝 Register", use_container_width=True, type="primary"):
-                if not all([reg_name, reg_email, reg_username, reg_password, reg_password_confirm]):
+                if not all(
+                    [
+                        reg_name,
+                        reg_email,
+                        reg_username,
+                        reg_password,
+                        reg_password_confirm,
+                    ]
+                ):
                     st.warning("⚠️ Please fill in all fields")
                 elif reg_password != reg_password_confirm:
                     st.error("❌ Passwords do not match")
@@ -300,6 +363,6 @@ def show_login_page():
                         st.balloons()
                     else:
                         st.error("❌ Username or email already exists")
-        
+
         st.markdown("---")
         st.caption("🔒 Your credentials are secure and never stored in plain text")

@@ -4,20 +4,21 @@ A sophisticated Streamlit-based AI chat interface with learning capabilities,
 voice integration, and multi-modal support.
 """
 
-import streamlit as st
+import logging
 import os
 import time
-import logging
 from datetime import datetime
+
+import streamlit as st
 
 # Import UI Modules
 import ui.styles
 from ui.auth import show_login_page
-from ui.profile import show_profile_page
-from ui.dashboard import show_dashboard
-from ui.sidebar import render_sidebar
 from ui.chat import show_chat_page
+from ui.dashboard import show_dashboard
 from ui.database import init_db
+from ui.profile import show_profile_page
+from ui.sidebar import render_sidebar
 
 # Initialize DB on startup
 init_db()
@@ -28,8 +29,7 @@ from multimodal_voice_integration import MultimodalVoiceIntegrator
 
 # --- LOGGER SETUP ---
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
@@ -42,8 +42,8 @@ def initialize_page_config():
         layout="wide",
         initial_sidebar_state="expanded",
         menu_items={
-            'About': "Antigravity AI - Multi-Provider Intelligence Platform v1.0"
-        }
+            "About": "Antigravity AI - Multi-Provider Intelligence Platform v1.0"
+        },
     )
     logger.info("Page configuration initialized")
 
@@ -53,15 +53,16 @@ def initialize_theme():
     # Load persisted preference (global or per-user) before setting defaults
     try:
         from ui.prefs import get_pref
-        username = st.session_state.get('username')
-        pref_dark = get_pref('dark_mode', username, None)
-        if pref_dark is not None and 'dark_mode' not in st.session_state:
-            st.session_state['dark_mode'] = bool(pref_dark)
-        if 'dark_mode' not in st.session_state:
-            st.session_state['dark_mode'] = False
+
+        username = st.session_state.get("username")
+        pref_dark = get_pref("dark_mode", username, None)
+        if pref_dark is not None and "dark_mode" not in st.session_state:
+            st.session_state["dark_mode"] = bool(pref_dark)
+        if "dark_mode" not in st.session_state:
+            st.session_state["dark_mode"] = False
     except Exception:
-        if 'dark_mode' not in st.session_state:
-            st.session_state['dark_mode'] = False
+        if "dark_mode" not in st.session_state:
+            st.session_state["dark_mode"] = False
 
     # Apply theme CSS (uses st.session_state['dark_mode'])
     st.markdown(ui.styles.load_css(), unsafe_allow_html=True)
@@ -76,16 +77,12 @@ def configure_environment():
 
 def initialize_auth_state():
     """Initialize authentication and user session state."""
-    defaults = {
-        "authenticated": False,
-        "username": None,
-        "current_page": "dashboard"
-    }
-    
+    defaults = {"authenticated": False, "username": None, "current_page": "dashboard"}
+
     for key, value in defaults.items():
         if key not in st.session_state:
             st.session_state[key] = value
-    
+
     logger.info(f"Auth state initialized - User: {st.session_state.username}")
 
 
@@ -94,13 +91,13 @@ def initialize_session_tracking():
     tracking_defaults = {
         "session_start_time": time.time(),
         "total_sessions": 1,
-        "user_joined_date": datetime.now().strftime('%Y-%m-%d')
+        "user_joined_date": datetime.now().strftime("%Y-%m-%d"),
     }
-    
+
     for key, value in tracking_defaults.items():
         if key not in st.session_state:
             st.session_state[key] = value
-    
+
     logger.debug("Session tracking initialized")
 
 
@@ -119,7 +116,7 @@ def initialize_brain_state():
         learning_brain, multimodal_voice = initialize_brain_components()
         st.session_state.learning_brain = learning_brain
         st.session_state.multimodal_voice_integrator = multimodal_voice
-    
+
     logger.debug("Brain state initialized")
 
 
@@ -130,13 +127,13 @@ def initialize_chat_state():
         "voice_mode": False,
         "enable_internet_search": False,
         "search_result_count": 5,
-        "enable_advanced_captioning": False
+        "enable_advanced_captioning": False,
     }
-    
+
     for key, value in chat_defaults.items():
         if key not in st.session_state:
             st.session_state[key] = value
-    
+
     logger.debug("Chat state initialized")
 
 
@@ -161,12 +158,12 @@ def handle_page_routing():
     page_router = {
         "dashboard": show_dashboard,
         "profile": show_profile_page,
-        "chat": show_chat_page
+        "chat": show_chat_page,
     }
-    
+
     current_page = st.session_state.current_page
     page_handler = page_router.get(current_page, show_chat_page)
-    
+
     logger.info(f"Routing to page: {current_page}")
     page_handler()
 
@@ -177,19 +174,19 @@ def main():
     initialize_page_config()
     initialize_theme()
     configure_environment()
-    
+
     # Initialize all states
     initialize_all_states()
-    
+
     # Authentication check
     handle_authentication()
-    
+
     # Render sidebar for authenticated users
     render_sidebar()
-    
+
     # Route to appropriate page
     handle_page_routing()
-    
+
     logger.info("Application render completed")
 
 
