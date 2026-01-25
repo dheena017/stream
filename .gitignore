@@ -54,6 +54,7 @@ logs/
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 *.db
 =======
 
@@ -193,3 +194,6 @@ backups/
 # Database
 *.db
 >>>>>>> origin/jules-3174636693196525980-404a41f2
+=======
+chat_history.db
+>>>>>>> origin/qa-testing-framework-16153121365111597359
