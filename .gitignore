@@ -55,6 +55,7 @@ logs/
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 *.db
 =======
 
@@ -197,3 +198,8 @@ backups/
 =======
 chat_history.db
 >>>>>>> origin/qa-testing-framework-16153121365111597359
+=======
+
+# Database
+*.db
+>>>>>>> origin/privacy-compliance-updates-6913709404570951522
