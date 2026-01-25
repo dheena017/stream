@@ -6,7 +6,44 @@ import asyncio
 import json
 from ui.ethics import EthicsGuardian
 from datetime import datetime
+<<<<<<< HEAD
 from typing import Any, Dict, List, Optional
+=======
+import streamlit as st
+
+
+@st.cache_data(ttl=3600)
+def _scrape_webpage_cached(url: str) -> str:
+    """Extract text content from a webpage (cached)"""
+    try:
+        import requests  # type: ignore
+        from bs4 import BeautifulSoup  # type: ignore
+
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+        }
+        response = requests.get(url, headers=headers, timeout=10)
+        response.raise_for_status()
+
+        soup = BeautifulSoup(response.content, 'html.parser')
+
+        # Remove script and style elements
+        for script in soup(["script", "style"]):
+            script.decompose()
+
+        # Get text
+        text = soup.get_text()
+
+        # Clean up text
+        lines = (line.strip() for line in text.splitlines())
+        chunks = (phrase.strip() for line in lines for phrase in line.split("  "))
+        text = ' '.join(chunk for chunk in chunks if chunk)
+
+        # Limit to first 2000 characters
+        return text[:2000]
+    except Exception as e:
+        return f"Failed to scrape webpage: {str(e)}"
+>>>>>>> performance-optimization-13534932852089819512
 
 
 class AIBrain:
@@ -45,6 +82,7 @@ class AIBrain:
 
     def scrape_webpage(self, url: str) -> str:
         """Extract text content from a webpage"""
+<<<<<<< HEAD
         try:
             import requests  # type: ignore
             from bs4 import BeautifulSoup  # type: ignore
@@ -74,6 +112,10 @@ class AIBrain:
         except Exception as e:
             return f"Failed to scrape webpage: {str(e)}"
 
+=======
+        return _scrape_webpage_cached(url)
+    
+>>>>>>> performance-optimization-13534932852089819512
     def gather_internet_context(self, query: str) -> str:
         """Gather context from internet for the query"""
         if not self.internet_enabled:
