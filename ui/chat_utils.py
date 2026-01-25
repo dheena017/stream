@@ -3506,6 +3506,7 @@ def preload_blip_model_with_progress(progress_callback: Optional[Callable[[int, 
 <<<<<<< HEAD
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> 3e83144 (AI Review: Fix ui/chat_utils.py syntax and asyncio crash in ui/chat.py)
 =======
              progress_callback(0, f"Failed: {str(e)}")
@@ -3591,3 +3592,5 @@ def serialize_messages(messages: List[Dict]) -> List[Dict]:
 
     return serializable_messages
 >>>>>>> origin/feature/json-chat-export-3053385537761538795
+=======
+>>>>>>> origin/ai-review-fixes-11861043321460875374
