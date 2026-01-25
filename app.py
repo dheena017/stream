@@ -5,6 +5,7 @@ voice integration, and multi-modal support.
 """
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 import logging
 import os
 import time
@@ -17,6 +18,29 @@ import os
 import time
 import logging
 from datetime import datetime
+=======
+import streamlit as st
+import os
+import time
+import logging
+from datetime import datetime
+
+# Import UI Modules
+import ui.styles
+from ui.auth import show_login_page
+from ui.profile import show_profile_page
+from ui.dashboard import show_dashboard
+from ui.sidebar import render_sidebar
+from ui.chat import show_chat_page
+from ui.database import init_db
+
+# Initialize DB on startup
+init_db()
+
+# Import Brain
+from brain_learning import LearningBrain
+from multimodal_voice_integration import MultimodalVoiceIntegrator
+>>>>>>> 8a352f7 (Privacy: [compliance updates])
 
 # --- LOGGER SETUP ---
 logging.basicConfig(
@@ -24,6 +48,7 @@ logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
+<<<<<<< HEAD
 >>>>>>> 673954a (Resilience: [error handling])
 
 # Import UI Modules
@@ -66,6 +91,10 @@ logger = logging.getLogger(__name__)
 
 =======
 >>>>>>> 673954a (Resilience: [error handling])
+=======
+
+
+>>>>>>> 8a352f7 (Privacy: [compliance updates])
 def initialize_page_config():
     """Configure Streamlit page settings and metadata."""
     st.set_page_config(
@@ -75,12 +104,17 @@ def initialize_page_config():
         initial_sidebar_state="expanded",
         menu_items={
 <<<<<<< HEAD
+<<<<<<< HEAD
             "About": "Antigravity AI - Multi-Provider Intelligence Platform v1.0"
         },
 =======
             'About': "Antigravity AI - Multi-Provider Intelligence Platform v1.0"
         }
 >>>>>>> 673954a (Resilience: [error handling])
+=======
+            'About': "Antigravity AI - Multi-Provider Intelligence Platform v1.0"
+        }
+>>>>>>> 8a352f7 (Privacy: [compliance updates])
     )
     logger.info("Page configuration initialized")
 
@@ -90,6 +124,7 @@ def initialize_theme():
     # Load persisted preference (global or per-user) before setting defaults
     try:
         from ui.prefs import get_pref
+<<<<<<< HEAD
 <<<<<<< HEAD
 
         username = st.session_state.get("username")
@@ -102,6 +137,8 @@ def initialize_theme():
         if "dark_mode" not in st.session_state:
             st.session_state["dark_mode"] = False
 =======
+=======
+>>>>>>> 8a352f7 (Privacy: [compliance updates])
         username = st.session_state.get('username')
         pref_dark = get_pref('dark_mode', username, None)
         if pref_dark is not None and 'dark_mode' not in st.session_state:
@@ -111,7 +148,10 @@ def initialize_theme():
     except Exception:
         if 'dark_mode' not in st.session_state:
             st.session_state['dark_mode'] = False
+<<<<<<< HEAD
 >>>>>>> 673954a (Resilience: [error handling])
+=======
+>>>>>>> 8a352f7 (Privacy: [compliance updates])
 
     # Apply theme CSS (uses st.session_state['dark_mode'])
     st.markdown(ui.styles.load_css(), unsafe_allow_html=True)
@@ -127,23 +167,32 @@ def configure_environment():
 def initialize_auth_state():
     """Initialize authentication and user session state."""
 <<<<<<< HEAD
+<<<<<<< HEAD
     defaults = {"authenticated": False, "username": None, "current_page": "dashboard"}
 =======
+=======
+>>>>>>> 8a352f7 (Privacy: [compliance updates])
     defaults = {
         "authenticated": False,
         "username": None,
         "current_page": "dashboard"
     }
+<<<<<<< HEAD
 >>>>>>> 673954a (Resilience: [error handling])
+=======
+>>>>>>> 8a352f7 (Privacy: [compliance updates])
 
     for key, value in defaults.items():
         if key not in st.session_state:
             st.session_state[key] = value
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> 673954a (Resilience: [error handling])
+=======
+>>>>>>> 8a352f7 (Privacy: [compliance updates])
     logger.info(f"Auth state initialized - User: {st.session_state.username}")
 
 
@@ -152,6 +201,7 @@ def initialize_session_tracking():
     tracking_defaults = {
         "session_start_time": time.time(),
         "total_sessions": 1,
+<<<<<<< HEAD
 <<<<<<< HEAD
         "user_joined_date": datetime.now().strftime("%Y-%m-%d"),
     }
@@ -162,6 +212,11 @@ def initialize_session_tracking():
     }
 
 >>>>>>> 673954a (Resilience: [error handling])
+=======
+        "user_joined_date": datetime.now().strftime('%Y-%m-%d')
+    }
+
+>>>>>>> 8a352f7 (Privacy: [compliance updates])
     for key, value in tracking_defaults.items():
         if key not in st.session_state:
             st.session_state[key] = value
@@ -186,9 +241,12 @@ def initialize_brain_state():
         st.session_state.multimodal_voice_integrator = multimodal_voice
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> 673954a (Resilience: [error handling])
+=======
+>>>>>>> 8a352f7 (Privacy: [compliance updates])
     logger.debug("Brain state initialized")
 
 
@@ -200,6 +258,7 @@ def initialize_chat_state():
         "enable_internet_search": False,
         "search_result_count": 5,
 <<<<<<< HEAD
+<<<<<<< HEAD
         "enable_advanced_captioning": False,
     }
 
@@ -209,14 +268,22 @@ def initialize_chat_state():
     }
 
 >>>>>>> 673954a (Resilience: [error handling])
+=======
+        "enable_advanced_captioning": False
+    }
+
+>>>>>>> 8a352f7 (Privacy: [compliance updates])
     for key, value in chat_defaults.items():
         if key not in st.session_state:
             st.session_state[key] = value
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> 673954a (Resilience: [error handling])
+=======
+>>>>>>> 8a352f7 (Privacy: [compliance updates])
     logger.debug("Chat state initialized")
 
 
@@ -242,6 +309,7 @@ def handle_page_routing():
         "dashboard": show_dashboard,
         "profile": show_profile_page,
 <<<<<<< HEAD
+<<<<<<< HEAD
         "chat": show_chat_page,
     }
 
@@ -251,13 +319,18 @@ def handle_page_routing():
 
 
 =======
+=======
+>>>>>>> 8a352f7 (Privacy: [compliance updates])
         "chat": show_chat_page
     }
 
     current_page = st.session_state.current_page
     page_handler = page_router.get(current_page, show_chat_page)
 
+<<<<<<< HEAD
 >>>>>>> 673954a (Resilience: [error handling])
+=======
+>>>>>>> 8a352f7 (Privacy: [compliance updates])
     logger.info(f"Routing to page: {current_page}")
     page_handler()
 
@@ -265,14 +338,18 @@ def handle_page_routing():
 def main():
     """Main application entry point."""
 <<<<<<< HEAD
+<<<<<<< HEAD
     # Analytics Setup
     init_analytics()
 
+=======
+>>>>>>> 8a352f7 (Privacy: [compliance updates])
     # Setup
     initialize_page_config()
     initialize_theme()
     configure_environment()
 
+<<<<<<< HEAD
 
     # Initialize all states
     initialize_all_states()
@@ -281,10 +358,30 @@ def main():
     # Authentication check
     handle_authentication()
 
+=======
+    # Initialize all states
+    initialize_all_states()
+
+    # Authentication check
+    handle_authentication()
+
+    # Privacy cleanup check
+    if 'cleanup_done' not in st.session_state:
+        try:
+             from ui.database import cleanup_user_messages
+             from ui.prefs import get_pref
+             retention = get_pref("retention_days", st.session_state.username, 0)
+             if retention > 0:
+                 cleanup_user_messages(st.session_state.username, retention)
+             st.session_state.cleanup_done = True
+        except Exception as e:
+             logger.error(f"Cleanup error: {e}")
+>>>>>>> 8a352f7 (Privacy: [compliance updates])
 
     # Render sidebar for authenticated users
     render_sidebar()
 
+<<<<<<< HEAD
 
     # Route to appropriate page
     handle_page_routing()
@@ -326,11 +423,20 @@ def main():
         logger.critical(f"Critical application error: {e}")
         st.error(f"An unexpected error occurred: {e}")
 >>>>>>> 673954a (Resilience: [error handling])
+=======
+    # Route to appropriate page
+    handle_page_routing()
+
+    logger.info("Application render completed")
+>>>>>>> 8a352f7 (Privacy: [compliance updates])
 
 
 if __name__ == "__main__":
     main()
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> 673954a (Resilience: [error handling])
+=======
+>>>>>>> 8a352f7 (Privacy: [compliance updates])

@@ -30,6 +30,7 @@ dist/
 .streamlit/secrets.toml
 .streamlit/config.toml
 <<<<<<< HEAD
+<<<<<<< HEAD
 *.db
 =======
 
@@ -37,3 +38,11 @@ dist/
 *.db
 *.pid
 >>>>>>> d4117c9 (Review: Fix syntax error and refactor inline styles)
+=======
+
+# Private Data
+users.json
+secret.key
+*.db
+logs/
+>>>>>>> 8a352f7 (Privacy: [compliance updates])
