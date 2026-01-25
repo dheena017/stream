@@ -306,13 +306,37 @@ def render_sidebar():
         # Chat Controls
         c1, c2 = st.columns(2)
         with c1:
-            if st.button("🗑️ Clear", width="stretch"):
+            if st.button("🗑️ Clear", use_container_width=True):
                 st.session_state.messages = []
                 st.rerun()
         with c2:
-            if st.button("💾 Save", width="stretch"):
-                # Simple export
+            # Use popover for export options
+            with st.popover("💾 Export", use_container_width=True):
+                st.markdown("### Export Chat")
                 msgs = st.session_state.get('messages', [])
-                text = "\n".join([f"{m['role']}: {m['content']}" for m in msgs])
-                st.download_button("TxT", text, "chat.txt")
+
+                # Text format
+                text_content = "\n".join([f"{m['role'].upper()}: {m['content']}" for m in msgs])
+                st.download_button(
+                    "📄 Download as Text",
+                    text_content,
+                    "chat_history.txt",
+                    mime="text/plain",
+                    use_container_width=True
+                )
+
+                # JSON format
+                try:
+                    from ui.chat_utils import serialize_messages
+                    import json
+                    json_data = json.dumps(serialize_messages(msgs), indent=2)
+                    st.download_button(
+                        "📦 Download as JSON",
+                        json_data,
+                        "chat_history.json",
+                        mime="application/json",
+                        use_container_width=True
+                    )
+                except Exception as e:
+                    st.error(f"JSON Export error: {e}")
 
