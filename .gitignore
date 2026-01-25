@@ -49,6 +49,7 @@ logs/
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 *.db
 =======
 
@@ -159,3 +160,9 @@ backups/
 =======
 *.db
 >>>>>>> origin/fix-chat-utils-syntax-error-3738676403581165176
+=======
+
+# Application Data
+chat_history.db
+users.json
+>>>>>>> origin/security-fixes-5054230979788780781

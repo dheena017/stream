@@ -1,6 +1,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import hashlib
 import json
 import logging
@@ -387,12 +388,15 @@ def show_login_page():
 >>>>>>> security-hardening-12270959347982184821
 =======
 >>>>>>> origin/accessibility-improvements-6998911318674562570
+=======
+>>>>>>> origin/security-fixes-5054230979788780781
 
 import streamlit as st
 import os
 import hashlib
 import json
 import logging
+<<<<<<< HEAD
 from typing import Dict, Optional, Any
 from google.oauth2 import id_token
 from google.auth.transport import requests
@@ -415,6 +419,55 @@ def hash_password(password: str) -> str:
     """Hash password using SHA-256"""
 >>>>>>> origin/accessibility-improvements-6998911318674562570
     return hashlib.sha256(password.encode()).hexdigest()
+=======
+import secrets
+import time
+from typing import Dict, Optional, Any
+from google.oauth2 import id_token
+from google.auth.transport import requests
+
+# Global rate limiter state
+@st.cache_resource
+def get_rate_limiter_state() -> Dict[str, list]:
+    return {}
+
+def hash_password(password: str, salt: Optional[str] = None) -> str:
+    """Hash password using SHA-256 with salt. Format: salt$hash"""
+    if salt is None:
+        salt = secrets.token_hex(16)
+
+    # Salted hash: sha256(salt + password)
+    hash_val = hashlib.sha256((salt + password).encode()).hexdigest()
+    return f"{salt}${hash_val}"
+
+def verify_password(stored_password: str, provided_password: str) -> bool:
+    """Verify password against stored hash (supports legacy unsalted and new salted)"""
+    if "$" in stored_password:
+        salt, hash_val = stored_password.split("$", 1)
+        expected_hash = hashlib.sha256((salt + provided_password).encode()).hexdigest()
+        return secrets.compare_digest(hash_val, expected_hash)
+    else:
+        # Legacy unsalted SHA-256
+        expected_hash = hashlib.sha256(provided_password.encode()).hexdigest()
+        return secrets.compare_digest(stored_password, expected_hash)
+
+def is_rate_limited(key: str, max_attempts: int = 5, window_seconds: int = 60) -> bool:
+    """Check if action is rate limited"""
+    state = get_rate_limiter_state()
+    now = time.time()
+
+    if key not in state:
+        state[key] = []
+
+    # Clean up old attempts
+    state[key] = [t for t in state[key] if now - t < window_seconds]
+
+    if len(state[key]) >= max_attempts:
+        return True
+
+    state[key].append(now)
+    return False
+>>>>>>> origin/security-fixes-5054230979788780781
 
 def load_user_credentials() -> Dict[str, Dict[str, str]]:
     """Load user credentials from file or environment"""
@@ -429,6 +482,7 @@ def load_user_credentials() -> Dict[str, Dict[str, str]]:
             pass
 
     # Default credentials with email support
+<<<<<<< HEAD
     return {
         "admin": {
 <<<<<<< HEAD
@@ -440,10 +494,20 @@ def load_user_credentials() -> Dict[str, Dict[str, str]]:
 =======
             "password": hash_password(os.getenv("ADMIN_PASSWORD", "admin123")),
 >>>>>>> origin/accessibility-improvements-6998911318674562570
+=======
+    # Note: These defaults use the new salted format for better security on init
+    admin_pw = os.getenv("ADMIN_PASSWORD", "admin123")
+    user_pw = os.getenv("USER_PASSWORD", "user123")
+
+    return {
+        "admin": {
+            "password": hash_password(admin_pw),
+>>>>>>> origin/security-fixes-5054230979788780781
             "email": "admin@example.com",
             "name": "Admin User"
         },
         "user": {
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
             "password": hash_password(os.getenv("USER_PASSWORD", "user123")),
@@ -453,6 +517,9 @@ def load_user_credentials() -> Dict[str, Dict[str, str]]:
 =======
             "password": hash_password(os.getenv("USER_PASSWORD", "user123")),
 >>>>>>> origin/accessibility-improvements-6998911318674562570
+=======
+            "password": hash_password(user_pw),
+>>>>>>> origin/security-fixes-5054230979788780781
             "email": "user@example.com",
             "name": "Regular User"
         }
@@ -472,15 +539,27 @@ def check_login(username_or_email: str, password: str) -> Optional[Dict[str, str
     """Verify login credentials - accepts username or email"""
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> origin/accessibility-improvements-6998911318674562570
+=======
+    # Rate limiting check
+    if is_rate_limited(username_or_email):
+        logging.warning(f"Rate limit exceeded for: {username_or_email}")
+        return None # Effectively denies login without revealing it's rate limited vs wrong password, though timing might leak.
+
+>>>>>>> origin/security-fixes-5054230979788780781
     logging.info(f"Login attempt for: {username_or_email}")
     users = load_user_credentials()
 
     # Check if input is username
     if username_or_email in users:
         user_data = users[username_or_email]
+<<<<<<< HEAD
         if user_data["password"] == hash_password(password):
+=======
+        if verify_password(user_data["password"], password):
+>>>>>>> origin/security-fixes-5054230979788780781
             return {
                 "username": username_or_email,
                 "email": user_data.get("email", ""),
@@ -490,12 +569,17 @@ def check_login(username_or_email: str, password: str) -> Optional[Dict[str, str
     # Check if input is email
     for username, user_data in users.items():
         if user_data.get("email", "").lower() == username_or_email.lower():
+<<<<<<< HEAD
             if user_data["password"] == hash_password(password):
+=======
+            if verify_password(user_data["password"], password):
+>>>>>>> origin/security-fixes-5054230979788780781
                 return {
                     "username": username,
                     "email": user_data.get("email", ""),
                     "name": user_data.get("name", username)
                 }
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
     if not rate_limiter.is_allowed(f"login_{username_or_email}"):
@@ -549,11 +633,14 @@ def check_login(username_or_email: str, password: str) -> Optional[Dict[str, str
 >>>>>>> security-hardening-12270959347982184821
 =======
 >>>>>>> origin/accessibility-improvements-6998911318674562570
+=======
+>>>>>>> origin/security-fixes-5054230979788780781
 
     return None
 
 def register_user(username: str, email: str, password: str, name: str = "") -> bool:
     """Register a new user"""
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
@@ -569,6 +656,8 @@ def register_user(username: str, email: str, password: str, name: str = "") -> b
 >>>>>>> security-hardening-12270959347982184821
 =======
 >>>>>>> origin/accessibility-improvements-6998911318674562570
+=======
+>>>>>>> origin/security-fixes-5054230979788780781
     users = load_user_credentials()
 
     # Check if username already exists
@@ -580,7 +669,11 @@ def register_user(username: str, email: str, password: str, name: str = "") -> b
         if user_data.get("email", "").lower() == email.lower():
             return False
 
+<<<<<<< HEAD
     # Add new user
+=======
+    # Add new user with salted password
+>>>>>>> origin/security-fixes-5054230979788780781
     users[username] = {
         "password": hash_password(password),
         "email": email,
@@ -589,6 +682,7 @@ def register_user(username: str, email: str, password: str, name: str = "") -> b
 
     return save_user_credentials(users)
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 def delete_user(username: str) -> bool:
@@ -603,6 +697,8 @@ def delete_user(username: str) -> bool:
 >>>>>>> security-hardening-12270959347982184821
 =======
 >>>>>>> origin/accessibility-improvements-6998911318674562570
+=======
+>>>>>>> origin/security-fixes-5054230979788780781
 def verify_google_oauth() -> Optional[Dict[str, Any]]:
     """Verify Google OAuth token and return user info"""
     try:
@@ -658,14 +754,19 @@ def show_login_page():
             --bg: #0b1220;
             --card: #0f1724;
 <<<<<<< HEAD
+<<<<<<< HEAD
             --muted: #9ca3af;
 =======
             --muted: #cbd5e1; /* Improved contrast */
 >>>>>>> origin/accessibility-improvements-6998911318674562570
+=======
+            --muted: #9ca3af;
+>>>>>>> origin/security-fixes-5054230979788780781
             --text: #e6eef8;
             --accent-1: #7c3aed;
             --accent-2: #2563eb;
         }
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
         @media (prefers-reduced-motion: reduce) {
@@ -675,6 +776,8 @@ def show_login_page():
             }
         }
 >>>>>>> origin/accessibility-improvements-6998911318674562570
+=======
+>>>>>>> origin/security-fixes-5054230979788780781
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-20px);} to { opacity: 1; transform: translateY(0);} }
         @keyframes slideIn { from { opacity: 0; transform: translateX(-30px);} to { opacity: 1; transform: translateX(0);} }
         .stApp { background: var(--bg) !important; color: var(--text) !important; }
@@ -682,9 +785,12 @@ def show_login_page():
         .login-header h1 { background: linear-gradient(135deg, var(--accent-2), var(--accent-1)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 3rem; font-weight: 800; margin-bottom: 0.5rem; }
         .login-subtitle { color: var(--muted); font-size: 1.2rem; margin-bottom: 1rem; }
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
         .feature-list { list-style: none; padding: 0; margin: 0; }
 >>>>>>> origin/accessibility-improvements-6998911318674562570
+=======
+>>>>>>> origin/security-fixes-5054230979788780781
         .feature-card { background: linear-gradient(135deg, rgba(124,58,237,0.06), rgba(37,99,235,0.03)); border-radius: 10px; padding: 1rem; margin: 0.5rem 0; border-left: 4px solid var(--accent-1); animation: slideIn 0.6s ease-out; color: var(--text); }
         .google-btn { background: linear-gradient(135deg, #1f6feb, #1646b2); color: white; padding: 12px 20px; border-radius: 8px; text-decoration: none; display: inline-block; width: 100%; text-align: center; font-weight: 600; margin-top: 10px; transition: all 0.3s ease; box-shadow: 0 6px 20px rgba(0,0,0,0.6); }
         .google-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 26px rgba(0,0,0,0.7); }
@@ -707,10 +813,14 @@ def show_login_page():
         # Feature highlights
         st.markdown(
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin/security-fixes-5054230979788780781
             '<div class="feature-card">✨ <strong>25+ AI Models</strong> from Google, OpenAI, Anthropic, Meta & more</div>'
             '<div class="feature-card">🧠 <strong>AI Brain Mode</strong> - Combines multiple models for enhanced responses</div>'
             '<div class="feature-card">🌐 <strong>Internet Search</strong> - Real-time information from the web</div>'
             '<div class="feature-card">📎 <strong>Multimodal</strong> - Images, PDFs, Audio & Video support</div>',
+<<<<<<< HEAD
 =======
             """
             <ul class="feature-list">
@@ -721,6 +831,8 @@ def show_login_page():
             </ul>
             """,
 >>>>>>> origin/accessibility-improvements-6998911318674562570
+=======
+>>>>>>> origin/security-fixes-5054230979788780781
             unsafe_allow_html=True
         )
 
@@ -791,6 +903,10 @@ def show_login_page():
                             st.success("✅ Login successful!")
                             st.rerun()
                         else:
+<<<<<<< HEAD
+=======
+                            # Generic error message
+>>>>>>> origin/security-fixes-5054230979788780781
                             st.error("❌ Invalid email/username or password")
                     else:
                         st.warning("⚠️ Please enter both email/username and password.")
@@ -839,8 +955,11 @@ def show_login_page():
         st.caption("🔒 Your credentials are secure and never stored in plain text")
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> 8a352f7 (Privacy: [compliance updates])
 =======
 >>>>>>> security-hardening-12270959347982184821
 =======
 >>>>>>> origin/accessibility-improvements-6998911318674562570
+=======
+>>>>>>> origin/security-fixes-5054230979788780781

@@ -1,5 +1,6 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 streamlit
 google-genai
 google-auth
@@ -114,3 +115,26 @@ pytest-mock
 =======
 loguru
 >>>>>>> origin/analytics-monitoring-16051435839535532537
+=======
+streamlit==1.40.0
+google-auth==2.36.0
+google-auth-oauthlib==1.2.1
+google-auth-httplib2==0.2.0
+openai==1.55.0
+anthropic==0.39.0
+together==1.3.0
+Pillow==11.0.0
+PyPDF2==3.0.1
+SpeechRecognition==3.10.4
+gTTS==2.5.3
+moviepy==1.0.3
+duckduckgo-search==6.3.0
+beautifulsoup4==4.12.3
+requests==2.32.3
+aiohttp==3.10.5
+google-generativeai==0.8.3
+transformers==4.46.0
+torch==2.5.1
+torchvision==0.20.1
+pytest==8.3.3
+>>>>>>> origin/security-fixes-5054230979788780781
