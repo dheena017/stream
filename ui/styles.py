@@ -352,6 +352,7 @@ def load_css():
     ::-webkit-scrollbar-thumb:hover { background: var(--text-primary); }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     /* --- Header & Status --- */
     .chat-header-container {
         display: flex;
@@ -426,6 +427,23 @@ def load_css():
             justify-content: center !important;
         }
 >>>>>>> origin/mobile-optimizations-15403240101322836592
+=======
+    /* --- Mobile Optimizations --- */
+    @media (max-width: 768px) {
+        .chat-header-container {
+            flex-direction: column;
+            align-items: flex-start !important;
+            gap: 1rem;
+        }
+        .header-title {
+            font-size: 1.5rem !important;
+        }
+        .status-container {
+             justify-content: flex-start !important;
+             text-align: left !important;
+             margin-top: 0.5rem;
+        }
+>>>>>>> origin/ui-ux-improvements-15420733255677191781
     }
     </style>
     """
