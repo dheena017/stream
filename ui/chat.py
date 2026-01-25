@@ -9,6 +9,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import asyncio
 import time
 from datetime import datetime
@@ -89,6 +90,10 @@ import streamlit as st
 
 import streamlit as st
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+
+import streamlit as st
+>>>>>>> origin/ui-ux-improvements-11896252316584290961
 import os
 import time
 import base64
@@ -112,6 +117,7 @@ from ui.chat_utils import (
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     generate_image_captions, generate_standard_response, prepare_brain_configuration
 =======
     generate_image_captions, generate_standard_response, prepare_brain_configuration,
@@ -129,11 +135,15 @@ from ui.chat_utils import (
 =======
     generate_image_captions, generate_standard_response, prepare_brain_configuration
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+    generate_image_captions, generate_standard_response, prepare_brain_configuration
+>>>>>>> origin/ui-ux-improvements-11896252316584290961
 )
 from brain import AIBrain
 from brain_learning import LearningBrain
 from multimodal_voice_integration import MultimodalVoiceIntegrator
 from ui.config import MODEL_PRICING, MODEL_CAPABILITIES, PROVIDER_ICONS
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -214,11 +224,17 @@ from ui.engagement import EngagementManager
 def show_chat_page():
     """Display the main chat interface"""
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+
+def show_chat_page():
+    """Display the main chat interface"""
+>>>>>>> origin/ui-ux-improvements-11896252316584290961
 
     # --- 1. Header & Status Bar ---
     # Compact Header
     c_head1, c_head2 = st.columns([3, 1])
     with c_head1:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -261,6 +277,9 @@ def show_chat_page():
 =======
         st.markdown("""
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+        st.markdown("""
+>>>>>>> origin/ui-ux-improvements-11896252316584290961
         <div style="display: flex; align-items: center; gap: 1rem;">
             <div style="font-size: 2rem;">🤖</div>
             <div>
@@ -274,6 +293,7 @@ def show_chat_page():
                 </div>
             </div>
         </div>
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -312,11 +332,14 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-17423438479402428749
 =======
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+>>>>>>> origin/ui-ux-improvements-11896252316584290961
         """, unsafe_allow_html=True)
 
     with c_head2:
         # Mini Status Details
         provider = st.session_state.get('selected_provider', 'google').upper()
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -361,6 +384,10 @@ def show_chat_page():
         brain_on = st.session_state.get('enable_brain_mode', False)
         inet_on = st.session_state.get('enable_internet_search', False)
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+        brain_on = st.session_state.get('enable_brain_mode', False)
+        inet_on = st.session_state.get('enable_internet_search', False)
+>>>>>>> origin/ui-ux-improvements-11896252316584290961
 
         status_html = f"""
         <div style="text-align: right;">
@@ -371,6 +398,7 @@ def show_chat_page():
                 {'🌐 Web' if inet_on else '📱 Off'}
             </div>
             <div style="margin-top: 4px; font-weight: 600; font-size: 0.9rem; color: var(--accent-primary);">
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -396,6 +424,9 @@ def show_chat_page():
 =======
                  🔌 {provider}
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+                 🔌 {provider}
+>>>>>>> origin/ui-ux-improvements-11896252316584290961
             </div>
         </div>
         """
@@ -408,6 +439,7 @@ def show_chat_page():
     prompt = None
 
     # --- 3. Chat History or Welcome Screen ---
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -445,11 +477,14 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-17423438479402428749
 =======
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+>>>>>>> origin/ui-ux-improvements-11896252316584290961
     messages = st.session_state.get('messages', [])
 
     if not messages:
         # ZERO STATE: Welcome Screen
         user_name = st.session_state.get('username', 'Traveler')
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -550,12 +585,24 @@ def show_chat_page():
 =======
         """, unsafe_allow_html=True)
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+
+        st.markdown(f"""
+        <div class="welcome-container" style="display: flex; flex-direction: column; align-items: center; gap: 1rem;">
+            <div class="welcome-title" style="margin-bottom: 0.5rem;">Welcome back, {user_name}! 👋</div>
+            <div class="welcome-subtitle" style="max-width: 600px; line-height: 1.6;">
+                I'm your intelligent assistant. Select a starter or type below to begin.
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+>>>>>>> origin/ui-ux-improvements-11896252316584290961
 
         wc1, wc2 = st.columns(2)
         with wc1:
             if st.button("🚀 Explain Quantum Computing", use_container_width=True):
                 prompt = "Explain quantum computing in simple terms."
             if st.button("📝 Write a Python Script", use_container_width=True):
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -591,12 +638,15 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-17423438479402428749
 =======
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+>>>>>>> origin/ui-ux-improvements-11896252316584290961
                  prompt = "Write a python script to parse a CSV file and plot it."
         with wc2:
              if st.button("📰 Search Latest News", use_container_width=True):
                  prompt = "What are the latest tech news headlines today?"
              if st.button("🎨 Analyze an Image", use_container_width=True):
                  prompt = "Help me analyze an image I'm about to upload."
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -625,10 +675,13 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-17423438479402428749
 =======
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+>>>>>>> origin/ui-ux-improvements-11896252316584290961
 
         st.markdown("<div style='height: 2rem'></div>", unsafe_allow_html=True)
 
     # 4. Filter logic (kept from original)
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -664,10 +717,13 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-17423438479402428749
 =======
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+>>>>>>> origin/ui-ux-improvements-11896252316584290961
     chat_search = st.session_state.get('chat_search_value', '')
     messages_to_display = messages
     if chat_search:
         messages_to_display = [m for m in messages if chat_search.lower() in m.get('content', '').lower()]
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -696,6 +752,8 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-17423438479402428749
 =======
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+>>>>>>> origin/ui-ux-improvements-11896252316584290961
         st.info(f"🔍 Found {len(messages_to_display)} matching messages")
 
     model_icons = PROVIDER_ICONS
@@ -706,6 +764,7 @@ def show_chat_page():
             if "images" in msg and msg["images"]:
                 cols = st.columns(min(len(msg["images"]), 3))
                 for i, img in enumerate(msg["images"]):
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -747,11 +806,15 @@ def show_chat_page():
 =======
                     with cols[i%3]:
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+                    with cols[i%3]:
+>>>>>>> origin/ui-ux-improvements-11896252316584290961
                         st.image(img, width="stretch")
 
             # Files info
             if "files" in msg and msg["files"]:
                 for file_info in msg["files"]:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -793,10 +856,13 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-17423438479402428749
 =======
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+>>>>>>> origin/ui-ux-improvements-11896252316584290961
                      st.caption(f"📎 {file_info.get('name')} ({file_info.get('type')})")
 
             # Content
             st.markdown(msg["content"])
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -819,12 +885,15 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-17423438479402428749
 =======
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+>>>>>>> origin/ui-ux-improvements-11896252316584290961
 
             # Metadata footer
             if msg["role"] == "assistant":
                 st.markdown("---")
                 mc1, mc2, mc3 = st.columns([0.6, 0.2, 0.2])
                 with mc1:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -877,10 +946,15 @@ def show_chat_page():
                     prov = msg.get('provider', '')
                     mod = msg.get('model', '')
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+                    prov = msg.get('provider', '')
+                    mod = msg.get('model', '')
+>>>>>>> origin/ui-ux-improvements-11896252316584290961
                     icon = model_icons.get(prov, "🤖")
                     st.caption(f"{icon} {mod} • {msg.get('timestamp','')}")
 
                 with mc2:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -933,11 +1007,16 @@ def show_chat_page():
                      if "response_time" in msg:
                          st.caption(f"⚡ {msg['response_time']:.2f}s")
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+                     if "response_time" in msg:
+                         st.caption(f"⚡ {msg['response_time']:.2f}s")
+>>>>>>> origin/ui-ux-improvements-11896252316584290961
 
                 with mc3:
                     # Action buttons
                     c_copy, c_regen = st.columns(2)
                     with c_copy:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -982,12 +1061,15 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-17423438479402428749
 =======
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+>>>>>>> origin/ui-ux-improvements-11896252316584290961
                         if st.button("📋", key=f"copy_{idx}", help="View raw text to copy"):
                             st.code(msg["content"], language=None)
                     with c_regen:
                         if st.button("🔄", key=f"regen_{idx}", help="Regenerate (Not implemented yet)"):
                              st.toast("Regeneration coming soon!")
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1059,11 +1141,16 @@ def show_chat_page():
     # 4. Internet Search Configuration
     with st.expander("🌐 Internet Search Settings", expanded=st.session_state.get('enable_internet_search', False)):
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+    # 4. Internet Search Configuration
+    with st.expander("🌐 Internet Search Settings", expanded=st.session_state.get('enable_internet_search', False)):
+>>>>>>> origin/ui-ux-improvements-11896252316584290961
 
         c_search1, c_search2 = st.columns([1, 1])
         with c_search1:
             enable_internet = st.toggle(
                 "Enable Real-time Search",
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1116,6 +1203,10 @@ def show_chat_page():
                 value=st.session_state.get('enable_internet_search', False),
                 help="Augment answers with live web data"
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+                value=st.session_state.get('enable_internet_search', False),
+                help="Augment answers with live web data"
+>>>>>>> origin/ui-ux-improvements-11896252316584290961
             )
             st.session_state.enable_internet_search = enable_internet
 
@@ -1123,6 +1214,7 @@ def show_chat_page():
                 "Search Mode",
                 ["Web", "News"],
                 horizontal=True,
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1175,11 +1267,16 @@ def show_chat_page():
                 index=0 if st.session_state.get('search_type') != "News" else 1,
                 key="search_type_selector"
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+                index=0 if st.session_state.get('search_type') != "News" else 1,
+                key="search_type_selector"
+>>>>>>> origin/ui-ux-improvements-11896252316584290961
             )
             st.session_state.search_type = search_type
 
         with c_search2:
             result_count = st.slider(
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1241,6 +1338,11 @@ def show_chat_page():
                 1, 10,
                 st.session_state.get('search_result_count', 5)
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+                "Result Count",
+                1, 10,
+                st.session_state.get('search_result_count', 5)
+>>>>>>> origin/ui-ux-improvements-11896252316584290961
             )
             st.session_state.search_result_count = result_count
 
@@ -1248,6 +1350,7 @@ def show_chat_page():
             time_range = st.selectbox(
                 "Time Range",
                 ["Anytime", "Past Day", "Past Week", "Past Month"],
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1289,6 +1392,9 @@ def show_chat_page():
 =======
                 index=0
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+                index=0
+>>>>>>> origin/ui-ux-improvements-11896252316584290961
             )
             st.session_state.search_time_range = time_range
 
@@ -1296,6 +1402,7 @@ def show_chat_page():
         domain_filter = st.text_input(
             "Limit to Site (optional)",
             placeholder="e.g. reddit.com, stackoverflow.com",
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1337,10 +1444,14 @@ def show_chat_page():
 =======
             help="Restrict search results to a specific domain"
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+            help="Restrict search results to a specific domain"
+>>>>>>> origin/ui-ux-improvements-11896252316584290961
         )
         st.session_state.search_domain_filter = domain_filter
 
     # 5. Multimodal Uploads Area
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1386,6 +1497,9 @@ def show_chat_page():
 =======
     multimodal_options = ["Images", "Documents (PDF/TXT)", "Audio Files", "Video Frames"]
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+    multimodal_options = ["Images", "Documents (PDF/TXT)", "Audio Files", "Video Frames"]
+>>>>>>> origin/ui-ux-improvements-11896252316584290961
 
     uploaded_images = []
     uploaded_file_info = []
@@ -1397,6 +1511,7 @@ def show_chat_page():
         uploaded_files = st.file_uploader(
             "Upload files",
             type=["jpg", "jpeg", "png", "pdf", "txt", "md", "mp3", "wav", "mp4"],
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1438,10 +1553,14 @@ def show_chat_page():
 =======
             accept_multiple_files=True
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+            accept_multiple_files=True
+>>>>>>> origin/ui-ux-improvements-11896252316584290961
         )
 
         if uploaded_files:
             for file in uploaded_files:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1486,6 +1605,9 @@ def show_chat_page():
 =======
                 file_ext = file.name.split('.')[-1].lower()
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+                file_ext = file.name.split('.')[-1].lower()
+>>>>>>> origin/ui-ux-improvements-11896252316584290961
 
                 # Images
                 if file_ext in ["jpg", "jpeg", "png", "webp"]:
@@ -1496,6 +1618,7 @@ def show_chat_page():
 
                 # PDF/TXT
                 elif file_ext in ["pdf", "txt", "md"]:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1546,11 +1669,17 @@ def show_chat_page():
                         try:
                             import PyPDF2
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+                    if file_ext == "pdf":
+                        try:
+                            import PyPDF2
+>>>>>>> origin/ui-ux-improvements-11896252316584290961
                             pdf = PyPDF2.PdfReader(file)
                             text = ""
                             for page in pdf.pages[:5]:
                                 text += page.extract_text() + "\n"
                             extra_context += f"\n--- PDF {file.name} ---\n{text}\n"
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1590,6 +1719,9 @@ def show_chat_page():
 =======
                             uploaded_file_info.append({"name": file.name, "type": "PDF"})
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+                            uploaded_file_info.append({"name": file.name, "type": "PDF"})
+>>>>>>> origin/ui-ux-improvements-11896252316584290961
                             st.success(f"PDF: {file.name}")
                         except ImportError:
                             st.error("PyPDF2 not installed")
@@ -1598,6 +1730,7 @@ def show_chat_page():
                         extra_context += f"\n--- {file.name} ---\n{text}\n"
                         uploaded_file_info.append({"name": file.name, "type": "Text"})
                         st.success(f"Text: {file.name}")
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1622,10 +1755,13 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-17423438479402428749
 =======
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+>>>>>>> origin/ui-ux-improvements-11896252316584290961
 
                 # Audio files
                 if file_ext in ["mp3", "wav"]:
                     try:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1685,10 +1821,16 @@ def show_chat_page():
                         file_bytes = file.read()
                         from io import BytesIO
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+                        # Keep a buffer copy for transcription helper
+                        file_bytes = file.read()
+                        from io import BytesIO
+>>>>>>> origin/ui-ux-improvements-11896252316584290961
                         audio_buf = BytesIO(file_bytes)
                         transcription = transcribe_audio_file(audio_buf)
                         extra_context += f"\n--- Audio {file.name} (transcript) ---\n{transcription}\n"
                         uploaded_file_info.append({"name": file.name, "type": "Audio", "transcript": transcription})
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1719,6 +1861,8 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-17423438479402428749
 =======
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+>>>>>>> origin/ui-ux-improvements-11896252316584290961
                         st.success(f"Audio processed: {file.name}")
                     except Exception as e:
                         st.warning(f"Audio processing failed: {e}")
@@ -1726,6 +1870,7 @@ def show_chat_page():
                 # Video files
                 if file_ext in ["mp4", "mov"]:
                     try:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1762,10 +1907,14 @@ def show_chat_page():
 =======
                         from io import BytesIO
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+                        from io import BytesIO
+>>>>>>> origin/ui-ux-improvements-11896252316584290961
                         file_bytes = file.read()
                         video_buf = BytesIO(file_bytes)
                         thumbs = extract_video_frame_thumbnails(video_buf, max_frames=3)
                         if thumbs:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1807,11 +1956,14 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-17423438479402428749
 =======
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+>>>>>>> origin/ui-ux-improvements-11896252316584290961
                             uploaded_file_info.append({"name": file.name, "type": "Video", "thumbnails": thumbs})
                             # display small gallery
                             cols = st.columns(min(len(thumbs), 3))
                             for i, b64 in enumerate(thumbs):
                                 with cols[i%3]:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1840,6 +1992,8 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-17423438479402428749
 =======
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+>>>>>>> origin/ui-ux-improvements-11896252316584290961
                                     st.image(b64)
                             extra_context += f"\n--- Video {file.name} - {len(thumbs)} thumbnails extracted ---\n"
                             st.success(f"Video processed: {file.name}")
@@ -1851,6 +2005,7 @@ def show_chat_page():
     # Advanced captioning option (move outside upload loop)
     adv_caption = st.checkbox(
         "🖼️ Enable Advanced Image Captioning (BLIP)",
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1903,12 +2058,17 @@ def show_chat_page():
         value=st.session_state.get('enable_advanced_captioning', False),
         help="Use BLIP model locally to generate richer image captions if installed"
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+        value=st.session_state.get('enable_advanced_captioning', False),
+        help="Use BLIP model locally to generate richer image captions if installed"
+>>>>>>> origin/ui-ux-improvements-11896252316584290961
     )
     st.session_state.enable_advanced_captioning = adv_caption
 
     # Hosted caption API settings (optional)
     if adv_caption:
         # Check readiness without triggering download/load
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1954,6 +2114,9 @@ def show_chat_page():
 =======
         from ui.chat_utils import get_blip_model
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+        from ui.chat_utils import get_blip_model
+>>>>>>> origin/ui-ux-improvements-11896252316584290961
 
         # Check if the resource is already cached in Streamlit
         # We can try to peek or just rely on a session state flag that indicates explicit load success
@@ -1964,6 +2127,7 @@ def show_chat_page():
             st.caption("Advanced captioning requires downloading the BLIP model (~1GB). This happens only once.")
 
             if st.button("⬇️ Download & Load BLIP Model"):
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
                 from ui.chat_utils import preload_blip_model_with_progress
@@ -1994,6 +2158,9 @@ def show_chat_page():
 =======
                 from ui.chat_utils import preload_blip_model_with_progress
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+                from ui.chat_utils import preload_blip_model_with_progress
+>>>>>>> origin/ui-ux-improvements-11896252316584290961
                 progress_bar = st.progress(0)
                 status_text = st.empty()
 
@@ -2004,6 +2171,7 @@ def show_chat_page():
                     except Exception:
                         pass
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -2056,6 +2224,8 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-17423438479402428749
 =======
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+>>>>>>> origin/ui-ux-improvements-11896252316584290961
                 with st.spinner('Downloading BLIP model...'):
                     ok = preload_blip_model_with_progress(progress_callback=_progress_callback)
                     if ok:
@@ -2077,6 +2247,7 @@ def show_chat_page():
                 help="External captioning service URL"
             )
              st.session_state.hosted_caption_url = hosted_url
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -2119,6 +2290,9 @@ def show_chat_page():
 =======
     # 'prompt' might already be set by Welcome Screen buttons or Voice mode simulation
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+    # 'prompt' might already be set by Welcome Screen buttons or Voice mode simulation
+>>>>>>> origin/ui-ux-improvements-11896252316584290961
 
     # We still need to render the chat input widget to allow typing
     input_prompt = st.chat_input("Ask anything...")
@@ -2127,6 +2301,7 @@ def show_chat_page():
         prompt = input_prompt
 
     # Check voice mode override if not already set
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -2160,10 +2335,13 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-17423438479402428749
 =======
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+>>>>>>> origin/ui-ux-improvements-11896252316584290961
     if not prompt and st.session_state.get('voice_mode'):
          # Simple simulation specific logic check
          # (In a real app, this would be an audio buffer handling block)
          pass
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -2192,6 +2370,8 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-17423438479402428749
 =======
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+>>>>>>> origin/ui-ux-improvements-11896252316584290961
 
     # 5. Processing
     if prompt:
@@ -2199,6 +2379,7 @@ def show_chat_page():
         user_msg = {
             "role": "user",
             "content": prompt,
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -2298,12 +2479,15 @@ def show_chat_page():
 =======
 >>>>>>> origin/code-quality-refactor-17423438479402428749
 =======
+=======
+>>>>>>> origin/ui-ux-improvements-11896252316584290961
             "timestamp": datetime.now().strftime('%H:%M:%S'),
             "images": uploaded_images,
             "files": uploaded_file_info
         }
         st.session_state.messages.append(user_msg)
 
+<<<<<<< HEAD
         # --- GAMIFICATION LOGGING ---
         try:
             user_id = st.session_state.get('username', 'guest')
@@ -2323,12 +2507,17 @@ def show_chat_page():
         # --- DB SAVE: USER ---
         from ui.database import create_new_conversation, save_message
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+        # --- DB SAVE: USER ---
+        from ui.database import create_new_conversation, save_message
+>>>>>>> origin/ui-ux-improvements-11896252316584290961
         try:
             if 'conversation_id' not in st.session_state:
                 user_id = st.session_state.get('username', 'guest')
                 # Smart title generation
                 title = (prompt[:30] + '..') if len(prompt) > 30 else prompt
                 st.session_state.conversation_id = create_new_conversation(user_id, title)
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -2357,12 +2546,15 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-17423438479402428749
 =======
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+>>>>>>> origin/ui-ux-improvements-11896252316584290961
 
             # Save to DB
             save_message(
                 st.session_state.conversation_id,
                 "user",
                 prompt,
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -2425,11 +2617,19 @@ def show_chat_page():
         except Exception as e:
             # Don't block chat if DB fails
             print(f"DB Save Error: {e}")
+=======
+                {"images": bool(uploaded_images), "files": [f['name'] for f in uploaded_file_info]}
+            )
+        except Exception as e:
+            # Don't block chat if DB fails
+            st.toast(f"Database Error: {e}", icon="⚠️")
+>>>>>>> origin/ui-ux-improvements-11896252316584290961
 
         with st.chat_message("user"):
             if uploaded_images:
                 cols = st.columns(min(len(uploaded_images), 3))
                 for i, img in enumerate(uploaded_images):
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -2471,6 +2671,9 @@ def show_chat_page():
 =======
                     with cols[i%3]:
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+                    with cols[i%3]:
+>>>>>>> origin/ui-ux-improvements-11896252316584290961
                         st.image(img, width="stretch")
             if uploaded_file_info:
                 for f in uploaded_file_info:
@@ -2487,6 +2690,7 @@ def show_chat_page():
             # Multimodal processing: images -> captions
             if uploaded_images:
                 try:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -2524,10 +2728,13 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-17423438479402428749
 =======
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+>>>>>>> origin/ui-ux-improvements-11896252316584290961
                     use_blip = st.session_state.get('enable_advanced_captioning', False)
                     img_context = generate_image_captions(uploaded_images, use_blip=use_blip)
                     if img_context:
                         img_texts = "\n".join([f"{it['name']}: {it['caption']}" for it in img_context])
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -2554,11 +2761,14 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-17423438479402428749
 =======
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+>>>>>>> origin/ui-ux-improvements-11896252316584290961
                         final_prompt += f"\n\nImage Context:\n{img_texts}"
                 except Exception as e:
                     st.warning(f"Image processing error: {e}")
 
             # Internet Search Integration
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -2601,12 +2811,15 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-17423438479402428749
 =======
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+>>>>>>> origin/ui-ux-improvements-11896252316584290961
             if st.session_state.get('enable_internet_search', False):
                 with st.spinner("🔍 Searching the internet..."):
                     # Pass new filters to helper
                     search_type_val = st.session_state.get('search_type', 'Web')
                     time_range_val = st.session_state.get('search_time_range', 'Anytime')
                     domain_val = st.session_state.get('search_domain_filter', None)
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -2635,10 +2848,13 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-17423438479402428749
 =======
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+>>>>>>> origin/ui-ux-improvements-11896252316584290961
 
                     search_results, search_context = perform_internet_search(
                         prompt,
                         enable_search=True,
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -2672,10 +2888,13 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-17423438479402428749
 =======
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+>>>>>>> origin/ui-ux-improvements-11896252316584290961
                         max_results=st.session_state.get('search_result_count', 5),
                         search_type=search_type_val,
                         time_range=time_range_val,
                         domain=domain_val
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -2704,6 +2923,8 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-17423438479402428749
 =======
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+>>>>>>> origin/ui-ux-improvements-11896252316584290961
                     )
 
                     if search_results:
@@ -2711,6 +2932,7 @@ def show_chat_page():
 
                         # Display search results
                         with st.expander("🌐 Search Results", expanded=False):
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -2769,6 +2991,8 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-17423438479402428749
 =======
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+>>>>>>> origin/ui-ux-improvements-11896252316584290961
                             from ui.internet_search import format_search_results_for_chat
                             search_display = format_search_results_for_chat(search_results, "web")
                             st.markdown(search_display)
@@ -2800,6 +3024,7 @@ def show_chat_page():
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> 3e83144 (AI Review: Fix ui/chat_utils.py syntax and asyncio crash in ui/chat.py)
 =======
 >>>>>>> 673954a (Resilience: [error handling])
@@ -2819,6 +3044,8 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-17423438479402428749
 =======
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+>>>>>>> origin/ui-ux-improvements-11896252316584290961
 
                 models_to_query = prepare_brain_configuration(api_key_map)
 
@@ -2834,6 +3061,7 @@ def show_chat_page():
                             with st.spinner("Searching internet..."):
                                 internet_ctx = brain.gather_internet_context(prompt)
                                 if internet_ctx:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -2879,10 +3107,13 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-17423438479402428749
 =======
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+>>>>>>> origin/ui-ux-improvements-11896252316584290961
                                     final_prompt += f"\n\nInternet Info:\n{internet_ctx}"
 
                         # Query Models
                         # Async execution wrapper
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -2916,10 +3147,13 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-17423438479402428749
 =======
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+>>>>>>> origin/ui-ux-improvements-11896252316584290961
                         responses = asyncio.run(brain.query_multiple_models(final_prompt, models_to_query, config))
 
                         # Synthesize
                         response_text = brain.synthesize_responses(prompt, responses, internet_ctx)
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -2943,10 +3177,13 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-17423438479402428749
 =======
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+>>>>>>> origin/ui-ux-improvements-11896252316584290961
 
                         # Show comparison
                         with st.expander("Model Comparison"):
                             for r in responses:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -2995,11 +3232,14 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-17423438479402428749
 =======
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+>>>>>>> origin/ui-ux-improvements-11896252316584290961
                                 st.markdown(f"**{r['provider'].upper()}**: {r.get('success', False)}")
                                 st.text(r.get('response', '')[:200] + "...")
 
                     except Exception as e:
                         response_text = f"Brain Error: {e}"
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -3011,12 +3251,15 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-17423438479402428749
 =======
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+>>>>>>> origin/ui-ux-improvements-11896252316584290961
 
                 provider = "brain-mode"
                 model_name = "ensemble"
 
             else:
                 # Standard Mode
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -3059,6 +3302,8 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-17423438479402428749
 =======
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+>>>>>>> origin/ui-ux-improvements-11896252316584290961
                 provider = st.session_state.get('selected_provider', 'google')
                 model_name = st.session_state.get('selected_model_name', 'gemini-1.5-flash')
 
@@ -3070,6 +3315,7 @@ def show_chat_page():
                 }
 
                 sys_prompt = st.session_state.get('system_instruction', "")
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -3201,10 +3447,27 @@ def show_chat_page():
 >>>>>>> origin/code-quality-refactor-17423438479402428749
 =======
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+
+                with st.spinner("✨ Generating response..."):
+                    response_text = generate_standard_response(
+                        provider=provider,
+                        model_name=model_name,
+                        api_keys=api_key_map,
+                        prompt=final_prompt,
+                        chat_history=st.session_state.messages,
+                        system_instruction=sys_prompt,
+                        config=config,
+                        images=uploaded_images
+                    )
+
+            end_time = time.time()
+>>>>>>> origin/ui-ux-improvements-11896252316584290961
             st.session_state.messages.append({
                 "role": "assistant",
                 "content": response_text,
                 "timestamp": datetime.now().strftime('%H:%M:%S'),
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -3222,6 +3485,9 @@ def show_chat_page():
 =======
                 "response_time": end_time - start_time,
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+                "response_time": end_time - start_time,
+>>>>>>> origin/ui-ux-improvements-11896252316584290961
                 "provider": provider,
                 "model": model_name
             })
@@ -3233,6 +3499,7 @@ def show_chat_page():
                         "provider": provider, "model": model_name, "response_time": end_time - start_time
                      })
             except Exception as e:
+<<<<<<< HEAD
                  print(f"DB Save Assistant Error: {e}")
 
             if st.session_state.get('voice_mode') and st.session_state.get('auto_speak'):
@@ -3897,3 +4164,11 @@ def show_chat_page():
 
             st.rerun()
 >>>>>>> origin/engagement-features-3224553925721226807
+=======
+                 st.toast(f"Database Error: {e}", icon="⚠️")
+
+            if st.session_state.get('voice_mode') and st.session_state.get('auto_speak'):
+                pass
+
+            st.rerun()
+>>>>>>> origin/ui-ux-improvements-11896252316584290961

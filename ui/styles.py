@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 import streamlit as st
 
 
@@ -510,6 +511,10 @@ def load_css():
     </style>
     """
 =======
+=======
+
+import streamlit as st
+>>>>>>> origin/ui-ux-improvements-11896252316584290961
 
 def load_css():
     """Load all custom CSS styles for the application"""
@@ -552,6 +557,19 @@ def load_css():
         color: var(--text-primary);
     }
 
+<<<<<<< HEAD
+=======
+    /* --- Animations --- */
+    @keyframes pulse-glow {
+        0% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4); }
+        70% { box-shadow: 0 0 0 6px rgba(99, 102, 241, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
+    }
+    .pulse-animation {
+        animation: pulse-glow 2s infinite;
+    }
+
+>>>>>>> origin/ui-ux-improvements-11896252316584290961
     /* --- Main Layout & Background --- */
     .stApp {
         background-color: var(--bg-primary);
@@ -648,6 +666,14 @@ def load_css():
         background-color: rgba(30, 41, 59, 0.4) !important;
         border: 1px solid var(--border-subtle) !important;
         border-radius: 12px !important;
+<<<<<<< HEAD
+=======
+        transition: all 0.3s ease;
+    }
+    .stChatMessage:hover {
+        border-color: var(--border-focus) !important;
+        background-color: rgba(30, 41, 59, 0.6) !important;
+>>>>>>> origin/ui-ux-improvements-11896252316584290961
     }
     [data-testid="chatAvatarIcon-user"] {
         background-color: var(--bg-tertiary) !important;
@@ -681,6 +707,7 @@ def load_css():
     }
 
     /* --- Scrollbars --- */
+<<<<<<< HEAD
     ::-webkit-scrollbar { width: 10px; height: 10px; }
     ::-webkit-scrollbar-track { background: var(--bg-primary); }
     ::-webkit-scrollbar-thumb {
@@ -689,6 +716,15 @@ def load_css():
         border: 2px solid var(--bg-primary);
     }
     ::-webkit-scrollbar-thumb:hover { background: #475569; }
+=======
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb {
+        background: #475569;
+        border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+>>>>>>> origin/ui-ux-improvements-11896252316584290961
 
     /* Custom Classes */
     .highlight-text { color: var(--accent-primary); font-weight: 600; }
@@ -850,6 +886,7 @@ def load_css():
         font-size: 1.1rem;
         margin-bottom: 3rem;
     }
+<<<<<<< HEAD
 
     /* Custom Scrollbars & Utilities */
     ::-webkit-scrollbar { width: 8px; height: 8px; }
@@ -863,3 +900,7 @@ def load_css():
     </style>
     """
 >>>>>>> origin/code-quality-refactor-17423438479402428749
+=======
+    </style>
+    """
+>>>>>>> origin/ui-ux-improvements-11896252316584290961
