@@ -81,11 +81,11 @@ def initialize_auth_state():
         "username": None,
         "current_page": "dashboard"
     }
-    
+
     for key, value in defaults.items():
         if key not in st.session_state:
             st.session_state[key] = value
-    
+
     logger.info(f"Auth state initialized - User: {st.session_state.username}")
 
 
@@ -96,11 +96,11 @@ def initialize_session_tracking():
         "total_sessions": 1,
         "user_joined_date": datetime.now().strftime('%Y-%m-%d')
     }
-    
+
     for key, value in tracking_defaults.items():
         if key not in st.session_state:
             st.session_state[key] = value
-    
+
     logger.debug("Session tracking initialized")
 
 
@@ -119,7 +119,7 @@ def initialize_brain_state():
         learning_brain, multimodal_voice = initialize_brain_components()
         st.session_state.learning_brain = learning_brain
         st.session_state.multimodal_voice_integrator = multimodal_voice
-    
+
     logger.debug("Brain state initialized")
 
 
@@ -132,11 +132,11 @@ def initialize_chat_state():
         "search_result_count": 5,
         "enable_advanced_captioning": False
     }
-    
+
     for key, value in chat_defaults.items():
         if key not in st.session_state:
             st.session_state[key] = value
-    
+
     logger.debug("Chat state initialized")
 
 
@@ -163,10 +163,10 @@ def handle_page_routing():
         "profile": show_profile_page,
         "chat": show_chat_page
     }
-    
+
     current_page = st.session_state.current_page
     page_handler = page_router.get(current_page, show_chat_page)
-    
+
     logger.info(f"Routing to page: {current_page}")
     page_handler()
 
@@ -177,19 +177,31 @@ def main():
     initialize_page_config()
     initialize_theme()
     configure_environment()
-    
+
     # Initialize all states
     initialize_all_states()
-    
+
     # Authentication check
     handle_authentication()
-    
+
+    # Privacy cleanup check
+    if 'cleanup_done' not in st.session_state:
+        try:
+             from ui.database import cleanup_user_messages
+             from ui.prefs import get_pref
+             retention = get_pref("retention_days", st.session_state.username, 0)
+             if retention > 0:
+                 cleanup_user_messages(st.session_state.username, retention)
+             st.session_state.cleanup_done = True
+        except Exception as e:
+             logger.error(f"Cleanup error: {e}")
+
     # Render sidebar for authenticated users
     render_sidebar()
-    
+
     # Route to appropriate page
     handle_page_routing()
-    
+
     logger.info("Application render completed")
 
 

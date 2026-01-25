@@ -5,7 +5,9 @@ from datetime import datetime
 import json
 import logging
 from ui.common import logout
-from ui.auth import load_user_credentials, save_user_credentials, hash_password
+from ui.auth import load_user_credentials, save_user_credentials, hash_password, delete_user
+from ui.database import delete_user_data
+from ui.prefs import get_pref, set_pref
 
 def show_profile_page():
     """Display full profile page"""
@@ -13,14 +15,14 @@ def show_profile_page():
     <div class="main-header" style="margin-bottom: 30px;">
         <h1>👤 My Profile</h1>
     </div>""", unsafe_allow_html=True)
-    
+
     # Get user info
     user_info = st.session_state.get('user_info', {})
     is_oauth = 'google_oauth_token' in st.session_state
-    
+
     # Profile header
     col_header1, col_header2 = st.columns([1, 3])
-    
+
     with col_header1:
         if is_oauth and user_info.get('picture'):
             st.image(user_info['picture'], width=150)
@@ -28,14 +30,14 @@ def show_profile_page():
             # Generate gradient avatar
             avatar_color = hash(st.session_state.username) % 360
             st.markdown(f'''
-                <div style="width: 150px; height: 150px; border-radius: 50%; 
-                background: linear-gradient(135deg, hsl({avatar_color}, 70%, 60%), hsl({avatar_color + 60}, 70%, 60%)); 
-                display: flex; align-items: center; justify-content: center; 
+                <div style="width: 150px; height: 150px; border-radius: 50%;
+                background: linear-gradient(135deg, hsl({avatar_color}, 70%, 60%), hsl({avatar_color + 60}, 70%, 60%));
+                display: flex; align-items: center; justify-content: center;
                 font-size: 4rem; color: white; font-weight: bold; margin: auto;">
                 {st.session_state.username[0].upper()}
                 </div>
             ''', unsafe_allow_html=True)
-    
+
     with col_header2:
         st.markdown(f"## {user_info.get('name', st.session_state.username)}")
         avatar_url = user_info.get('avatar_url', None)
@@ -65,20 +67,20 @@ def show_profile_page():
             if st.button("Submit Feedback", key="submit_feedback_btn"):
                 logging.info(f"User feedback: {feedback}")
                 st.success("Thank you for your feedback!")
-    
+
     st.divider()
-    
+
     # Tabbed interface
-    tab1, tab2, tab3, tab4 = st.tabs(["📊 Statistics", "⚙️ Settings", "🎨 Preferences", "🔒 Security"])
-    
+    tab1, tab2, tab3, tab4 = st.tabs(["📊 Statistics", "⚙️ Settings", "🎨 Preferences", "🔒 Privacy & Security"])
+
     with tab1:
         st.markdown("### 📊 Usage Statistics")
-        
+
         # Activity metrics
         col1, col2, col3, col4 = st.columns(4)
         learning_brain = st.session_state.get('learning_brain')
         stats = learning_brain.get_learning_stats() if learning_brain else {}
-        
+
         with col1:
             st.metric("Total Messages", total_messages, help="Total number of messages exchanged in this session.")
         with col2:
@@ -87,7 +89,7 @@ def show_profile_page():
             st.metric("Models Used", stats.get('models_tracked', 0), help="Number of different AI models used.")
         with col4:
             st.metric("Conversations", stats.get('total_conversations', 0), help="Total separate conversations in this session.")
-        
+
         st.markdown("### 🏆 Top Models Used")
         if stats.get('model_strengths'):
             for i, model_stat in enumerate(stats['model_strengths'][:5], 1):
@@ -102,24 +104,24 @@ def show_profile_page():
                 with col_stats:
                     st.progress(model_stat['success_rate'] / 100)
                     st.caption(f"Success: {model_stat['success_rate']}% ({model_stat['success']}/{model_stat['total']})")
-        
+
         st.markdown("### 📈 Activity Timeline")
         joined_date = st.session_state.get("user_joined_date", datetime.now().strftime('%Y-%m-%d'))
         st.info(f"📅 Member since: {joined_date}")
         st.info(f"🔄 Total sessions: {st.session_state.get('total_sessions', 1)}")
-    
+
     with tab2:
         st.markdown("### ⚙️ Account Settings")
-        
+
         if not is_oauth:
             # Editable fields for traditional users
             users = load_user_credentials()
             user_data = users.get(st.session_state.username, {})
-            
+
             st.markdown("#### Personal Information")
             new_name = st.text_input("Display Name", value=user_data.get('name', st.session_state.username))
             new_email = st.text_input("Email Address", value=user_data.get('email', ''))
-            
+
             if st.button("💾 Save Changes", type="primary"):
                 users[st.session_state.username]['name'] = new_name
                 users[st.session_state.username]['email'] = new_email
@@ -138,7 +140,7 @@ def show_profile_page():
             st.markdown("**Current Information:**")
             st.text_input("Name", value=user_info.get('name', ''), disabled=True)
             st.text_input("Email", value=user_info.get('email', ''), disabled=True)
-        
+
         st.markdown("#### Export Data")
         if st.button("📥 Download My Data"):
             user_data = {
@@ -153,24 +155,24 @@ def show_profile_page():
                 file_name=f"{st.session_state.username}_data.json",
                 mime="application/json"
             )
-    
+
     with tab3:
         st.markdown("### 🎨 Preferences")
-        
+
         prefs = st.session_state.get('profile_preferences', {})
-        
+
         theme = st.selectbox("Theme", ["Dark"], index=0, help="Dark mode is now enforced.")
-        
+
         language = st.selectbox("Language", ["English", "Spanish", "French", "German", "Chinese"],
                                index=["English", "Spanish", "French", "German", "Chinese"].index(prefs.get('language', 'English')))
-        
+
         timezone = st.selectbox("Timezone", ["UTC", "EST", "PST", "GMT", "IST"],
                                index=0)
-        
+
         notifications = st.checkbox("Enable Notifications", value=prefs.get('notifications', True))
-        
+
         auto_save = st.checkbox("Auto-save Chat History", value=True)
-        
+
         if st.button("💾 Save Preferences", type="primary"):
             st.session_state.profile_preferences = {
                 'theme': theme,
@@ -179,28 +181,58 @@ def show_profile_page():
                 'notifications': notifications,
                 'auto_save': auto_save
             }
-            
-            # Apply Theme Change
+
             # Apply Theme Change
             st.session_state["dark_mode"] = True
-            
+
             st.success("✅ Preferences saved! reloading...")
             time.sleep(0.5)
             st.rerun()
-    
+
     with tab4:
-        st.markdown("### 🔒 Security")
-        
+        st.markdown("### 🔒 Privacy & Security")
+
+        # Privacy Policy link
+        with st.expander("📄 Privacy Policy"):
+            try:
+                with open("PRIVACY.md", "r") as f:
+                    st.markdown(f.read())
+            except Exception:
+                st.info("Privacy Policy not available.")
+
+        st.divider()
+
+        # Data Retention
+        st.markdown("#### Data Retention")
+        current_retention = get_pref("retention_days", st.session_state.username, 0)
+        retention_options = {0: "Keep Forever", 30: "30 Days", 60: "60 Days", 90: "90 Days"}
+
+        selected_retention = st.selectbox(
+            "Chat History Retention",
+            options=list(retention_options.keys()),
+            format_func=lambda x: retention_options[x],
+            index=list(retention_options.keys()).index(current_retention) if current_retention in retention_options else 0
+        )
+
+        if selected_retention != current_retention:
+            if st.button("Update Retention Policy"):
+                set_pref("retention_days", selected_retention, st.session_state.username)
+                st.success(f"Retention policy updated to: {retention_options[selected_retention]}")
+                time.sleep(1)
+                st.rerun()
+
+        st.divider()
+
         if not is_oauth:
             st.markdown("#### Change Password")
-            
+
             with st.form("change_password_form"):
                 current_pwd = st.text_input("Current Password", type="password")
                 new_pwd = st.text_input("New Password", type="password")
                 confirm_pwd = st.text_input("Confirm New Password", type="password")
-                
+
                 submit = st.form_submit_button("🔒 Update Password", type="primary")
-                
+
                 if submit:
                     if not all([current_pwd, new_pwd, confirm_pwd]):
                         st.error("❌ Please fill all fields")
@@ -220,18 +252,32 @@ def show_profile_page():
                             st.error("❌ Current password is incorrect")
         else:
             st.info("🔒 Password is managed by Google OAuth")
-        
+
         st.markdown("#### Active Sessions")
         st.info(f"🟢 Current session started: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-        
+
         st.markdown("#### Danger Zone")
         with st.expander("⚠️ Delete Account", expanded=False):
-            st.warning("This action cannot be undone!")
-            if st.button("🗑️ Delete My Account", type="secondary"):
-                st.error("Account deletion is not implemented in this demo")
-    
+            st.warning("This action cannot be undone! It will permanently delete your account, profile, and all chat history.")
+            if st.button("🗑️ Delete My Account", type="primary"):
+                 st.session_state.confirm_delete = True
+
+            if st.session_state.get("confirm_delete"):
+                st.error("Are you sure? This is irreversible.")
+                if st.button("Yes, Delete Everything"):
+                    username = st.session_state.username
+                    # 1. Delete user data (conversations)
+                    delete_user_data(username)
+                    # 2. Delete user account
+                    if delete_user(username):
+                         st.success("Account deleted. Goodbye.")
+                         time.sleep(2)
+                         logout()
+                    else:
+                         st.error("Failed to delete account credentials.")
+
     st.divider()
-    
+
     # Back button
     if st.button("← Back to Dashboard", width="stretch"):
         st.session_state.current_page = "dashboard"
