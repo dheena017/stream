@@ -471,7 +471,11 @@ from ui.feedback import show_feedback_page
 from ui.database import init_db
 
 # Initialize DB on startup
-init_db()
+@st.cache_resource
+def initialize_database():
+    init_db()
+
+initialize_database()
 
 # Import Brain
 from brain_learning import LearningBrain

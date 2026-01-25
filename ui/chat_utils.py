@@ -4279,6 +4279,7 @@ def extract_video_frame_thumbnails(file_like, max_frames: int = 3) -> List[str]:
 
 
 
+@st.cache_data(show_spinner=False)
 def generate_blip_caption(image) -> Optional[str]:
     try:
         processor, model, device = get_blip_model()

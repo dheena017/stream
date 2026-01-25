@@ -11,6 +11,7 @@ from typing import Any, Dict, List
 >>>>>>> origin/code-quality-refactor-17423438479402428749
 from datetime import datetime
 <<<<<<< HEAD
+<<<<<<< HEAD
 from typing import Any, Dict, List, Optional
 =======
 import streamlit as st
@@ -48,6 +49,9 @@ def _scrape_webpage_cached(url: str) -> str:
     except Exception as e:
         return f"Failed to scrape webpage: {str(e)}"
 >>>>>>> performance-optimization-13534932852089819512
+=======
+import streamlit as st
+>>>>>>> origin/performance-optimizations-caching-2508816788705387048
 
 
 class AIBrain:
@@ -58,8 +62,15 @@ class AIBrain:
     def __init__(self):
         self.conversation_memory = []
         self.internet_enabled = True
+<<<<<<< HEAD
 
     def search_internet(self, query: str, num_results: int = 5) -> List[Dict[str, str]]:
+=======
+        
+    @staticmethod
+    @st.cache_data(ttl=3600, show_spinner=False)
+    def search_internet(query: str, num_results: int = 5) -> List[Dict[str, str]]:
+>>>>>>> origin/performance-optimizations-caching-2508816788705387048
         """Search the internet using DuckDuckGo"""
         try:
             from duckduckgo_search import DDGS  # type: ignore
@@ -83,8 +94,15 @@ class AIBrain:
             ]
         except Exception as e:
             return [{"error": f"Search failed: {str(e)}"}]
+<<<<<<< HEAD
 
     def scrape_webpage(self, url: str) -> str:
+=======
+    
+    @staticmethod
+    @st.cache_data(ttl=86400, show_spinner=False)
+    def scrape_webpage(url: str) -> str:
+>>>>>>> origin/performance-optimizations-caching-2508816788705387048
         """Extract text content from a webpage"""
 <<<<<<< HEAD
         try:
