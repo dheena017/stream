@@ -5194,6 +5194,7 @@ from io import BytesIO
 from PIL import Image
 import google.generativeai as genai
 
+from ui.database import get_conversation_messages
 from ui.chat_utils import (
     get_openai_client, get_google_client, get_anthropic_client,
     build_conversation_history, create_openai_messages, handle_openai_compatible_provider,
@@ -5331,6 +5332,18 @@ def show_chat_page():
     # --- 3. Chat History or Welcome Screen ---
     messages = st.session_state.get('messages', [])
     
+    # Load Older Messages Button
+    if messages and 'conversation_id' in st.session_state:
+        if st.button("⬆️ Load Older Messages", type="secondary", use_container_width=True):
+             cid = st.session_state.conversation_id
+             current_len = len(messages)
+             older_msgs = get_conversation_messages(cid, limit=50, offset=current_len)
+             if older_msgs:
+                 st.session_state.messages = older_msgs + messages
+                 st.rerun()
+             else:
+                 st.toast("No older messages found.")
+
     if not messages:
         # ZERO STATE: Welcome Screen
         user_name = st.session_state.get('username', 'Traveler')

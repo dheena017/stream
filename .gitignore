@@ -51,6 +51,7 @@ logs/
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 *.db
 =======
 
@@ -175,3 +176,9 @@ users.json
 logs/
 chat_history.db
 >>>>>>> origin/innovation-chat-export-16090347511713793939
+=======
+
+# Database & Secrets
+*.db
+users.json
+>>>>>>> origin/scalability-optimizations-5191153255901361581

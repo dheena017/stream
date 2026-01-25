@@ -37,6 +37,7 @@ def init_db():
                       role TEXT, content TEXT, meta_json TEXT, timestamp TIMESTAMP)''')
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
         # Indexes for performance
         c.execute("CREATE INDEX IF NOT EXISTS idx_conversations_user_updated ON conversations(user_id, updated_at)")
@@ -55,6 +56,12 @@ def init_db():
                      (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id TEXT,
                       category TEXT, rating INTEGER, comment TEXT, timestamp TIMESTAMP)''')
 >>>>>>> origin/feedback-integration-17764393616523020931
+=======
+
+        # Performance Indexes
+        c.execute('CREATE INDEX IF NOT EXISTS idx_messages_conversation_id ON messages (conversation_id)')
+
+>>>>>>> origin/scalability-optimizations-5191153255901361581
         conn.commit()
         conn.close()
     except Exception as e:
@@ -136,6 +143,7 @@ def get_user_conversations(user_id: str) -> List[Tuple[str, str, str]]:
     conn.close()
     return rows
 
+<<<<<<< HEAD
 
 def get_conversation_messages(conversation_id: str) -> List[Dict]:
     conn = sqlite3.connect(DB_FILE)
@@ -147,6 +155,26 @@ def get_conversation_messages(conversation_id: str) -> List[Dict]:
     rows = c.fetchall()
     conn.close()
 <<<<<<< HEAD
+=======
+def get_conversation_messages(conversation_id: str, limit: int = 50, offset: int = 0) -> List[Dict]:
+    conn = sqlite3.connect(DB_FILE)
+    c = conn.cursor()
+
+    # Fetch in reverse order (latest first) with limit/offset
+    c.execute("""
+        SELECT role, content, meta_json, timestamp
+        FROM messages
+        WHERE conversation_id = ?
+        ORDER BY id DESC
+        LIMIT ? OFFSET ?
+    """, (conversation_id, limit, offset))
+
+    rows = c.fetchall()
+    conn.close()
+    
+    # Reverse back to chronological order
+    rows.reverse()
+>>>>>>> origin/scalability-optimizations-5191153255901361581
 
     messages = []
     for r in rows:

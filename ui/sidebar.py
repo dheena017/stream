@@ -202,7 +202,7 @@ def render_sidebar():
                         type=type_,
                     ):
                         st.session_state.conversation_id = c_id
-                        st.session_state.messages = get_conversation_messages(c_id)
+                        st.session_state.messages = get_conversation_messages(c_id, limit=50)
                         st.rerun()
 
 
@@ -215,9 +215,13 @@ def render_sidebar():
                                 use_container_width=True,
                             ):
                                 st.session_state.conversation_id = c_id
+<<<<<<< HEAD
                                 st.session_state.messages = get_conversation_messages(
                                     c_id
                                 )
+=======
+                                st.session_state.messages = get_conversation_messages(c_id, limit=50)
+>>>>>>> origin/scalability-optimizations-5191153255901361581
                                 st.rerun()
 
 
@@ -1207,6 +1211,7 @@ def render_sidebar():
                 text = "\n".join([f"{m['role']}: {m['content']}" for m in msgs])
                 st.download_button("TxT", text, "chat.txt")
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> origin/ui-ux-improvements-3860328367442600035
 =======
 >>>>>>> origin/ui-ux-improvements-11896252316584290961
@@ -1270,3 +1275,5 @@ def render_sidebar():
 >>>>>>> origin/innovation-chat-export-16090347511713793939
 
 >>>>>>> origin/feature-chat-export-regen-2510491870086228569
+=======
+>>>>>>> origin/scalability-optimizations-5191153255901361581
