@@ -2980,6 +2980,7 @@ def show_chat_page():
 import streamlit as st
 import os
 import time
+from loguru import logger
 import base64
 import asyncio
 import tempfile
@@ -3149,7 +3150,7 @@ def show_chat_page():
             # Metadata footer
             if msg["role"] == "assistant":
                 st.markdown("---")
-                mc1, mc2, mc3 = st.columns([0.6, 0.2, 0.2])
+                mc1, mc2, mc3 = st.columns([0.5, 0.2, 0.3])
                 with mc1:
                     prov = msg.get('provider', '')
                     mod = msg.get('model', '')
@@ -3162,13 +3163,23 @@ def show_chat_page():
                 
                 with mc3:
                     # Action buttons
-                    c_copy, c_regen = st.columns(2)
+                    c_copy, c_regen, c_up, c_down = st.columns(4)
                     with c_copy:
                         if st.button("📋", key=f"copy_{idx}", help="View raw text to copy"):
                             st.code(msg["content"], language=None)
                     with c_regen:
                         if st.button("🔄", key=f"regen_{idx}", help="Regenerate (Not implemented yet)"):
                              st.toast("Regeneration coming soon!")
+                    with c_up:
+                        if st.button("👍", key=f"up_{idx}"):
+                             st.session_state.learning_brain.register_feedback(msg.get('provider', 'unknown'), True)
+                             logger.info(f"Feedback: 👍 for provider={msg.get('provider')}")
+                             st.toast("Thanks!")
+                    with c_down:
+                        if st.button("👎", key=f"down_{idx}"):
+                             st.session_state.learning_brain.register_feedback(msg.get('provider', 'unknown'), False)
+                             logger.info(f"Feedback: 👎 for provider={msg.get('provider')}")
+                             st.toast("Thanks!")
     
     # 4. Internet Search Configuration
     with st.expander("🌐 Internet Search Settings", expanded=st.session_state.get('enable_internet_search', False)):

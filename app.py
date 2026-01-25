@@ -451,8 +451,8 @@ voice integration, and multi-modal support.
 import streamlit as st
 import os
 import time
-import logging
 from datetime import datetime
+from loguru import logger
 
 # Import UI Modules
 import ui.styles
@@ -474,11 +474,7 @@ from brain_learning import LearningBrain
 from multimodal_voice_integration import MultimodalVoiceIntegrator
 
 # --- LOGGER SETUP ---
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger(__name__)
+logger.add("logs/app.log", rotation="500 MB", level="INFO")
 
 
 def initialize_page_config():
