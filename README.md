@@ -1,6 +1,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 # Stream — Multimodal AI Chat
 
 <<<<<<< HEAD
@@ -18,6 +19,12 @@ This project is a Streamlit-based multi-provider AI chat with multimodal (image/
 - Groq (Llama, Mixtral)
 
 >>>>>>> api-groq-integration-6554511320622598819
+=======
+# Stream — Multimodal AI Chat
+
+This project is a Streamlit-based multi-provider AI chat with multimodal (image/audio/video) support, internet search augmentation, and optional advanced image captioning via BLIP or a hosted caption API.
+
+>>>>>>> origin/testing-improvements-12652221572839124303
 ## BLIP (Optional)
 - BLIP model (`Salesforce/blip-image-captioning-base`) is optional and will be downloaded on first preload.
 - To enable advanced captioning in the UI, toggle "Enable Advanced Image Captioning (BLIP)" in the chat page and optionally provide a Hosted Caption API URL.
@@ -27,6 +34,7 @@ This project is a Streamlit-based multi-provider AI chat with multimodal (image/
 - Provide an endpoint that accepts multipart image uploads and returns JSON containing `caption` or `text` fields.
 - The app will prefer the hosted caption API if configured, then BLIP (if available), then fallback heuristics.
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
@@ -47,6 +55,8 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 >>>>>>> 948b4f4 (Community: [PR merges/docs])
 =======
 >>>>>>> api-groq-integration-6554511320622598819
+=======
+>>>>>>> origin/testing-improvements-12652221572839124303
 ## Running locally
 Create and activate a virtual environment, then install dependencies:
 
@@ -58,6 +68,7 @@ pip install -r requirements.txt
 
 Run Streamlit:
 
+<<<<<<< HEAD
 =======
 # Antigravity AI — Multimodal Chat Application
 
@@ -93,17 +104,28 @@ pip install -r requirements.txt
 
 ### 2. Run the App
 >>>>>>> origin/docs-update-v1-11532887947141402034
+=======
+>>>>>>> origin/testing-improvements-12652221572839124303
 ```powershell
 streamlit run app.py
 ```
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 ## Tests & CI
 - A lightweight pytest smoke test is provided at `tests/test_multimodal_smoke.py` to validate multimodal helpers without requiring heavy optional dependencies.
+=======
+## Tests & CI
+- Unit tests are located in `tests/` covering:
+  - Multimodal helpers (`tests/test_multimodal_smoke.py`)
+  - Chat utility logic (`tests/test_chat_utils.py`)
+  - Application state initialization (`tests/test_app_state.py`)
+>>>>>>> origin/testing-improvements-12652221572839124303
 - A GitHub Actions workflow `.github/workflows/multimodal-smoke.yml` runs the tests on push and PR.
 
 Run tests locally:
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 ```bash
@@ -116,11 +138,20 @@ pytest -q
 ```powershell
 pytest -q
 >>>>>>> api-groq-integration-6554511320622598819
+=======
+```powershell
+# Run all tests
+pytest
+
+# Run specific test file
+pytest tests/test_app_state.py
+>>>>>>> origin/testing-improvements-12652221572839124303
 ```
 
 ## Notes
 - Optional dependencies: `transformers`, `torch`, `torchvision`, `moviepy`, `speech_recognition`. These are only required for BLIP, video frame extraction, and audio transcription respectively.
 - Search library may warn about `duckduckgo_search` -> `ddgs` rename; consider installing `ddgs` if you see warnings.
+<<<<<<< HEAD
 =======
 Stream is a powerful, Streamlit-based AI chat interface that supports multiple providers (Google, OpenAI, Anthropic, etc.), multimodal inputs (images, audio, video), and real-time internet search augmentation.
 
@@ -346,3 +377,5 @@ Run tests locally:
 pytest -q
 ```
 >>>>>>> origin/docs-update-5816964673776763608
+=======
+>>>>>>> origin/testing-improvements-12652221572839124303

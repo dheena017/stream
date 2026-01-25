@@ -33,6 +33,7 @@ pytest
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 loguru
 =======
 cryptography
@@ -106,3 +107,6 @@ torchvision==0.21.0
 # Testing
 pytest==8.4.2
 >>>>>>> origin/deps-updates-12404091237155611765
+=======
+pytest-mock
+>>>>>>> origin/testing-improvements-12652221572839124303
