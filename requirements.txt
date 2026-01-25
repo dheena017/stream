@@ -25,7 +25,11 @@ google-generativeai
 # Testing
 pytest
 <<<<<<< HEAD
+<<<<<<< HEAD
 loguru
 =======
 cryptography
 >>>>>>> 8a352f7 (Privacy: [compliance updates])
+=======
+bcrypt
+>>>>>>> security-hardening-12270959347982184821

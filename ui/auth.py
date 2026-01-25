@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 import hashlib
 import json
 import logging
@@ -368,6 +369,8 @@ def show_login_page():
         st.markdown("---")
         st.caption("🔒 Your credentials are secure and never stored in plain text")
 =======
+=======
+>>>>>>> security-hardening-12270959347982184821
 
 import streamlit as st
 import os
@@ -377,9 +380,18 @@ import logging
 from typing import Dict, Optional, Any
 from google.oauth2 import id_token
 from google.auth.transport import requests
+<<<<<<< HEAD
 
 def hash_password(password: str) -> str:
     """Hash password using SHA-256"""
+=======
+from ui.security import sanitize_html, hash_password, verify_password, RateLimiter
+
+rate_limiter = RateLimiter(max_requests=5, period=60)
+
+def legacy_hash_password(password: str) -> str:
+    """Hash password using SHA-256 (Legacy)"""
+>>>>>>> security-hardening-12270959347982184821
     return hashlib.sha256(password.encode()).hexdigest()
 
 def load_user_credentials() -> Dict[str, Dict[str, str]]:
@@ -397,12 +409,20 @@ def load_user_credentials() -> Dict[str, Dict[str, str]]:
     # Default credentials with email support
     return {
         "admin": {
+<<<<<<< HEAD
             "password": hash_password(os.getenv("ADMIN_PASSWORD", "admin123")),
+=======
+            "password": legacy_hash_password(os.getenv("ADMIN_PASSWORD", "admin123")),
+>>>>>>> security-hardening-12270959347982184821
             "email": "admin@example.com",
             "name": "Admin User"
         },
         "user": {
+<<<<<<< HEAD
             "password": hash_password(os.getenv("USER_PASSWORD", "user123")),
+=======
+            "password": legacy_hash_password(os.getenv("USER_PASSWORD", "user123")),
+>>>>>>> security-hardening-12270959347982184821
             "email": "user@example.com",
             "name": "Regular User"
         }
@@ -420,6 +440,7 @@ def save_user_credentials(users: Dict[str, Dict[str, str]]) -> bool:
 
 def check_login(username_or_email: str, password: str) -> Optional[Dict[str, str]]:
     """Verify login credentials - accepts username or email"""
+<<<<<<< HEAD
     logging.info(f"Login attempt for: {username_or_email}")
     users = load_user_credentials()
 
@@ -442,11 +463,73 @@ def check_login(username_or_email: str, password: str) -> Optional[Dict[str, str
                     "email": user_data.get("email", ""),
                     "name": user_data.get("name", username)
                 }
+=======
+    if not rate_limiter.is_allowed(f"login_{username_or_email}"):
+        st.error("Too many login attempts. Please try again later.")
+        return None
+
+    logging.info(f"Login attempt for: {username_or_email}")
+    users = load_user_credentials()
+
+    user_key = None
+    user_data = None
+
+    # Check if input is username
+    if username_or_email in users:
+        user_key = username_or_email
+        user_data = users[username_or_email]
+    else:
+        # Check if input is email
+        for username, u_data in users.items():
+            if u_data.get("email", "").lower() == username_or_email.lower():
+                user_key = username
+                user_data = u_data
+                break
+
+    if user_data:
+        stored_password = user_data["password"]
+
+        # 1. Try bcrypt verification
+        if verify_password(password, stored_password):
+            return {
+                "username": user_key,
+                "email": user_data.get("email", ""),
+                "name": user_data.get("name", user_key)
+            }
+
+        # 2. Try legacy SHA-256 verification
+        if stored_password == legacy_hash_password(password):
+            # Upgrade to bcrypt
+            try:
+                users[user_key]["password"] = hash_password(password)
+                save_user_credentials(users)
+                logging.info(f"Upgraded password for user {user_key} to bcrypt")
+            except Exception as e:
+                logging.warning(f"Failed to upgrade password: {e}")
+
+            return {
+                "username": user_key,
+                "email": user_data.get("email", ""),
+                "name": user_data.get("name", user_key)
+            }
+>>>>>>> security-hardening-12270959347982184821
 
     return None
 
 def register_user(username: str, email: str, password: str, name: str = "") -> bool:
     """Register a new user"""
+<<<<<<< HEAD
+=======
+    if not rate_limiter.is_allowed(f"register_{username}") or not rate_limiter.is_allowed(f"register_{email}"):
+         st.error("Too many registration attempts. Please try again later.")
+         return False
+
+    # Sanitize inputs
+    username = sanitize_html(username)
+    email = sanitize_html(email)
+    name = sanitize_html(name)
+
+>>>>>>> security-hardening-12270959347982184821
     users = load_user_credentials()
 
     # Check if username already exists
@@ -467,6 +550,7 @@ def register_user(username: str, email: str, password: str, name: str = "") -> b
 
     return save_user_credentials(users)
 
+<<<<<<< HEAD
 def delete_user(username: str) -> bool:
     """Delete a user from the credentials file"""
     users = load_user_credentials()
@@ -475,6 +559,8 @@ def delete_user(username: str) -> bool:
         return save_user_credentials(users)
     return False
 
+=======
+>>>>>>> security-hardening-12270959347982184821
 def verify_google_oauth() -> Optional[Dict[str, Any]]:
     """Verify Google OAuth token and return user info"""
     try:
@@ -681,4 +767,7 @@ def show_login_page():
 
         st.markdown("---")
         st.caption("🔒 Your credentials are secure and never stored in plain text")
+<<<<<<< HEAD
 >>>>>>> 8a352f7 (Privacy: [compliance updates])
+=======
+>>>>>>> security-hardening-12270959347982184821
