@@ -48,6 +48,7 @@ logs/
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 *.db
 =======
 
@@ -155,3 +156,6 @@ backups/
 >>>>>>> origin/feature-chat-export-regen-2510491870086228569
 =======
 >>>>>>> origin/monitoring-setup-15681340840960488850
+=======
+*.db
+>>>>>>> origin/fix-chat-utils-syntax-error-3738676403581165176

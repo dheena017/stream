@@ -5095,4 +5095,8 @@ def preload_blip_model_with_progress(progress_callback: Optional[Callable[[int, 
         if progress_callback:
              progress_callback(0, f"Failed: {str(e)}")
         return False
+<<<<<<< HEAD
 >>>>>>> origin/code-review-fix-dead-code-security-warning-7379667601375496538
+=======
+
+>>>>>>> origin/fix-chat-utils-syntax-error-3738676403581165176
