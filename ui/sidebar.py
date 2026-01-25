@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 import json
 import os
 from datetime import datetime
@@ -478,6 +479,8 @@ def render_sidebar():
                 json_data = serialize_messages(msgs)
                 st.download_button("📦 JSON (.json)", json.dumps(json_data, indent=2), f"chat_export_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json", use_container_width=True)
 =======
+=======
+>>>>>>> api-integrations-groq-3434217061461873316
 
 import streamlit as st
 import os
@@ -740,11 +743,19 @@ def render_sidebar():
                 with c1:
                     google = st.checkbox("Google", value=True, disabled=not bool(st.session_state.google_api_key))
                     openai = st.checkbox("OpenAI", value=False, disabled=not bool(st.session_state.openai_api_key))
+<<<<<<< HEAD
                     groq = st.checkbox("Groq", value=False, disabled=not bool(st.session_state.groq_api_key))
+=======
+>>>>>>> api-integrations-groq-3434217061461873316
                 with c2:
                     anthropic = st.checkbox("Claude", value=False, disabled=not bool(st.session_state.anthropic_api_key))
                     together = st.checkbox("Llama", value=False, disabled=not bool(st.session_state.together_api_key))
 
+<<<<<<< HEAD
+=======
+                groq = st.checkbox("Groq", value=False, disabled=not bool(st.session_state.groq_api_key))
+
+>>>>>>> api-integrations-groq-3434217061461873316
                 # Logic to store which models to consult (could be stored in session state)
                 st.session_state.brain_consult_models = {
                     "google": google, "openai": openai, "anthropic": anthropic, "together": together, "groq": groq
@@ -800,4 +811,7 @@ def render_sidebar():
                 msgs = st.session_state.get('messages', [])
                 text = "\n".join([f"{m['role']}: {m['content']}" for m in msgs])
                 st.download_button("TxT", text, "chat.txt")
+<<<<<<< HEAD
 >>>>>>> api-groq-integration-6554511320622598819
+=======
+>>>>>>> api-integrations-groq-3434217061461873316

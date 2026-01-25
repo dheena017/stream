@@ -179,14 +179,23 @@ class AIBrain:
                     "response": response.text,
                     "success": True,
                 }
+<<<<<<< HEAD
 
             elif provider in ["openai", "together", "xai", "deepseek"]:
+=======
+            
+            elif provider in ["openai", "together", "xai", "deepseek", "groq"]:
+>>>>>>> api-integrations-groq-3434217061461873316
                 from openai import OpenAI
 
                 base_urls = {
                     "together": "https://api.together.xyz/v1",
                     "xai": "https://api.x.ai/v1",
                     "deepseek": "https://api.deepseek.com",
+<<<<<<< HEAD
+=======
+                    "groq": "https://api.groq.com/openai/v1"
+>>>>>>> api-integrations-groq-3434217061461873316
                 }
 
                 client = OpenAI(api_key=api_key, base_url=base_urls.get(provider))

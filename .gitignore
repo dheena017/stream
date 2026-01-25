@@ -18,6 +18,7 @@ dist/
 
 # Logs
 *.log
+logs/
 
 # IDE / editor
 .vscode/
@@ -29,6 +30,7 @@ dist/
 # Streamlit
 .streamlit/secrets.toml
 .streamlit/config.toml
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 *.db
@@ -46,3 +48,10 @@ secret.key
 *.db
 logs/
 >>>>>>> 8a352f7 (Privacy: [compliance updates])
+=======
+
+# Application Data
+*.db
+users.json
+secret.key
+>>>>>>> api-integrations-groq-3434217061461873316

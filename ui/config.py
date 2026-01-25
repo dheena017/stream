@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 # Pricing per 1M tokens (input, output) - Updated Jan 2026 estimates
 
 # Pricing per 1M tokens (input, output) - Updated Jan 2026 estimates
@@ -192,6 +193,8 @@ PROVIDER_LABELS = {
     "brain-mode": "Brain Mode",
 }
 =======
+=======
+>>>>>>> api-integrations-groq-3434217061461873316
 
 # Pricing per 1M tokens (input, output) - Updated Jan 2026 estimates
 
@@ -226,6 +229,10 @@ MODEL_PRICING = {
     # Groq
     "llama-3.3-70b-versatile": (0.59, 0.79),
     "llama-3.1-8b-instant": (0.05, 0.08),
+<<<<<<< HEAD
+=======
+    "mixtral-8x7b-32768": (0.24, 0.24),
+>>>>>>> api-integrations-groq-3434217061461873316
 }
 
 # Detailed Model Metadata
@@ -364,6 +371,7 @@ MODEL_DETAILS = {
     },
     # Groq
     "llama-3.3-70b-versatile": {
+<<<<<<< HEAD
         "label": "Llama 3.3 70B (Groq)",
         "provider": "groq",
         "context": "128k",
@@ -377,6 +385,28 @@ MODEL_DETAILS = {
         "description": "Instant speed, extremely low cost.",
         "capabilities": ["⚡ Fast", "💰 Cheap"]
     },
+=======
+        "label": "Groq Llama 3.3 70B",
+        "provider": "groq",
+        "context": "128k",
+        "description": "High speed open model.",
+        "capabilities": ["⚡ Fast", "🦙 Open"]
+    },
+    "llama-3.1-8b-instant": {
+        "label": "Groq Llama 3.1 8B",
+        "provider": "groq",
+        "context": "128k",
+        "description": "Extremely fast small model.",
+        "capabilities": ["⚡ Fast", "💰 Cheap"]
+    },
+    "mixtral-8x7b-32768": {
+        "label": "Groq Mixtral 8x7b",
+        "provider": "groq",
+        "context": "32k",
+        "description": "Balanced performance and speed.",
+        "capabilities": ["⚡ Fast", "🧠 Smart"]
+    },
+>>>>>>> api-integrations-groq-3434217061461873316
 }
 
 # Legacy Compatibility Lists (Generated from MODEL_DETAILS)
@@ -393,7 +423,11 @@ MODEL_CAPABILITIES = {
 PROVIDER_ICONS = {
     "google": "🔵", "openai": "🟢", "anthropic": "🟣",
     "together": "🔴", "xai": "⚫", "deepseek": "🟠",
+<<<<<<< HEAD
     "groq": "🚀",
+=======
+    "groq": "⚡",
+>>>>>>> api-integrations-groq-3434217061461873316
     "brain-mode": "🧠"
 }
 
@@ -403,4 +437,7 @@ PROVIDER_LABELS = {
     "groq": "Groq",
     "brain-mode": "Brain Mode"
 }
+<<<<<<< HEAD
 >>>>>>> api-groq-integration-6554511320622598819
+=======
+>>>>>>> api-integrations-groq-3434217061461873316
