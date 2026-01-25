@@ -67,11 +67,18 @@ def get_user_conversations(user_id: str) -> List[Tuple]:
     conn.close()
     return rows
 
-def get_conversation_messages(conversation_id: str) -> List[Dict]:
+def get_conversation_messages(conversation_id: str, limit: int = None, offset: int = 0) -> List[Dict]:
     conn = sqlite3.connect(DB_FILE)
     c = conn.cursor()
-    c.execute("SELECT role, content, meta_json, timestamp FROM messages WHERE conversation_id = ? ORDER BY id ASC", (conversation_id,))
-    rows = c.fetchall()
+
+    if limit is not None:
+        c.execute("SELECT role, content, meta_json, timestamp FROM messages WHERE conversation_id = ? ORDER BY id DESC LIMIT ? OFFSET ?", (conversation_id, limit, offset))
+        rows = c.fetchall()
+        rows.reverse()
+    else:
+        c.execute("SELECT role, content, meta_json, timestamp FROM messages WHERE conversation_id = ? ORDER BY id ASC", (conversation_id,))
+        rows = c.fetchall()
+
     conn.close()
     
     messages = []
