@@ -5,6 +5,56 @@ import asyncio
 from typing import List, Dict, Optional, Any
 import json
 from datetime import datetime
+import streamlit as st
+
+@st.cache_data(ttl=3600, show_spinner=False)
+def _cached_brain_search(query: str, num_results: int) -> List[Dict[str, str]]:
+    try:
+        from duckduckgo_search import DDGS  # type: ignore
+        results = []
+        with DDGS() as ddgs:
+            for result in ddgs.text(query, max_results=num_results):
+                results.append({
+                    'title': result.get('title', ''),
+                    'url': result.get('href', ''),
+                    'snippet': result.get('body', '')
+                })
+        return results
+    except ImportError:
+        return [{"error": "DuckDuckGo search not available. Install: pip install duckduckgo-search"}]
+    except Exception as e:
+        return [{"error": f"Search failed: {str(e)}"}]
+
+@st.cache_data(ttl=3600, show_spinner=False)
+def _cached_scrape_url(url: str) -> str:
+    try:
+        import requests  # type: ignore
+        from bs4 import BeautifulSoup  # type: ignore
+
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+        }
+        response = requests.get(url, headers=headers, timeout=10)
+        response.raise_for_status()
+
+        soup = BeautifulSoup(response.content, 'html.parser')
+
+        # Remove script and style elements
+        for script in soup(["script", "style"]):
+            script.decompose()
+
+        # Get text
+        text = soup.get_text()
+
+        # Clean up text
+        lines = (line.strip() for line in text.splitlines())
+        chunks = (phrase.strip() for line in lines for phrase in line.split("  "))
+        text = ' '.join(chunk for chunk in chunks if chunk)
+
+        # Limit to first 2000 characters
+        return text[:2000]
+    except Exception as e:
+        return f"Failed to scrape webpage: {str(e)}"
 
 
 class AIBrain:
@@ -18,53 +68,11 @@ class AIBrain:
         
     def search_internet(self, query: str, num_results: int = 5) -> List[Dict[str, str]]:
         """Search the internet using DuckDuckGo"""
-        try:
-            from duckduckgo_search import DDGS  # type: ignore
-            
-            results = []
-            with DDGS() as ddgs:
-                for result in ddgs.text(query, max_results=num_results):
-                    results.append({
-                        'title': result.get('title', ''),
-                        'url': result.get('href', ''),
-                        'snippet': result.get('body', '')
-                    })
-            return results
-        except ImportError:
-            return [{"error": "DuckDuckGo search not available. Install: pip install duckduckgo-search"}]
-        except Exception as e:
-            return [{"error": f"Search failed: {str(e)}"}]
+        return _cached_brain_search(query, num_results)
     
     def scrape_webpage(self, url: str) -> str:
         """Extract text content from a webpage"""
-        try:
-            import requests  # type: ignore
-            from bs4 import BeautifulSoup  # type: ignore
-            
-            headers = {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-            }
-            response = requests.get(url, headers=headers, timeout=10)
-            response.raise_for_status()
-            
-            soup = BeautifulSoup(response.content, 'html.parser')
-            
-            # Remove script and style elements
-            for script in soup(["script", "style"]):
-                script.decompose()
-            
-            # Get text
-            text = soup.get_text()
-            
-            # Clean up text
-            lines = (line.strip() for line in text.splitlines())
-            chunks = (phrase.strip() for line in lines for phrase in line.split("  "))
-            text = ' '.join(chunk for chunk in chunks if chunk)
-            
-            # Limit to first 2000 characters
-            return text[:2000]
-        except Exception as e:
-            return f"Failed to scrape webpage: {str(e)}"
+        return _cached_scrape_url(url)
     
     def gather_internet_context(self, query: str) -> str:
         """Gather context from internet for the query"""

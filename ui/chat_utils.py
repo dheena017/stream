@@ -90,9 +90,9 @@ def retry_with_backoff(retries=3, backoff_in_seconds=1):
 
 # --- Provider Handlers ---
 def handle_google_provider(
-    api_key: str, 
-    model_name: str, 
-    prompt: str, 
+    api_key: str,
+    model_name: str,
+    prompt: str,
     system_instruction: Optional[str] = None,
     temperature: float = 0.7,
     max_tokens: int = 2048,
@@ -105,14 +105,14 @@ def handle_google_provider(
         import google.generativeai as genai
         # Configure the global instance
         genai.configure(api_key=api_key)
-        
+
         # Mapping config specifically for GenerativeModel
         generation_config = genai.types.GenerationConfig(
             temperature=temperature,
             max_output_tokens=max_tokens,
             top_p=top_p
         )
-        
+
         # Initialize model
         # system_instruction is supported in newer versions as init argument or via specific methods
         # For broader compatibility, passing via constructor if supported, else prepending to prompt might be needed
@@ -124,7 +124,7 @@ def handle_google_provider(
             model = genai.GenerativeModel(model_name=model_name)
             if system_instruction:
                 prompt = f"{system_instruction}\n\n{prompt}"
-            
+
         contents = []
         if images:
             from io import BytesIO
@@ -132,20 +132,20 @@ def handle_google_provider(
             for img in images:
                 # Gemai SDK can take PIL images directly in 'contents'
                 contents.append(img)
-        
+
         contents.append(prompt)
-        
+
         @retry_with_backoff(retries=2)
         def _generate():
             # For gemini, we can pass stream=True/False to generate_content
             return model.generate_content(
-                contents, 
+                contents,
                 generation_config=generation_config,
                 stream=enable_streaming
             )
 
         response = _generate()
-        
+
         if enable_streaming:
             collected_text = []
             def _stream_gen():
@@ -153,12 +153,12 @@ def handle_google_provider(
                     if chunk.text:
                         collected_text.append(chunk.text)
                         yield chunk.text
-            
+
             try:
                 st.write_stream(_stream_gen())
             except Exception as e:
                 logger.warning(f"Google streaming visualization failed: {e}")
-            
+
             return "".join(collected_text)
         else:
              return response.text
@@ -180,7 +180,7 @@ def handle_anthropic_provider(
         if not api_key: return "Please provide an Anthropic API Key."
         from anthropic import Anthropic
         client = Anthropic(api_key=api_key)
-        
+
         kwargs = {
              "model": model_name,
              "messages": messages,
@@ -189,7 +189,7 @@ def handle_anthropic_provider(
         }
         if system_instruction:
              kwargs["system"] = system_instruction
-             
+
         @retry_with_backoff(retries=2)
         def _create_message():
             if enable_streaming:
@@ -198,7 +198,7 @@ def handle_anthropic_provider(
                 return client.messages.create(stream=False, **kwargs)
 
         response = _create_message()
-        
+
         if enable_streaming:
             collected_text = []
             def _stream_gen():
@@ -207,7 +207,7 @@ def handle_anthropic_provider(
                         text = event.delta.text
                         collected_text.append(text)
                         yield text
-            
+
             try:
                 st.write_stream(_stream_gen())
             except Exception:
@@ -243,10 +243,10 @@ def generate_standard_response(
 
         if provider == "google":
             return handle_google_provider(
-                api_key, model_name, prompt, system_instruction, 
+                api_key, model_name, prompt, system_instruction,
                 temp, max_tok, top_p, images, enable_streaming=stream
             )
-            
+
         elif provider in ["openai", "together", "xai", "deepseek"]:
             base_urls = {
                 "together": "https://api.together.xyz/v1",
@@ -256,33 +256,33 @@ def generate_standard_response(
             client = get_openai_client(api_key, base_urls.get(provider))
             msgs = create_openai_messages(build_conversation_history(chat_history), prompt, system_instruction)
             return handle_openai_compatible_provider(client, model_name, msgs, temp, max_tok, top_p, stream)
-            
+
         elif provider == "anthropic":
             # Anthropic expects just user/assistant messages
             msgs = [{"role": "user", "content": prompt}] # Simplified for this call; ideally use full history if supported
             return handle_anthropic_provider(
-                api_key, model_name, msgs, system_instruction, 
+                api_key, model_name, msgs, system_instruction,
                 temp, max_tok, enable_streaming=stream
             )
-            
+
         return "Provider not supported."
-        
+
     except Exception as e:
         return f"Generation Error: {str(e)}"
 
 def prepare_brain_configuration(api_keys: Dict[str, str], requested_models: List[str] = None) -> List[Dict[str, Any]]:
     """Helper to build the list of models for Brain Mode based on available keys"""
     models_to_query = []
-    
+
     # Default strategy: Use available keys (simplified)
     # In a real app, 'requested_models' would come from user config
-    
+
     if api_keys.get('google'):
         models_to_query.append({"provider": "google", "model": "gemini-1.5-flash", "api_key": api_keys['google']})
-        
+
     if api_keys.get('openai'):
         models_to_query.append({"provider": "openai", "model": "gpt-4o-mini", "api_key": api_keys['openai']})
-        
+
     if api_keys.get('anthropic'):
          models_to_query.append({"provider": "anthropic", "model": "claude-3-5-haiku-20241022", "api_key": api_keys['anthropic']})
 
@@ -348,18 +348,12 @@ def perform_internet_search(query: str, enable_search: bool = True, max_results:
     if not enable_search:
         return [], ""
     try:
-        search_engine = get_internet_search_engine()
-        
         if search_type == "News":
-             # News search generally supports time range implicitly by recency, 
-             # but standard DDG news api might handle max_results.
-             # If we want detailed time filtering for news, we'd need to extend it, 
-             # but for now we route to search_news.
-             results = search_engine.search_news(query, max_results=max_results)
+             results = _cached_search_news(query, max_results=max_results)
         else:
              # Standard Web Search with filters
-             results = search_engine.search(query, max_results=max_results, time_range=time_range, domain=domain)
-             
+             results = _cached_search_web(query, max_results=max_results, time_range=time_range, domain=domain)
+
         if results:
             from ui.internet_search import create_search_context
             context = create_search_context(results, query)
@@ -386,6 +380,88 @@ Please use the above search results to provide a current and accurate answer."""
 
 
 # --- Multimodal helpers ---
+# Performance Optimization: Cached Implementations
+@st.cache_data(show_spinner=False)
+def _cached_transcribe_audio_bytes(audio_bytes: bytes) -> str:
+    try:
+        import speech_recognition as sr
+        from io import BytesIO
+        recognizer = sr.Recognizer()
+        with sr.AudioFile(BytesIO(audio_bytes)) as source:
+            audio = recognizer.record(source)
+        try:
+            return recognizer.recognize_google(audio)
+        except Exception as e:
+            logger.warning(f"Speech recognition failed: {e}")
+            return "[Transcription failed or not available]"
+    except Exception:
+        logger.info("speech_recognition not installed or failed")
+        return "[Transcription unavailable]"
+
+@st.cache_data(show_spinner=False)
+def _cached_extract_video_frame_thumbnails_bytes(video_bytes: bytes, max_frames: int = 3) -> List[str]:
+    thumbnails: List[str] = []
+    try:
+        import importlib
+        moviepy = importlib.import_module("moviepy.editor")
+        VideoFileClip = getattr(moviepy, "VideoFileClip")
+        import tempfile
+        from io import BytesIO
+        import base64
+        from PIL import Image
+
+        with tempfile.NamedTemporaryFile(suffix='.mp4', delete=True) as tmp:
+            tmp.write(video_bytes)
+            tmp.flush()
+            clip = VideoFileClip(tmp.name)
+            duration = clip.duration or 0
+            times = [(i + 1) * duration / (max_frames + 1) for i in range(max_frames)]
+            for t in times:
+                frame = clip.get_frame(t)
+                img = Image.fromarray(frame)
+                buf = BytesIO()
+                img.thumbnail((320, 320))
+                img.save(buf, format='PNG')
+                b64 = base64.b64encode(buf.getvalue()).decode('utf-8')
+                thumbnails.append(f"data:image/png;base64,{b64}")
+            try:
+                clip.reader.close()
+            except Exception:
+                pass
+            clip.audio = None
+    except Exception as e:
+        logger.info(f"moviepy error: {e}")
+    return thumbnails
+
+@st.cache_data(show_spinner=False)
+def _cached_generate_blip_caption_bytes(image_bytes: bytes) -> Optional[str]:
+    try:
+        from io import BytesIO
+        from PIL import Image
+        image = Image.open(BytesIO(image_bytes))
+
+        processor, model, device = get_blip_model()
+        inputs = processor(images=image, return_tensors="pt").to(device)
+        import torch
+        with torch.no_grad():
+            output_ids = model.generate(**inputs, max_new_tokens=50)
+        caption = processor.decode(output_ids[0], skip_special_tokens=True)
+        return caption
+    except Exception as e:
+        logger.info(f"BLIP captioning unavailable: {e}")
+        return None
+
+@st.cache_data(ttl=300, show_spinner=False)
+def _cached_search_web(query: str, max_results: int, time_range: str, domain: Optional[str]) -> List[Dict]:
+    engine = get_internet_search_engine()
+    return engine.search(query, max_results=max_results, time_range=time_range, domain=domain)
+
+@st.cache_data(ttl=300, show_spinner=False)
+def _cached_search_news(query: str, max_results: int) -> List[Dict]:
+    engine = get_internet_search_engine()
+    return engine.search_news(query, max_results=max_results)
+
+
 def process_images_for_context(images: List) -> List[Dict]:
     results = []
     try:
@@ -410,55 +486,28 @@ def process_images_for_context(images: List) -> List[Dict]:
 
 def transcribe_audio_file(file_like) -> str:
     try:
-        import speech_recognition as sr
-        recognizer = sr.Recognizer()
-        with sr.AudioFile(file_like) as source:
-            audio = recognizer.record(source)
-        try:
-            text = recognizer.recognize_google(audio)
-            return text
-        except Exception as e:
-            logger.warning(f"Speech recognition failed: {e}")
-            return "[Transcription failed or not available]"
-    except Exception:
-        logger.info("speech_recognition not installed; skipping transcription")
-        return "[Transcription unavailable - install speech_recognition]"
+        if hasattr(file_like, 'seek'):
+            file_like.seek(0)
+        data = file_like.read()
+        if hasattr(file_like, 'seek'):
+            file_like.seek(0)
+        return _cached_transcribe_audio_bytes(data)
+    except Exception as e:
+        logger.error(f"Transcription wrapper error: {e}")
+        return "[Transcription error]"
 
 
 def extract_video_frame_thumbnails(file_like, max_frames: int = 3) -> List[str]:
-    thumbnails: List[str] = []
     try:
-        import importlib
-        moviepy = importlib.import_module("moviepy.editor")
-        VideoFileClip = getattr(moviepy, "VideoFileClip")
-        import tempfile
-        from io import BytesIO
-        import base64
-        from PIL import Image
-
-        with tempfile.NamedTemporaryFile(suffix='.mp4', delete=True) as tmp:
-            tmp.write(file_like.read())
-            tmp.flush()
-            clip = VideoFileClip(tmp.name)
-            duration = clip.duration or 0
-            times = [(i + 1) * duration / (max_frames + 1) for i in range(max_frames)]
-            for t in times:
-                frame = clip.get_frame(t)
-                img = Image.fromarray(frame)
-                buf = BytesIO()
-                img.thumbnail((320, 320))
-                img.save(buf, format='PNG')
-                b64 = base64.b64encode(buf.getvalue()).decode('utf-8')
-                thumbnails.append(f"data:image/png;base64,{b64}")
-            try:
-                clip.reader.close()
-            except Exception:
-                pass
-            clip.audio = None
+        if hasattr(file_like, 'seek'):
+            file_like.seek(0)
+        data = file_like.read()
+        if hasattr(file_like, 'seek'):
+            file_like.seek(0)
+        return _cached_extract_video_frame_thumbnails_bytes(data, max_frames)
     except Exception as e:
-        logger.info(f"moviepy not available or failed to extract frames: {e}")
-    return thumbnails
-
+        logger.error(f"Video thumbnail wrapper error: {e}")
+        return []
 
 
 # Consolidated BLIP Logic is now at the bottom of the file
@@ -468,15 +517,12 @@ def extract_video_frame_thumbnails(file_like, max_frames: int = 3) -> List[str]:
 
 def generate_blip_caption(image) -> Optional[str]:
     try:
-        processor, model, device = get_blip_model()
-        inputs = processor(images=image, return_tensors="pt").to(device)
-        import torch
-        with torch.no_grad():
-            output_ids = model.generate(**inputs, max_new_tokens=50)
-        caption = processor.decode(output_ids[0], skip_special_tokens=True)
-        return caption
+        from io import BytesIO
+        buf = BytesIO()
+        image.save(buf, format='PNG')
+        return _cached_generate_blip_caption_bytes(buf.getvalue())
     except Exception as e:
-        logger.info(f"BLIP captioning unavailable: {e}")
+        logger.info(f"BLIP caption wrapper failed: {e}")
         return None
 
 
@@ -536,9 +582,9 @@ def preload_blip_model(timeout: int = 120) -> bool:
 def _load_blip_resources():
     from transformers import BlipProcessor, BlipForConditionalGeneration
     import torch
-    
+
     model_id = "Salesforce/blip-image-captioning-base"
-    
+
     # helper to load with retry strategy
     def load_with_fallback(cls, model_id):
         # 1. Try local cache first
@@ -550,7 +596,7 @@ def _load_blip_resources():
 
     processor = load_with_fallback(BlipProcessor, model_id)
     model = load_with_fallback(BlipForConditionalGeneration, model_id)
-    
+
     device = "cuda" if torch.cuda.is_available() else "cpu"
     model.to(device)
     return processor, model, device
@@ -566,16 +612,16 @@ def preload_blip_model_with_progress(progress_callback: Optional[Callable[[int, 
     try:
         if progress_callback:
             progress_callback(10, "Checking local cache...")
-        
+
         # We'll use a thread/process safe check by just calling the cached function
         # Streamlit's cache will handle the heavy lifting.
-        
+
         if progress_callback:
              progress_callback(30, "Loading BLIP model items...")
-        
+
         # This will block until loaded
         _load_blip_resources()
-        
+
         if progress_callback:
             progress_callback(100, "BLIP model ready")
         return True
@@ -584,7 +630,3 @@ def preload_blip_model_with_progress(progress_callback: Optional[Callable[[int, 
         if progress_callback:
              progress_callback(0, f"Failed: {str(e)}")
         return False
-
-    except Exception as e:
-        logger.info(f"extract_video_frame_thumbnails error: {e}")
-        return thumbnails
