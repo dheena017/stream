@@ -4,6 +4,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import json
 import platform
 import sys
@@ -601,6 +602,9 @@ Python: {platform.python_version()}
 =======
 
 >>>>>>> origin/feedback-integration-7692380356929291134
+=======
+
+>>>>>>> origin/engagement-features-7857729897611492638
 import streamlit as st
 import time
 import json
@@ -609,6 +613,7 @@ import platform
 from datetime import datetime
 import pandas as pd
 from ui.common import logout
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -636,11 +641,16 @@ from ui.database import get_user_stats, get_leaderboard
 >>>>>>> origin/feedback-integration-17764393616523020931
 =======
 >>>>>>> origin/feedback-integration-7692380356929291134
+=======
+from ui.engagement import calculate_level, get_unlocked_achievements, get_leaderboard_data, ACHIEVEMENTS
+from ui.database import get_total_message_count
+>>>>>>> origin/engagement-features-7857729897611492638
 
 def show_dashboard():
     """Display user dashboard with stats and activity"""
 
     # Modern gradient header for dashboard
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -660,6 +670,9 @@ def show_dashboard():
 =======
     # Modern gradient header for dashboard
 >>>>>>> origin/feedback-integration-7692380356929291134
+=======
+    # Modern gradient header for dashboard
+>>>>>>> origin/engagement-features-7857729897611492638
     st.markdown("""
     <div class="main-header">
         <div style="font-size: 3rem;">📊</div>
@@ -685,6 +698,7 @@ def show_dashboard():
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     # Welcome card
 =======
 >>>>>>> origin/engagement-features-5881933724913241534
@@ -699,6 +713,9 @@ def show_dashboard():
 =======
     # Welcome card
 >>>>>>> origin/feedback-integration-7692380356929291134
+=======
+    # Welcome card
+>>>>>>> origin/engagement-features-7857729897611492638
     st.markdown(f"""
     <div class="glass-panel" style="margin-bottom: 2rem;">
         <h3 style="margin: 0 0 0.5rem 0; color: var(--text-primary);">Welcome back, {user_name}! 👋</h3>
@@ -706,6 +723,7 @@ def show_dashboard():
     </div>
     """, unsafe_allow_html=True)
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -837,6 +855,80 @@ def show_dashboard():
 >>>>>>> origin/feedback-integration-17764393616523020931
 =======
 >>>>>>> origin/feedback-integration-7692380356929291134
+=======
+    # --- ENGAGEMENT SECTION ---
+
+    # 1. Fetch Data
+    total_msg_count = get_total_message_count(st.session_state.username)
+    level, level_title, progress, next_threshold = calculate_level(total_msg_count)
+    unlocked_achievements, _ = get_unlocked_achievements(st.session_state.username)
+
+    # 2. Display Level & Progress
+    eng_col1, eng_col2 = st.columns([2, 1])
+
+    with eng_col1:
+        st.markdown(f"""
+        <div class="glass-panel" style="padding: 1.5rem; margin-bottom: 1rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                <h4 style="margin: 0;">🏆 Level {level}: {level_title}</h4>
+                <span style="color: var(--text-secondary); font-size: 0.9rem;">{total_msg_count} / {next_threshold} XP</span>
+            </div>
+            <div style="background-color: rgba(128,128,128,0.2); height: 8px; border-radius: 4px; overflow: hidden;">
+                <div style="background: linear-gradient(90deg, #4CAF50, #8BC34A); width: {progress*100}%; height: 100%;"></div>
+            </div>
+             <p style="color: var(--text-secondary); font-size: 0.8rem; margin-top: 0.5rem;">
+                Keep chatting to unlock new levels and badges!
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with eng_col2:
+        # Mini Leaderboard Preview
+        leaderboard = get_leaderboard_data(st.session_state.username, total_msg_count)
+        my_rank = next((item['rank'] for item in leaderboard if item['name'].endswith('(You)')), 'N/A')
+
+        st.markdown(f"""
+        <div class="glass-panel" style="padding: 1.5rem; text-align: center; margin-bottom: 1rem;">
+            <div style="font-size: 2rem;">🏅</div>
+            <div style="font-weight: bold; font-size: 1.2rem;">Rank #{my_rank}</div>
+            <div style="font-size: 0.8rem; color: var(--text-secondary);">Global Leaderboard</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    # 3. Achievements Gallery
+    with st.expander("🎖️ Achievements Gallery", expanded=False):
+        # Show all achievements (dimmed if locked)
+        cols = st.columns(4)
+        all_achievements = list(ACHIEVEMENTS.values())
+
+        for i, ach in enumerate(all_achievements):
+            is_unlocked = any(u['title'] == ach['title'] for u in unlocked_achievements)
+            opacity = "1" if is_unlocked else "0.5"
+            filter_style = "" if is_unlocked else "filter: grayscale(100%);"
+            status_icon = "✅" if is_unlocked else "🔒"
+
+            with cols[i % 4]:
+                st.markdown(f"""
+                <div style="
+                    background: rgba(255,255,255,0.05);
+                    border: 1px solid rgba(255,255,255,0.1);
+                    border-radius: 8px;
+                    padding: 1rem;
+                    text-align: center;
+                    height: 100%;
+                    opacity: {opacity};
+                    {filter_style}
+                ">
+                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">{ach['icon']}</div>
+                    <div style="font-weight: bold; font-size: 0.9rem;">{ach['title']}</div>
+                    <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.5rem;">{ach['description']}</div>
+                    <div style="font-size: 0.8rem;">{status_icon}</div>
+                </div>
+                """, unsafe_allow_html=True)
+
+    st.markdown("<br>", unsafe_allow_html=True)
+
+>>>>>>> origin/engagement-features-7857729897611492638
     # Activity metrics with modern cards
     col1, col2, col3, col4 = st.columns(4)
 
@@ -883,6 +975,7 @@ def show_dashboard():
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     # Leaderboard Section
     with st.expander("🏆 Leaderboard", expanded=False):
@@ -914,6 +1007,8 @@ def show_dashboard():
 >>>>>>> origin/feedback-integration-17764393616523020931
 =======
 >>>>>>> origin/feedback-integration-7692380356929291134
+=======
+>>>>>>> origin/engagement-features-7857729897611492638
     # Enhanced Quick actions with descriptions
     st.markdown("""
     <h3 style="display: flex; align-items: center; gap: 0.5rem;">
@@ -986,6 +1081,7 @@ def show_dashboard():
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
     action_col5, action_col6 = st.columns(2)
@@ -1005,6 +1101,8 @@ def show_dashboard():
 >>>>>>> origin/feedback-integration-17764393616523020931
 =======
 >>>>>>> origin/feedback-integration-7692380356929291134
+=======
+>>>>>>> origin/engagement-features-7857729897611492638
     # Additional quick action shortcuts (enhanced)
     st.markdown("---")
     st.markdown("### ⚡ Additional Actions")
@@ -1120,6 +1218,7 @@ def show_dashboard():
         st.session_state.compact_ui = compact_ui
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     st.markdown("#### Support")
     from ui.feedback import render_feedback_form
@@ -1127,6 +1226,8 @@ def show_dashboard():
         render_feedback_form(key_suffix="dashboard")
 
 >>>>>>> origin/feedback-integration-7692380356929291134
+=======
+>>>>>>> origin/engagement-features-7857729897611492638
     # Brain stats display
     if st.session_state.get('show_brain_stats', False):
         st.divider()
@@ -1275,6 +1376,7 @@ def show_dashboard():
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         # --- Analytics / System Health ---
         st.markdown("---")
         st.markdown("### 🩺 System Health")
@@ -1315,6 +1417,8 @@ def show_dashboard():
 >>>>>>> origin/feedback-integration-17764393616523020931
 =======
 >>>>>>> origin/feedback-integration-7692380356929291134
+=======
+>>>>>>> origin/engagement-features-7857729897611492638
         st.markdown("---")
         st.markdown("### 📝 Quick Debug Info")
 
@@ -1350,6 +1454,7 @@ Python: {platform.python_version()}
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> origin/analytics-monitoring-17353357073288903889
 =======
 >>>>>>> origin/engagement-features-5881933724913241534
@@ -1361,3 +1466,5 @@ Python: {platform.python_version()}
 >>>>>>> origin/feedback-integration-17764393616523020931
 =======
 >>>>>>> origin/feedback-integration-7692380356929291134
+=======
+>>>>>>> origin/engagement-features-7857729897611492638

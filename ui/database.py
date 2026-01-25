@@ -314,6 +314,7 @@ def update_conversation_title(conversation_id: str, title: str):
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 import sqlite3
 import json
@@ -936,3 +937,19 @@ def delete_user_data(user_id: str):
     conn.commit()
     conn.close()
 >>>>>>> origin/privacy-compliance-updates-6913709404570951522
+=======
+
+def get_total_message_count(user_id: str) -> int:
+    """Get total number of messages sent by the user across all conversations"""
+    conn = sqlite3.connect(DB_FILE)
+    c = conn.cursor()
+    # Count messages where role is 'user' and conversation belongs to user_id
+    c.execute('''
+        SELECT COUNT(*) FROM messages
+        JOIN conversations ON messages.conversation_id = conversations.id
+        WHERE conversations.user_id = ? AND messages.role = 'user'
+    ''', (user_id,))
+    count = c.fetchone()[0]
+    conn.close()
+    return count
+>>>>>>> origin/engagement-features-7857729897611492638
