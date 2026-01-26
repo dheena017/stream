@@ -56,14 +56,14 @@ def clean_state():
 
     # Reset mocks
     mock_st.stop.reset_mock()
-    app.show_login_page.reset_mock()
-    app.show_dashboard.reset_mock()
-    app.show_profile_page.reset_mock()
-    app.show_chat_page.reset_mock()
 
-    yield
+    # Patch app functions
+    with patch.object(app, 'show_login_page') as mock_login, \
+         patch.object(app, 'show_dashboard') as mock_dash, \
+         patch.object(app, 'show_profile_page') as mock_profile, \
+         patch.object(app, 'show_chat_page') as mock_chat:
 
-    mock_st.session_state.clear()
+        yield
 
 def test_initialize_auth_state():
     app.initialize_auth_state()
