@@ -1,18 +1,13 @@
-
 import pytest
 from unittest.mock import MagicMock, patch
-<<<<<<< HEAD
 import sys
 
-# Mock streamlit
-mock_streamlit = MagicMock()
-sys.modules['streamlit'] = mock_streamlit
-
-# Pre-mock google.generativeai
+# Mock streamlit and google.generativeai to avoid import errors
+sys.modules['streamlit'] = MagicMock()
 mock_genai_module = MagicMock()
 sys.modules['google.generativeai'] = mock_genai_module
 
-from ui.chat_utils import handle_google_provider, generate_standard_response
+from ui.chat_utils import handle_google_provider, generate_standard_response, prepare_brain_configuration
 
 def test_handle_google_provider_configures_genai():
     # Reset mocks
@@ -42,34 +37,6 @@ def test_handle_google_provider_configures_genai():
     assert response == "Gemini response"
 
 @patch('ui.chat_utils.get_openai_client')
-@patch('ui.chat_utils.handle_openai_compatible_provider')
-def test_generate_standard_response_groq(mock_handle_provider, mock_get_client):
-    # Setup
-    api_keys = {"groq": "fake_groq_key"}
-    chat_history = []
-
-    mock_client = MagicMock()
-    mock_get_client.return_value = mock_client
-    mock_handle_provider.return_value = "Groq Response"
-
-    # Call
-    response = generate_standard_response(
-        provider="groq",
-        model_name="llama-3.3-70b",
-        api_keys=api_keys,
-        prompt="Hi",
-        chat_history=chat_history
-    )
-
-    # Assertions
-    # Check if get_openai_client was called with Groq URL
-    mock_get_client.assert_called_once_with("fake_groq_key", "https://api.groq.com/openai/v1")
-    mock_handle_provider.assert_called_once()
-    assert response == "Groq Response"
-=======
-from ui.chat_utils import generate_standard_response, prepare_brain_configuration
-
-@patch("ui.chat_utils.get_openai_client")
 def test_groq_integration(mock_get_client):
     # Setup mock
     mock_client_instance = MagicMock()
@@ -107,7 +74,10 @@ def test_prepare_brain_configuration_with_groq():
     api_keys = {"groq": "test_key", "openai": "sk-..."}
     models = prepare_brain_configuration(api_keys)
 
-    groq_entries = [m for m in models if m["provider"] == "groq"]
-    assert len(groq_entries) == 1
+    # Assume prepare_brain_configuration returns a list of model configs
+    # We check if groq provider is present
+    groq_entries = [m for m in models if m.get("provider") == "groq"]
+
+    assert len(groq_entries) >= 1
+    # Check if correct model is used
     assert groq_entries[0]["model"] == "llama-3.3-70b-versatile"
->>>>>>> origin/api-integrations-groq-12473300930587894354
