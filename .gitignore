@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+chat_history.db
+streamlit.log
+*.png
+test_*.py
+verify_*.py
+.venv
+env/
