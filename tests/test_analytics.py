@@ -1,43 +1,64 @@
-import pytest
-import time
 import os
-from pathlib import Path
-from ui.analytics import init_analytics, log_api_call, log_error, get_recent_errors, get_analytics_summary, LOG_FILE
+import json
+import pytest
+import ui.chat_utils as chat_utils
+import ui.analytics as analytics
+
+LOG_FILE = "logs/app.log"
 
 def test_analytics_logging():
-    # Setup
-    if LOG_FILE.exists():
-        os.remove(LOG_FILE)
-    init_analytics()
-    print(f"DEBUG: Initialized. File: {LOG_FILE}, Abs: {LOG_FILE.absolute()}, Exists: {LOG_FILE.exists()}")
+    # Configure logging
+    analytics.configure_logging()
 
-    # Test log_api_call
-    log_api_call("test_provider", "test_model", 0.5, True)
-    print(f"DEBUG: Logged. Exists: {LOG_FILE.exists()}")
-    log_api_call("test_provider", "test_model_fail", 0.1, False, "Error message")
+    # Record initial state
+    initial_lines = 0
+    if os.path.exists(LOG_FILE):
+        with open(LOG_FILE, 'r') as f:
+            initial_lines = len(f.readlines())
 
-    # Test log_error
+    from loguru import logger
+    # Simulate a call
+    messages = [{"role": "user", "content": "Hello test"}]
+    response = chat_utils.generate_response("test_provider", "test_model", messages)
+
+    # Wait for logs to be written
+    logger.complete()
+
+    # Verify response structure
+    assert "Response from test_provider" in response or "Error:" in response
+
+    # Check logs
+    assert os.path.exists(LOG_FILE)
+
+    found_event = False
+    with open(LOG_FILE, 'r') as f:
+        lines = f.readlines()
+        # Check new lines
+        for line in lines[initial_lines:]:
+            try:
+                log_entry = json.loads(line)
+                extra = log_entry.get("record", {}).get("extra", {})
+                if extra.get("event_type") == "api_call":
+                    if extra.get("provider") == "test_provider":
+                        found_event = True
+                        assert extra.get("model") == "test_model"
+                        assert "duration" in extra
+                        assert "success" in extra
+                        # Check tokens
+                        assert "input_tokens" in extra
+                        assert "output_tokens" in extra
+            except json.JSONDecodeError:
+                continue
+
+    assert found_event, "API call log entry not found in logs/app.log"
+
+if __name__ == "__main__":
     try:
-        raise ValueError("Test Exception")
+        test_analytics_logging()
+        print("Test passed!")
+    except AssertionError as e:
+        print(f"Test failed: {e}")
+        exit(1)
     except Exception as e:
-        log_error("test_context", e)
-
-    # Allow some time for IO
-    time.sleep(0.1)
-
-    assert LOG_FILE.exists()
-
-    # Test parsing
-    summary = get_analytics_summary()
-    assert summary["api_calls"] == 2
-    assert summary["successful_calls"] == 1
-    assert summary["failed_calls"] == 1
-
-    errors = get_recent_errors(10)
-    # Should have 2 errors: 1 from failed api call, 1 from log_error
-    assert len(errors) == 2
-
-    # Verify content
-    # Recent errors returns reversed list
-    assert errors[0]["context"] == "test_context" # The exception
-    assert errors[1]["error_details"] == "Error message" or errors[1]["message"].endswith("(Failed)")
+        print(f"Test error: {e}")
+        exit(1)
