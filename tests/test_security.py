@@ -35,24 +35,16 @@ def test_sanitize_html():
     assert sanitize_html(123) == "123"
 
 def test_rate_limiter():
-    # Manually patch get_rate_limit_store to return a persistent dictionary
-    # because st.cache_resource doesn't work as expected in unit tests without a session
+    # Manually pass a store dictionary
     from collections import defaultdict, deque
     store = defaultdict(lambda: deque())
 
-    # Save original to restore later if needed (though not strictly necessary for this run)
-    original_func = ui.security.get_rate_limit_store
-    ui.security.get_rate_limit_store = lambda: store
+    limiter = RateLimiter(max_requests=2, period=1, store=store)
+    key = "test_user"
 
-    try:
-        limiter = RateLimiter(max_requests=2, period=1)
-        key = "test_user"
+    assert limiter.is_allowed(key) == True
+    assert limiter.is_allowed(key) == True
+    assert limiter.is_allowed(key) == False
 
-        assert limiter.is_allowed(key) == True
-        assert limiter.is_allowed(key) == True
-        assert limiter.is_allowed(key) == False
-
-        time.sleep(1.1)
-        assert limiter.is_allowed(key) == True
-    finally:
-        ui.security.get_rate_limit_store = original_func
+    time.sleep(1.1)
+    assert limiter.is_allowed(key) == True
