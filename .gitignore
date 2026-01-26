@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+users.json
+user_prefs.json
+secret.key
+*.db
+*.pid
+logs/
+backups/
+verification/
+chat_history.json
+chat_history.txt
+installed_requirements.txt
+venv/
+.env
