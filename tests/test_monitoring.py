@@ -1,177 +1,63 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
-import os
-import json
-import pandas as pd
-import pytest
-from ui.monitoring import log_metric, get_metrics_df, LOG_FILE
-
-def test_monitoring_flow():
-    # Clean up before test
-    if os.path.exists(LOG_FILE):
-        os.remove(LOG_FILE)
-
-    # 1. Test Logging
-    log_metric("response_time", {"duration": 0.5, "model": "test-model"})
-    log_metric("error", {"message": "test error"})
-
-    assert os.path.exists(LOG_FILE)
-
-    # 2. Test Reading
-    df = get_metrics_df()
-    assert not df.empty
-    assert len(df) == 2
-    assert "response_time" in df['type'].values
-    assert "error" in df['type'].values
-
-    # 3. Test Threshold Alerting (Check if it logs - captured via mocking would be better, but we check if it writes to file at least)
-    log_metric("response_time", {"duration": 15.0, "model": "slow-model"})
-    df = get_metrics_df()
-    assert len(df) == 3
-
-    # Check data content
-    last_entry = df.iloc[-1]
-    assert last_entry['type'] == 'response_time'
-    assert last_entry['data']['duration'] == 15.0
-
-    # Cleanup
-    if os.path.exists(LOG_FILE):
-        os.remove(LOG_FILE)
-
-if __name__ == "__main__":
-    try:
-        test_monitoring_flow()
-        print("Tests passed!")
-    except Exception as e:
-        print(f"Tests failed: {e}")
-        exit(1)
-=======
 import pytest
 import os
 import json
 import time
-import logging
-from monitoring import Monitor, get_monitor
+from ui.analytics import track_request, get_metrics, check_alerts, LOG_FILE
 
-@pytest.fixture
-def monitor_fixture(tmp_path):
-    # Reset logger handlers to avoid leakage between tests
-    logger = logging.getLogger("monitoring")
-    logger.handlers = []
+@pytest.fixture(autouse=True)
+def clean_logs():
+    # Clear log file before each test
+    if os.path.exists(LOG_FILE):
+        open(LOG_FILE, 'w').close()
+    yield
+    # Optional cleanup after test
+    if os.path.exists(LOG_FILE):
+        open(LOG_FILE, 'w').close()
 
-    log_file = tmp_path / "test_usage.jsonl"
-    monitor = Monitor(log_file=str(log_file))
-    return monitor
+def test_track_request_and_metrics():
+    # 1. Track some successful requests
+    track_request("test_event", 0.5, True)
+    track_request("test_event", 1.5, True)
 
-def test_log_request(monitor_fixture):
-    monitor_fixture.log_request("test_provider", "test_model", 0.5, True)
+    # 2. Track a failed request
+    track_request("test_event", 1.0, False)
 
-    with open(monitor_fixture.log_file, 'r') as f:
-        lines = f.readlines()
-        assert len(lines) == 1
-        entry = json.loads(lines[0])
-        assert entry['provider'] == "test_provider"
-        assert entry['model'] == "test_model"
-        assert entry['duration'] == 0.5
-        assert entry['success'] is True
+    # Ensure logs are flushed to disk (loguru is async or buffered sometimes?
+    # default enqueue=False, so it should be sync. But OS buffering?)
+    # A small sleep might be safe but usually flush happens on file close or flush.
+    # loguru handles are robust.
 
-def test_get_stats(monitor_fixture):
-    monitor_fixture.log_request("p1", "m1", 1.0, True)
-    monitor_fixture.log_request("p1", "m1", 2.0, True)
-    monitor_fixture.log_request("p1", "m1", 0.0, False) # Error
+    # 3. Get metrics
+    metrics = get_metrics()
 
-    stats = monitor_fixture.get_stats()
+    # Total 3 requests
+    assert metrics["total_requests"] == 3
 
-    assert stats['total_requests'] == 3
-    assert stats['error_rate'] == 1/3
-    # Avg latency = (1.0 + 2.0) / 2 = 1.5
-    assert stats['avg_latency'] == 1.5
-    assert stats['provider_stats']['p1']['count'] == 3
-    assert stats['provider_stats']['p1']['errors'] == 1
+    # Average duration: (0.5 + 1.5 + 1.0) / 3 = 1.0
+    assert abs(metrics["avg_response_time"] - 1.0) < 0.01
 
-def test_alerts(monitor_fixture):
-    # Create high error rate scenario
-    for _ in range(12):
-        monitor_fixture.log_request("p1", "m1", 0.1, False)
+    # Error rate: 1 failure out of 3 = 33.33%
+    assert abs(metrics["error_rate"] - 33.33) < 0.1
 
-    alerts = monitor_fixture.check_alerts()
-    assert len(alerts) >= 1
-    assert "High Error Rate" in alerts[0]
+def test_alerts():
+    # Simulate high error rate
+    # Threshold is 5% error rate
 
-def test_singleton():
-    m1 = get_monitor()
-    m2 = get_monitor()
-    assert m1 is m2
->>>>>>> origin/monitoring-setup-15681340840960488850
-=======
-import os
-import json
-import pytest
-from monitoring import Monitor
-import time
+    # 1 success, 1 failure => 50% error rate
+    track_request("test_event", 0.1, True)
+    track_request("test_event", 0.1, False)
 
-@pytest.fixture
-def monitor():
-    m = Monitor()
+    thresholds = {"error_rate": 5.0, "response_time": 2.0}
+    alerts = check_alerts(thresholds)
 
-    # Reset handlers to allow re-setup with fresh file handle
-    if m._logger:
-        for handler in m._logger.handlers[:]:
-            handler.close()
-            m._logger.removeHandler(handler)
+    assert any("High Error Rate" in a for a in alerts)
 
-    # Clear log file
-    if os.path.exists(m.log_file):
-        os.remove(m.log_file)
+    # Clean logs for next part of test
+    open(LOG_FILE, 'w').close()
 
-    # Re-setup logging
-    # We need to manually call setup because singleton __new__ won't call it again
-    m._setup_logging()
+    # Simulate high response time
+    # 1 success, 5.0s duration
+    track_request("test_event", 5.0, True)
 
-    yield m
-
-    # Cleanup after test
-    if m._logger:
-         for handler in m._logger.handlers[:]:
-            handler.close()
-            m._logger.removeHandler(handler)
-    if os.path.exists(m.log_file):
-        os.remove(m.log_file)
-
-def test_log_usage(monitor):
-    monitor.log_usage(
-        user_id="test_user",
-        model="gpt-4",
-        provider="openai",
-        response_time=1.5,
-        success=True
-    )
-
-    # Give a tiny bit of time for file write if async (it's not, but good practice)
-    # But logging.FileHandler is sync usually.
-
-    assert os.path.exists(monitor.log_file)
-
-    with open(monitor.log_file, 'r') as f:
-        lines = f.readlines()
-        assert len(lines) == 1
-        data = json.loads(lines[0])
-        assert data["user_id"] == "test_user"
-        assert data["model"] == "gpt-4"
-        assert data["response_time"] == 1.5
-
-def test_analytics(monitor):
-    monitor.log_usage("user1", "model1", "prov1", 1.0, True)
-    monitor.log_usage("user2", "model1", "prov1", 2.0, True)
-    monitor.log_usage("user3", "model1", "prov1", 3.0, False, "error")
-
-    stats = monitor.get_analytics()
-    assert stats["total_requests"] == 3
-    assert stats["avg_response_time"] == 2.0 # (1+2+3)/3
-    assert abs(stats["error_rate"] - 0.3333) < 0.0001
-
-def test_alerts(monitor, capsys):
-    monitor.log_usage("user1", "model1", "prov1", 11.0, True)
-    captured = capsys.readouterr()
-    assert "ALERT: High response time" in captured.out
->>>>>>> origin/monitoring-setup-3291123637376011491
+    alerts = check_alerts(thresholds)
+    assert any("High Response Time" in a for a in alerts)
