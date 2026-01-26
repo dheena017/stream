@@ -1,0 +1,12 @@
+streamlit
+google-generativeai
+openai
+anthropic
+pytest
+pytest-mock
+requests
+beautifulsoup4
+duckduckgo-search
+Pillow
+loguru
+pandas
