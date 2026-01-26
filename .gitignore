@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+*.log
+logs/
+.streamlit/
+test_tool.txt
+tests/__pycache__/
+ui/__pycache__/
