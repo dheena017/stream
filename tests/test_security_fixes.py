@@ -1,13 +1,18 @@
-import pytest
-from ui.chat_utils import sanitize_text, RateLimiter
+
 import streamlit as st
-import time
+
+from ui.chat_utils import RateLimiter, sanitize_text
+
 
 def test_sanitize_text():
-    assert sanitize_text("<script>alert(1)</script>") == "&lt;script&gt;alert(1)&lt;/script&gt;"
+    assert (
+        sanitize_text("<script>alert(1)</script>")
+        == "&lt;script&gt;alert(1)&lt;/script&gt;"
+    )
     assert sanitize_text("Hello World") == "Hello World"
     assert sanitize_text("") == ""
     assert sanitize_text(None) == ""
+
 
 def test_rate_limiter():
     # Mock session state
@@ -21,6 +26,7 @@ def test_rate_limiter():
     class MockSessionState(dict):
         def __getattr__(self, key):
             return self.get(key)
+
         def __setattr__(self, key, value):
             self[key] = value
 
@@ -32,6 +38,6 @@ def test_rate_limiter():
 
         assert limiter.check(user_id) is True
         assert limiter.check(user_id) is True
-        assert limiter.check(user_id) is False # 3rd request should fail
+        assert limiter.check(user_id) is False  # 3rd request should fail
     finally:
         st.session_state = original_session_state

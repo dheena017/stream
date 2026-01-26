@@ -1,8 +1,10 @@
-import pytest
 import sqlite3
-import os
-from ui.database import init_db, save_feedback, DB_FILE
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
+
+import pytest
+
+from ui.database import init_db, save_feedback
+
 
 @pytest.fixture
 def mock_db_file(tmp_path):
@@ -11,6 +13,7 @@ def mock_db_file(tmp_path):
     with patch("ui.database.DB_FILE", str(db_file)):
         init_db()
         yield str(db_file)
+
 
 def test_init_db_creates_feedback_table(mock_db_file):
     conn = sqlite3.connect(mock_db_file)
@@ -29,6 +32,7 @@ def test_init_db_creates_feedback_table(mock_db_file):
     assert "comment" in columns
     assert "timestamp" in columns
     conn.close()
+
 
 def test_save_feedback(mock_db_file):
     user_id = "test_user"

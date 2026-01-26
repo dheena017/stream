@@ -1,10 +1,16 @@
-import pytest
-from ui.experimental import serialize_messages_for_export, format_messages_markdown, calculate_chat_stats
-from unittest.mock import MagicMock
+
+
+from ui.experimental import (
+    calculate_chat_stats,
+    format_messages_markdown,
+    serialize_messages_for_export,
+)
+
 
 class MockImage:
     def __init__(self, size=(100, 100)):
         self.size = size
+
 
 def test_serialize_messages_for_export():
     messages = [
@@ -12,14 +18,14 @@ def test_serialize_messages_for_export():
             "role": "user",
             "content": "Hello",
             "images": [MockImage((200, 200))],
-            "timestamp": "12:00:00"
+            "timestamp": "12:00:00",
         },
         {
             "role": "assistant",
             "content": "Hi there!",
             "provider": "google",
-            "model": "gemini-pro"
-        }
+            "model": "gemini-pro",
+        },
     ]
 
     json_output = serialize_messages_for_export(messages)
@@ -29,19 +35,16 @@ def test_serialize_messages_for_export():
     assert "[Image: (200, 200)]" in json_output
     assert "google" in json_output
 
+
 def test_format_messages_markdown():
     messages = [
-        {
-            "role": "user",
-            "content": "Hello",
-            "timestamp": "12:00"
-        },
+        {"role": "user", "content": "Hello", "timestamp": "12:00"},
         {
             "role": "assistant",
             "content": "Hi there",
             "provider": "openai",
-            "model": "gpt-4"
-        }
+            "model": "gpt-4",
+        },
     ]
 
     md = format_messages_markdown(messages)
@@ -52,11 +55,12 @@ def test_format_messages_markdown():
     assert "### Assistant" in md
     assert "openai/gpt-4" in md
 
+
 def test_calculate_chat_stats():
     messages = [
         {"role": "user", "content": "123"},
         {"role": "assistant", "content": "12345", "response_time": 1.5},
-        {"role": "user", "content": "123"}
+        {"role": "user", "content": "123"},
     ]
 
     stats = calculate_chat_stats(messages)
@@ -66,6 +70,7 @@ def test_calculate_chat_stats():
     assert stats["assistant_count"] == 1
     assert stats["avg_response_time"] == 1.5
     assert stats["total_chars"] == 11
+
 
 def test_calculate_chat_stats_empty():
     stats = calculate_chat_stats([])

@@ -1,11 +1,12 @@
-
 import unittest
 from unittest.mock import MagicMock, patch
+
 from ui.chat_utils import generate_standard_response
 
+
 class TestGroqIntegration(unittest.TestCase):
-    @patch('ui.chat_utils.get_openai_client')
-    @patch('ui.chat_utils.st')
+    @patch("ui.chat_utils.get_openai_client")
+    @patch("ui.chat_utils.st")
     def test_groq_generation(self, mock_st, mock_get_client):
         # Setup mock client
         mock_client = MagicMock()
@@ -30,7 +31,7 @@ class TestGroqIntegration(unittest.TestCase):
             model_name=model_name,
             api_keys=api_keys,
             prompt=prompt,
-            chat_history=chat_history
+            chat_history=chat_history,
         )
 
         # Verify get_openai_client was called with correct base_url
@@ -39,14 +40,15 @@ class TestGroqIntegration(unittest.TestCase):
         # Verify completion call
         mock_client.chat.completions.create.assert_called()
         call_args = mock_client.chat.completions.create.call_args
-        self.assertEqual(call_args.kwargs['model'], model_name)
+        self.assertEqual(call_args.kwargs["model"], model_name)
         # Check that user prompt is in messages
-        messages = call_args.kwargs['messages']
-        self.assertEqual(messages[-1]['role'], 'user')
-        self.assertEqual(messages[-1]['content'], prompt)
+        messages = call_args.kwargs["messages"]
+        self.assertEqual(messages[-1]["role"], "user")
+        self.assertEqual(messages[-1]["content"], prompt)
 
         # Verify response
         self.assertEqual(response, "Groq response")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()
