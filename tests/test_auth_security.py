@@ -1,23 +1,24 @@
-
 import pytest
 import sys
 from unittest.mock import MagicMock, patch
 
+# Force cleanup of modules to avoid pollution from other tests
+for mod in ['ui.auth', 'ui.security', 'streamlit']:
+    if mod in sys.modules:
+        del sys.modules[mod]
+
 # Mock streamlit before importing ui.auth
 mock_st = MagicMock()
-# Mock cache_resource to return a singleton-like behavior or just a consistent object
 _cache_store = {}
 def mock_cache_resource(func=None, **kwargs):
     def wrapper(f):
         def cached_func(*args, **kwargs):
-            # Only cache get_rate_limiter_state for this test
-            if f.__name__ == 'get_rate_limiter_state':
+            if f.__name__ == 'get_rate_limiter_state' or f.__name__ == 'get_rate_limit_store':
                 if 'rate_limiter' not in _cache_store:
                     _cache_store['rate_limiter'] = f(*args, **kwargs)
                 return _cache_store['rate_limiter']
             return f(*args, **kwargs)
         return cached_func
-
     if func:
         return wrapper(func)
     return wrapper
@@ -25,28 +26,24 @@ def mock_cache_resource(func=None, **kwargs):
 mock_st.cache_resource = mock_cache_resource
 mock_st.session_state = {}
 sys.modules["streamlit"] = mock_st
-
-# Mock google libraries to avoid import errors if not installed in test env
 sys.modules["google.oauth2"] = MagicMock()
 sys.modules["google.auth.transport"] = MagicMock()
 
-# Now import the module under test
 from ui import auth
 
 # Reset global rate limiter for tests
 auth.get_rate_limiter_state().clear()
 
 def test_hash_password_format():
-    """Test that password hash includes salt and follows format"""
+    """Test that password hash is valid bcrypt hash."""
     pw = "testpass"
     hashed = auth.hash_password(pw)
-    assert "$" in hashed
-    salt, hash_val = hashed.split("$")
-    assert len(salt) == 32  # 16 bytes hex
-    assert len(hash_val) == 64 # sha256 hex
+    # Check for bcrypt prefix
+    assert hashed.startswith("$2b$") or hashed.startswith("$2a$") or hashed.startswith("$2y$")
+    assert auth.verify_password(hashed, pw)
 
 def test_verify_password():
-    """Test password verification (salted)"""
+    """Test password verification (salted/bcrypt)"""
     pw = "securepassword"
     hashed = auth.hash_password(pw)
 
@@ -81,15 +78,13 @@ def test_rate_limiting(mock_load):
 
     # 5 allowed attempts
     for _ in range(5):
+        # We need check_login to actually consume
+        # The mock returns user data if password matches.
+        # But here we pass "wrongpass".
         assert auth.check_login(username, "wrongpass") is None
 
-    # 6th attempt should be blocked (and return None)
-    # Ideally we'd distinguish between blocked and wrong pass, but function returns None for both.
-    # We can check the rate limiter state directly.
+    # 6th attempt should be blocked
     assert auth.is_rate_limited(username) is True
-
-    # Even correct password should fail now if strictly enforced,
-    # but the implementation checks rate limit *before* verifying password.
     assert auth.check_login(username, "password") is None
 
 @patch("ui.auth.save_user_credentials")
@@ -108,5 +103,5 @@ def test_register_user_hashing(mock_load, mock_save):
     saved_data = mock_save.call_args[0][0]
     assert username in saved_data
     stored_pw = saved_data[username]["password"]
-    assert "$" in stored_pw
+    assert stored_pw.startswith("$2b$") or stored_pw.startswith("$2a$")
     assert auth.verify_password(stored_pw, password)

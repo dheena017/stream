@@ -1,0 +1,11 @@
+streamlit
+openai
+google-generativeai
+anthropic
+tenacity
+pytest
+pytest-mock
+mock
+bcrypt
+loguru
+cryptography
