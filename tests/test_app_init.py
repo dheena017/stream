@@ -1,9 +1,12 @@
-import pytest
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
+
+
 import app
+
 
 class SessionState(dict):
     """Mock Streamlit SessionState which supports attribute access."""
+
     def __getattr__(self, key):
         try:
             return self[key]
@@ -13,9 +16,10 @@ class SessionState(dict):
     def __setattr__(self, key, value):
         self[key] = value
 
+
 def test_initialize_auth_state():
     # Patch st in the app module
-    with patch.object(app, 'st') as mock_st:
+    with patch.object(app, "st") as mock_st:
         # Setup mock session state
         mock_st.session_state = SessionState()
 
@@ -33,9 +37,10 @@ def test_initialize_auth_state():
         app.initialize_auth_state()
         assert mock_st.session_state.authenticated is True
 
+
 def test_initialize_chat_state():
     # Patch st in the app module
-    with patch.object(app, 'st') as mock_st:
+    with patch.object(app, "st") as mock_st:
         # Setup mock session state
         mock_st.session_state = SessionState()
 

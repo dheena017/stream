@@ -1,17 +1,21 @@
-
-import unittest
 import os
-import sqlite3
-import json
-from unittest.mock import patch
 
 # Configure path so we can import ui
 import sys
+import unittest
+from unittest.mock import patch
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from ui.database import init_db, create_new_conversation, save_message, get_conversation_messages
+from ui.database import (
+    create_new_conversation,
+    get_conversation_messages,
+    init_db,
+    save_message,
+)
 
 TEST_DB = "test_scalability.db"
+
 
 class TestScalability(unittest.TestCase):
 
@@ -21,7 +25,7 @@ class TestScalability(unittest.TestCase):
             os.remove(TEST_DB)
 
         # Patch the DB_FILE in ui.database
-        self.patcher = patch('ui.database.DB_FILE', TEST_DB)
+        self.patcher = patch("ui.database.DB_FILE", TEST_DB)
         self.mock_db = self.patcher.start()
 
         # Initialize DB
@@ -54,31 +58,33 @@ class TestScalability(unittest.TestCase):
             latest_messages = get_conversation_messages(conv_id, limit=50, offset=0)
 
             self.assertEqual(len(latest_messages), 50)
-            self.assertEqual(latest_messages[-1]['content'], "Message 149")
-            self.assertEqual(latest_messages[0]['content'], "Message 100")
+            self.assertEqual(latest_messages[-1]["content"], "Message 149")
+            self.assertEqual(latest_messages[0]["content"], "Message 100")
 
             # Load previous 50 messages (should be Message 50 to Message 99)
             older_messages = get_conversation_messages(conv_id, limit=50, offset=50)
 
             self.assertEqual(len(older_messages), 50)
-            self.assertEqual(older_messages[-1]['content'], "Message 99")
-            self.assertEqual(older_messages[0]['content'], "Message 50")
+            self.assertEqual(older_messages[-1]["content"], "Message 99")
+            self.assertEqual(older_messages[0]["content"], "Message 50")
 
             # Load oldest 50 messages (should be Message 0 to Message 49)
             oldest_messages = get_conversation_messages(conv_id, limit=50, offset=100)
 
             self.assertEqual(len(oldest_messages), 50)
-            self.assertEqual(oldest_messages[-1]['content'], "Message 49")
-            self.assertEqual(oldest_messages[0]['content'], "Message 0")
+            self.assertEqual(oldest_messages[-1]["content"], "Message 49")
+            self.assertEqual(oldest_messages[0]["content"], "Message 0")
 
             # Test limit beyond range
             empty_messages = get_conversation_messages(conv_id, limit=50, offset=200)
             self.assertEqual(len(empty_messages), 0)
 
         except TypeError:
-            print("Pagination arguments not yet implemented in get_conversation_messages")
+            print(
+                "Pagination arguments not yet implemented in get_conversation_messages"
+            )
             # We expect this failure initially
-            pass
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

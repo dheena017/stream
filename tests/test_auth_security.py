@@ -1,26 +1,29 @@
-
-import pytest
 import sys
 from unittest.mock import MagicMock, patch
+
 
 # Mock streamlit before importing ui.auth
 mock_st = MagicMock()
 # Mock cache_resource to return a singleton-like behavior or just a consistent object
 _cache_store = {}
+
+
 def mock_cache_resource(func=None, **kwargs):
     def wrapper(f):
         def cached_func(*args, **kwargs):
             # Only cache get_rate_limiter_state for this test
-            if f.__name__ == 'get_rate_limiter_state':
-                if 'rate_limiter' not in _cache_store:
-                    _cache_store['rate_limiter'] = f(*args, **kwargs)
-                return _cache_store['rate_limiter']
+            if f.__name__ == "get_rate_limiter_state":
+                if "rate_limiter" not in _cache_store:
+                    _cache_store["rate_limiter"] = f(*args, **kwargs)
+                return _cache_store["rate_limiter"]
             return f(*args, **kwargs)
+
         return cached_func
 
     if func:
         return wrapper(func)
     return wrapper
+
 
 mock_st.cache_resource = mock_cache_resource
 mock_st.session_state = {}
@@ -36,6 +39,7 @@ from ui import auth
 # Reset global rate limiter for tests
 auth.get_rate_limiter_state().clear()
 
+
 def test_hash_password_format():
     """Test that password hash includes salt and follows format"""
     pw = "testpass"
@@ -43,7 +47,8 @@ def test_hash_password_format():
     assert "$" in hashed
     salt, hash_val = hashed.split("$")
     assert len(salt) == 32  # 16 bytes hex
-    assert len(hash_val) == 64 # sha256 hex
+    assert len(hash_val) == 64  # sha256 hex
+
 
 def test_verify_password():
     """Test password verification (salted)"""
@@ -53,14 +58,17 @@ def test_verify_password():
     assert auth.verify_password(hashed, pw) is True
     assert auth.verify_password(hashed, "wrongpassword") is False
 
+
 def test_verify_legacy_password():
     """Test verification of old unsalted passwords"""
     import hashlib
+
     pw = "legacy"
     legacy_hash = hashlib.sha256(pw.encode()).hexdigest()
 
     assert auth.verify_password(legacy_hash, pw) is True
     assert auth.verify_password(legacy_hash, "wrong") is False
+
 
 @patch("ui.auth.load_user_credentials")
 def test_rate_limiting(mock_load):
@@ -70,7 +78,7 @@ def test_rate_limiting(mock_load):
         "testuser": {
             "password": auth.hash_password("password"),
             "email": "test@example.com",
-            "name": "Test User"
+            "name": "Test User",
         }
     }
 
@@ -91,6 +99,7 @@ def test_rate_limiting(mock_load):
     # Even correct password should fail now if strictly enforced,
     # but the implementation checks rate limit *before* verifying password.
     assert auth.check_login(username, "password") is None
+
 
 @patch("ui.auth.save_user_credentials")
 @patch("ui.auth.load_user_credentials")

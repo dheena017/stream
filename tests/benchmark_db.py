@@ -1,18 +1,17 @@
-
-import time
-import sys
-import os
-import uuid
 import json
+import os
 import sqlite3
+import sys
+import time
 
 # Add repo root to path
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 import ui.database
 
 # Patch DB file
 ui.database.DB_FILE = "benchmark_chat_history.db"
+
 
 def setup_data():
     if os.path.exists(ui.database.DB_FILE):
@@ -30,19 +29,25 @@ def setup_data():
 
     data = []
     for i in range(1000):
-        data.append((
-            conv_id,
-            "user" if i % 2 == 0 else "assistant",
-            f"This is message number {i}. It has some content.",
-            json.dumps({"idx": i}),
-            str(time.time())
-        ))
+        data.append(
+            (
+                conv_id,
+                "user" if i % 2 == 0 else "assistant",
+                f"This is message number {i}. It has some content.",
+                json.dumps({"idx": i}),
+                str(time.time()),
+            )
+        )
 
-    c.executemany("INSERT INTO messages (conversation_id, role, content, meta_json, timestamp) VALUES (?, ?, ?, ?, ?)", data)
+    c.executemany(
+        "INSERT INTO messages (conversation_id, role, content, meta_json, timestamp) VALUES (?, ?, ?, ?, ?)",
+        data,
+    )
     conn.commit()
     conn.close()
 
     return conv_id
+
 
 def benchmark():
     conv_id = setup_data()
@@ -81,6 +86,7 @@ def benchmark():
     # Clean up
     if os.path.exists(ui.database.DB_FILE):
         os.remove(ui.database.DB_FILE)
+
 
 if __name__ == "__main__":
     benchmark()

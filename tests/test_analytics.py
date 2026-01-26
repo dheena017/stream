@@ -1,15 +1,25 @@
-import pytest
-import time
 import os
-from pathlib import Path
-from ui.analytics import init_analytics, log_api_call, log_error, get_recent_errors, get_analytics_summary, LOG_FILE
+import time
+
+
+from ui.analytics import (
+    LOG_FILE,
+    get_analytics_summary,
+    get_recent_errors,
+    init_analytics,
+    log_api_call,
+    log_error,
+)
+
 
 def test_analytics_logging():
     # Setup
     if LOG_FILE.exists():
         os.remove(LOG_FILE)
     init_analytics()
-    print(f"DEBUG: Initialized. File: {LOG_FILE}, Abs: {LOG_FILE.absolute()}, Exists: {LOG_FILE.exists()}")
+    print(
+        f"DEBUG: Initialized. File: {LOG_FILE}, Abs: {LOG_FILE.absolute()}, Exists: {LOG_FILE.exists()}"
+    )
 
     # Test log_api_call
     log_api_call("test_provider", "test_model", 0.5, True)
@@ -39,5 +49,7 @@ def test_analytics_logging():
 
     # Verify content
     # Recent errors returns reversed list
-    assert errors[0]["context"] == "test_context" # The exception
-    assert errors[1]["error_details"] == "Error message" or errors[1]["message"].endswith("(Failed)")
+    assert errors[0]["context"] == "test_context"  # The exception
+    assert errors[1]["error_details"] == "Error message" or errors[1][
+        "message"
+    ].endswith("(Failed)")

@@ -1,5 +1,6 @@
-import pytest
+
 from ui.chat_utils import preload_blip_model_with_progress
+
 
 def test_preload_blip_model_graceful_failure():
     """
@@ -13,9 +14,11 @@ def test_preload_blip_model_graceful_failure():
     result = preload_blip_model_with_progress()
     assert result is False
 
+
 def test_preload_blip_model_with_callback():
     """Test with a callback function."""
     msgs = []
+
     def callback(progress, msg):
         msgs.append((progress, msg))
 

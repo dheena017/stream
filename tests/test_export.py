@@ -1,33 +1,34 @@
-
 import json
-import unittest
-import sys
 import os
+import sys
+import unittest
 
 # Ensure root is in path
 sys.path.append(os.getcwd())
 
 from PIL import Image
+
 from ui.chat_utils import serialize_messages
+
 
 class TestExport(unittest.TestCase):
     def test_serialize_messages(self):
         # Create dummy image
-        img = Image.new('RGB', (10, 10), color = 'red')
+        img = Image.new("RGB", (10, 10), color="red")
 
         messages = [
             {
                 "role": "user",
                 "content": "Look at this image",
                 "images": [img],
-                "timestamp": "12:00:00"
+                "timestamp": "12:00:00",
             },
             {
                 "role": "assistant",
                 "content": "Nice red square",
                 "images": [],
-                "timestamp": "12:00:05"
-            }
+                "timestamp": "12:00:05",
+            },
         ]
 
         serialized = serialize_messages(messages)
@@ -43,5 +44,6 @@ class TestExport(unittest.TestCase):
         print(f"Serialized image desc: {serialized[0]['images'][0]}")
         self.assertIn("Image <None (10, 10)>", serialized[0]["images"][0])
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()
